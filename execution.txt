@@ -1,0 +1,1359 @@
+[...]/django/django/db/models/manager.py:184   call         => __get__(self=<django.db.models.manager.ManagerDescriptor object at 0x107354690>, instance=None, cls=<django.db.models.base.ModelBase object at 0x1070929d0>)
+[...]/django/django/db/models/manager.py:185   line            if instance is not None:
+[...]/django/django/db/models/manager.py:190   line            if cls._meta.abstract:
+[...]/django/django/db/models/manager.py:195   line            if cls._meta.swapped:
+[...]/django/django/db/models/options.py:404   call            => swapped(self=<django.db.models.options.Options object at 0x107275390>)
+[...]/django/django/db/models/options.py:413   line               if self.swappable:
+[...]/django/django/db/models/options.py:430   line               return None
+[...]/django/django/db/models/options.py:430   return          <= swapped: None
+[...]/django/django/db/models/manager.py:204   line            return cls._meta.managers_map[self.manager.name]
+[...]/django/django/db/models/manager.py:204   return       <= __get__: <django.db.models.manager.Manager object at 0x1073fb650>
+[...]/django/django/db/models/manager.py:157   call         => all(self=<django.db.models.manager.Manager object at 0x1073fb650>)
+[...]/django/django/db/models/manager.py:164   line            return self.get_queryset()
+[...]/django/django/db/models/manager.py:150   call            => get_queryset(self=<django.db.models.manager.Manager object at 0x1073fb650>)
+[...]/django/django/db/models/manager.py:155   line               return self._queryset_class(model=self.model, using=self._db, hints=self._hints)
+[...]rn/django/django/db/models/query.py:294   call               => __init__(self=<django.db.models.query.QuerySet object at 0x107c7a350>, model=<django.db.models.base.ModelBase object at 0x1070929d0>, query=None, using=None, hints={})
+[...]rn/django/django/db/models/query.py:295   line                  self.model = model
+[...]rn/django/django/db/models/query.py:296   line                  self._db = using
+[...]rn/django/django/db/models/query.py:297   line                  self._hints = hints or {}
+[...]rn/django/django/db/models/query.py:298   line                  self._query = query or sql.Query(self.model)
+[...]jango/django/db/models/sql/query.py:279   call                  => __init__(self=<django.db.models.sql.query.Query object at 0x10766d8d0>, model=<django.db.models.base.ModelBase object at 0x1070929d0>, alias_cols=True)
+[...]jango/django/db/models/sql/query.py:280   line                     self.model = model
+[...]jango/django/db/models/sql/query.py:281   line                     self.alias_refcount = {}
+[...]jango/django/db/models/sql/query.py:287   line                     self.alias_map = {}
+[...]jango/django/db/models/sql/query.py:289   line                     self.alias_cols = alias_cols
+[...]jango/django/db/models/sql/query.py:294   line                     self.external_aliases = {}
+[...]jango/django/db/models/sql/query.py:295   line                     self.table_map = {}  # Maps table names to list of aliases.
+[...]jango/django/db/models/sql/query.py:296   line                     self.used_aliases = set()
+[...]jango/django/db/models/sql/query.py:298   line                     self.where = WhereNode()
+[...]s/Learn/django/django/utils/tree.py:22    call                     => __init__(self=<django.db.models.sql.where.WhereNode object at 0x107d1e910>, children=None, connector=None, negated=False)
+[...]s/Learn/django/django/utils/tree.py:24    line                        self.children = children[:] if children else []
+[...]s/Learn/django/django/utils/tree.py:25    line                        self.connector = connector or self.default
+[...]s/Learn/django/django/utils/tree.py:26    line                        self.negated = negated
+[...]s/Learn/django/django/utils/tree.py:26    return                   <= __init__: None
+[...]jango/django/db/models/sql/query.py:300   line                     self.annotations = {}
+[...]jango/django/db/models/sql/query.py:303   line                     self.extra = {}  # Maps col_alias -> (col_sql, params).
+[...]jango/django/db/models/sql/query.py:305   line                     self._filtered_relations = {}
+[...]jango/django/db/models/sql/query.py:305   return                <= __init__: None
+[...]rn/django/django/db/models/query.py:299   line                  self._result_cache = None
+[...]rn/django/django/db/models/query.py:300   line                  self._sticky_filter = False
+[...]rn/django/django/db/models/query.py:301   line                  self._for_write = False
+[...]rn/django/django/db/models/query.py:302   line                  self._prefetch_related_lookups = ()
+[...]rn/django/django/db/models/query.py:303   line                  self._prefetch_done = False
+[...]rn/django/django/db/models/query.py:304   line                  self._known_related_objects = {}  # {rel_field: {pk: rel_obj}}
+[...]rn/django/django/db/models/query.py:305   line                  self._iterable_class = ModelIterable
+[...]rn/django/django/db/models/query.py:306   line                  self._fields = None
+[...]rn/django/django/db/models/query.py:307   line                  self._defer_next_filter = False
+[...]rn/django/django/db/models/query.py:308   line                  self._deferred_filter = None
+[...]rn/django/django/db/models/query.py:308   return             <= __init__: None
+[...]/django/django/db/models/manager.py:155   return          <= get_queryset: <django.db.models.query.QuerySet object at 0x107c7a350>
+[...]/django/django/db/models/manager.py:164   return       <= all: <django.db.models.query.QuerySet object at 0x107c7a350>
+[...]rn/django/django/db/models/query.py:415   call         => __getitem__(self=<django.db.models.query.QuerySet object at 0x107c7a350>, k=0)
+[...]rn/django/django/db/models/query.py:417   line            if not isinstance(k, (int, slice)):
+[...]rn/django/django/db/models/query.py:422   line            if (isinstance(k, int) and k < 0) or (
+[...]rn/django/django/db/models/query.py:423   line            isinstance(k, slice)
+[...]rn/django/django/db/models/query.py:422   line            if (isinstance(k, int) and k < 0) or (
+[...]rn/django/django/db/models/query.py:431   line            if self._result_cache is not None:
+[...]rn/django/django/db/models/query.py:434   line            if isinstance(k, slice):
+[...]rn/django/django/db/models/query.py:447   line            qs = self._chain()
+[...]rn/django/django/db/models/query.py:1894  call            => _chain(self=<django.db.models.query.QuerySet object at 0x107c7a350>)
+[...]rn/django/django/db/models/query.py:1899  line               obj = self._clone()
+[...]rn/django/django/db/models/query.py:1905  call               => _clone(self=<django.db.models.query.QuerySet object at 0x107c7a350>)
+[...]rn/django/django/db/models/query.py:1910  line                  c = self.__class__(
+[...]rn/django/django/db/models/query.py:1911  line                  model=self.model,
+[...]rn/django/django/db/models/query.py:1912  line                  query=self.query.chain(),
+[...]rn/django/django/db/models/query.py:310   call                  => query(self=<django.db.models.query.QuerySet object at 0x107c7a350>)
+[...]rn/django/django/db/models/query.py:312   line                     if self._deferred_filter:
+[...]rn/django/django/db/models/query.py:316   line                     return self._query
+[...]rn/django/django/db/models/query.py:316   return                <= query: <django.db.models.sql.query.Query object at 0x10766d8d0>
+[...]jango/django/db/models/sql/query.py:407   call                  => chain(self=<django.db.models.sql.query.Query object at 0x10766d8d0>, klass=None)
+[...]jango/django/db/models/sql/query.py:412   line                     obj = self.clone()
+[...]jango/django/db/models/sql/query.py:362   call                     => clone(self=<django.db.models.sql.query.Query object at 0x10766d8d0>)
+[...]jango/django/db/models/sql/query.py:367   line                        obj = Empty()
+[...]jango/django/db/models/sql/query.py:368   line                        obj.__class__ = self.__class__
+[...]jango/django/db/models/sql/query.py:370   line                        obj.__dict__ = self.__dict__.copy()
+[...]jango/django/db/models/sql/query.py:372   line                        obj.alias_refcount = self.alias_refcount.copy()
+[...]jango/django/db/models/sql/query.py:373   line                        obj.alias_map = self.alias_map.copy()
+[...]jango/django/db/models/sql/query.py:374   line                        obj.external_aliases = self.external_aliases.copy()
+[...]jango/django/db/models/sql/query.py:375   line                        obj.table_map = self.table_map.copy()
+[...]jango/django/db/models/sql/query.py:376   line                        obj.where = self.where.clone()
+[...]jango/django/db/models/sql/where.py:214   call                        => clone(self=<django.db.models.sql.where.WhereNode object at 0x107d1e910>)
+[...]jango/django/db/models/sql/where.py:215   line                           clone = self.create(connector=self.connector, negated=self.negated)
+[...]s/Learn/django/django/utils/tree.py:28    call                           => create(cls=<class 'django.db.models.sql.where.WhereNode'>, children=None, connector='AND', negated=False)
+[...]s/Learn/django/django/utils/tree.py:36    line                              obj = Node(children, connector or cls.default, negated)
+[...]s/Learn/django/django/utils/tree.py:22    call                              => __init__(self=<django.utils.tree.Node object at 0x107d1ecd0>, children=None, connector='AND', negated=False)
+[...]s/Learn/django/django/utils/tree.py:24    line                                 self.children = children[:] if children else []
+[...]s/Learn/django/django/utils/tree.py:25    line                                 self.connector = connector or self.default
+[...]s/Learn/django/django/utils/tree.py:26    line                                 self.negated = negated
+[...]s/Learn/django/django/utils/tree.py:26    return                            <= __init__: None
+[...]s/Learn/django/django/utils/tree.py:37    line                              obj.__class__ = cls
+[...]s/Learn/django/django/utils/tree.py:38    line                              return obj
+[...]s/Learn/django/django/utils/tree.py:38    return                         <= create: <django.db.models.sql.where.WhereNode object at 0x107d1ecd0>
+[...]jango/django/db/models/sql/where.py:216   line                           for child in self.children:
+[...]jango/django/db/models/sql/where.py:220   line                           return clone
+[...]jango/django/db/models/sql/where.py:220   return                      <= clone: <django.db.models.sql.where.WhereNode object at 0x107d1ecd0>
+[...]jango/django/db/models/sql/query.py:377   line                        obj.annotations = self.annotations.copy()
+[...]jango/django/db/models/sql/query.py:378   line                        if self.annotation_select_mask is not None:
+[...]jango/django/db/models/sql/query.py:380   line                        if self.combined_queries:
+[...]jango/django/db/models/sql/query.py:389   line                        obj._annotation_select_cache = None
+[...]jango/django/db/models/sql/query.py:390   line                        obj.extra = self.extra.copy()
+[...]jango/django/db/models/sql/query.py:391   line                        if self.extra_select_mask is not None:
+[...]jango/django/db/models/sql/query.py:393   line                        if self._extra_select_cache is not None:
+[...]jango/django/db/models/sql/query.py:395   line                        if self.select_related is not False:
+[...]jango/django/db/models/sql/query.py:399   line                        if "subq_aliases" in self.__dict__:
+[...]jango/django/db/models/sql/query.py:401   line                        obj.used_aliases = self.used_aliases.copy()
+[...]jango/django/db/models/sql/query.py:402   line                        obj._filtered_relations = self._filtered_relations.copy()
+[...]jango/django/db/models/sql/query.py:404   line                        obj.__dict__.pop("base_table", None)
+[...]jango/django/db/models/sql/query.py:405   line                        return obj
+[...]jango/django/db/models/sql/query.py:405   return                   <= clone: <django.db.models.sql.query.Query object at 0x107704590>
+[...]jango/django/db/models/sql/query.py:413   line                     if klass and obj.__class__ != klass:
+[...]jango/django/db/models/sql/query.py:415   line                     if not obj.filter_is_sticky:
+[...]jango/django/db/models/sql/query.py:416   line                     obj.used_aliases = set()
+[...]jango/django/db/models/sql/query.py:417   line                     obj.filter_is_sticky = False
+[...]jango/django/db/models/sql/query.py:418   line                     if hasattr(obj, "_setup_query"):
+[...]jango/django/db/models/sql/query.py:420   line                     return obj
+[...]jango/django/db/models/sql/query.py:420   return                <= chain: <django.db.models.sql.query.Query object at 0x107704590>
+[...]rn/django/django/db/models/query.py:1913  line                  using=self._db,
+[...]rn/django/django/db/models/query.py:1914  line                  hints=self._hints,
+[...]rn/django/django/db/models/query.py:1910  line                  c = self.__class__(
+[...]rn/django/django/db/models/query.py:294   call                  => __init__(self=<django.db.models.query.QuerySet object at 0x107d1edd0>, model=<django.db.models.base.ModelBase object at 0x1070929d0>, query=<django.db.models.sql.query.Query object at 0x107704590>, using=None, hints={})
+[...]rn/django/django/db/models/query.py:295   line                     self.model = model
+[...]rn/django/django/db/models/query.py:296   line                     self._db = using
+[...]rn/django/django/db/models/query.py:297   line                     self._hints = hints or {}
+[...]rn/django/django/db/models/query.py:298   line                     self._query = query or sql.Query(self.model)
+[...]rn/django/django/db/models/query.py:299   line                     self._result_cache = None
+[...]rn/django/django/db/models/query.py:300   line                     self._sticky_filter = False
+[...]rn/django/django/db/models/query.py:301   line                     self._for_write = False
+[...]rn/django/django/db/models/query.py:302   line                     self._prefetch_related_lookups = ()
+[...]rn/django/django/db/models/query.py:303   line                     self._prefetch_done = False
+[...]rn/django/django/db/models/query.py:304   line                     self._known_related_objects = {}  # {rel_field: {pk: rel_obj}}
+[...]rn/django/django/db/models/query.py:305   line                     self._iterable_class = ModelIterable
+[...]rn/django/django/db/models/query.py:306   line                     self._fields = None
+[...]rn/django/django/db/models/query.py:307   line                     self._defer_next_filter = False
+[...]rn/django/django/db/models/query.py:308   line                     self._deferred_filter = None
+[...]rn/django/django/db/models/query.py:308   return                <= __init__: None
+[...]rn/django/django/db/models/query.py:1916  line                  c._sticky_filter = self._sticky_filter
+[...]rn/django/django/db/models/query.py:1917  line                  c._for_write = self._for_write
+[...]rn/django/django/db/models/query.py:1918  line                  c._prefetch_related_lookups = self._prefetch_related_lookups[:]
+[...]rn/django/django/db/models/query.py:1919  line                  c._known_related_objects = self._known_related_objects
+[...]rn/django/django/db/models/query.py:1920  line                  c._iterable_class = self._iterable_class
+[...]rn/django/django/db/models/query.py:1921  line                  c._fields = self._fields
+[...]rn/django/django/db/models/query.py:1922  line                  return c
+[...]rn/django/django/db/models/query.py:1922  return             <= _clone: <django.db.models.query.QuerySet object at 0x107d1edd0>
+[...]rn/django/django/db/models/query.py:1900  line               if obj._sticky_filter:
+[...]rn/django/django/db/models/query.py:1903  line               return obj
+[...]rn/django/django/db/models/query.py:1903  return          <= _chain: <django.db.models.query.QuerySet object at 0x107d1edd0>
+[...]rn/django/django/db/models/query.py:448   line            qs.query.set_limits(k, k + 1)
+[...]rn/django/django/db/models/query.py:310   call            => query(self=<django.db.models.query.QuerySet object at 0x107d1edd0>)
+[...]rn/django/django/db/models/query.py:312   line               if self._deferred_filter:
+[...]rn/django/django/db/models/query.py:316   line               return self._query
+[...]rn/django/django/db/models/query.py:316   return          <= query: <django.db.models.sql.query.Query object at 0x107704590>
+[...]jango/django/db/models/sql/query.py:2098  call            => set_limits(self=<django.db.models.sql.query.Query object at 0x107704590>, low=0, high=1)
+[...]jango/django/db/models/sql/query.py:2107  line               if high is not None:
+[...]jango/django/db/models/sql/query.py:2108  line               if self.high_mark is not None:
+[...]jango/django/db/models/sql/query.py:2111  line               self.high_mark = self.low_mark + high
+[...]jango/django/db/models/sql/query.py:2112  line               if low is not None:
+[...]jango/django/db/models/sql/query.py:2113  line               if self.high_mark is not None:
+[...]jango/django/db/models/sql/query.py:2114  line               self.low_mark = min(self.high_mark, self.low_mark + low)
+[...]jango/django/db/models/sql/query.py:2118  line               if self.low_mark == self.high_mark:
+[...]jango/django/db/models/sql/query.py:2118  return          <= set_limits: None
+[...]rn/django/django/db/models/query.py:449   line            qs._fetch_all()
+[...]rn/django/django/db/models/query.py:1924  call            => _fetch_all(self=<django.db.models.query.QuerySet object at 0x107d1edd0>)
+[...]rn/django/django/db/models/query.py:1925  line               if self._result_cache is None:
+[...]rn/django/django/db/models/query.py:1926  line               self._result_cache = list(self._iterable_class(self))
+[...]rn/django/django/db/models/query.py:47    call               => __init__(self=<django.db.models.query.ModelIterable object at 0x1073ae450>, queryset=<django.db.models.query.QuerySet object at 0x107d1edd0>, chunked_fetch=False, chunk_size=100)
+[...]rn/django/django/db/models/query.py:50    line                  self.queryset = queryset
+[...]rn/django/django/db/models/query.py:51    line                  self.chunked_fetch = chunked_fetch
+[...]rn/django/django/db/models/query.py:52    line                  self.chunk_size = chunk_size
+[...]rn/django/django/db/models/query.py:52    return             <= __init__: None
+[...]rn/django/django/db/models/query.py:85    call               => __iter__(self=<django.db.models.query.ModelIterable object at 0x1073ae450>)
+[...]rn/django/django/db/models/query.py:86    line                  queryset = self.queryset
+[...]rn/django/django/db/models/query.py:87    line                  db = queryset.db
+[...]rn/django/django/db/models/query.py:1809  call                  => db(self=<django.db.models.query.QuerySet object at 0x107d1edd0>)
+[...]rn/django/django/db/models/query.py:1812  line                     if self._for_write:
+[...]rn/django/django/db/models/query.py:1814  line                     return self._db or router.db_for_read(self.model, **self._hints)
+[...]nts/Learn/django/django/db/utils.py:218   call                     => _route_db(self=<django.db.utils.ConnectionRouter object at 0x105eb9090>, model=<django.db.models.base.ModelBase object at 0x1070929d0>, **hints={})
+[...]nts/Learn/django/django/db/utils.py:219   line                        chosen_db = None
+[...]nts/Learn/django/django/db/utils.py:220   line                        for router in self.routers:
+[...]nts/Learn/django/django/db/utils.py:230   line                        instance = hints.get("instance")
+[...]nts/Learn/django/django/db/utils.py:231   line                        if instance is not None and instance._state.db:
+[...]nts/Learn/django/django/db/utils.py:233   line                        return DEFAULT_DB_ALIAS
+[...]nts/Learn/django/django/db/utils.py:233   return                   <= _route_db: 'default'
+[...]rn/django/django/db/models/query.py:1814  return                <= db: 'default'
+[...]rn/django/django/db/models/query.py:88    line                  compiler = queryset.query.get_compiler(using=db)
+[...]rn/django/django/db/models/query.py:310   call                  => query(self=<django.db.models.query.QuerySet object at 0x107d1edd0>)
+[...]rn/django/django/db/models/query.py:312   line                     if self._deferred_filter:
+[...]rn/django/django/db/models/query.py:316   line                     return self._query
+[...]rn/django/django/db/models/query.py:316   return                <= query: <django.db.models.sql.query.Query object at 0x107704590>
+[...]jango/django/db/models/sql/query.py:344   call                  => get_compiler(self=<django.db.models.sql.query.Query object at 0x107704590>, using='default', connection=None, elide_empty=True)
+[...]jango/django/db/models/sql/query.py:345   line                     if using is None and connection is None:
+[...]jango/django/db/models/sql/query.py:347   line                     if using:
+[...]jango/django/db/models/sql/query.py:348   line                     connection = connections[using]
+[...]n/django/django/utils/connection.py:56    call                     => __getitem__(self=<django.db.utils.ConnectionHandler object at 0x105ea0850>, alias='default')
+[...]n/django/django/utils/connection.py:57    line                        try:
+[...]n/django/django/utils/connection.py:58    line                        return getattr(self._connections, alias)
+[...]3.11/site-packages/asgiref/local.py:99    call                        => __getattr__(self=<asgiref.local.Local object at 0x105eb8ed0>, key='default')
+[...]3.11/site-packages/asgiref/local.py:100   line                           with self._thread_lock:
+[...]3.11/site-packages/asgiref/local.py:101   line                           storage = self._get_storage()
+[...]3.11/site-packages/asgiref/local.py:80    call                           => _get_storage(self=<asgiref.local.Local object at 0x105eb8ed0>)
+[...]3.11/site-packages/asgiref/local.py:81    line                              context_obj = self._get_context_id()
+[...]3.11/site-packages/asgiref/local.py:44    call                              => _get_context_id(self=<asgiref.local.Local object at 0x105eb8ed0>)
+[...]3.11/site-packages/asgiref/local.py:49    line                                 from .sync import AsyncToSync, SyncToAsync
+[...]3.11/site-packages/asgiref/local.py:52    line                                 context_id = SyncToAsync.get_current_task()
+[...]n3.11/site-packages/asgiref/sync.py:545   call                                 => get_current_task()
+[...]n3.11/site-packages/asgiref/sync.py:551   line                                    try:
+[...]n3.11/site-packages/asgiref/sync.py:552   line                                    return asyncio.current_task()
+[...]n3.11/site-packages/asgiref/sync.py:552   exception                             ! get_current_task: (<class 'RuntimeError'>, RuntimeError('no running event loop'), <traceback object at 0x107d1e680>)
+[...]n3.11/site-packages/asgiref/sync.py:553   line                                    except RuntimeError:
+[...]n3.11/site-packages/asgiref/sync.py:554   line                                    return None
+[...]n3.11/site-packages/asgiref/sync.py:554   return                               <= get_current_task: None
+[...]3.11/site-packages/asgiref/local.py:53    line                                 context_is_async = True
+[...]3.11/site-packages/asgiref/local.py:55    line                                 if context_id is None:
+[...]3.11/site-packages/asgiref/local.py:56    line                                 context_id = threading.current_thread()
+[...]3.11/site-packages/asgiref/local.py:57    line                                 context_is_async = False
+[...]3.11/site-packages/asgiref/local.py:59    line                                 if self._thread_critical:
+[...]3.11/site-packages/asgiref/local.py:60    line                                 return context_id
+[...]3.11/site-packages/asgiref/local.py:60    return                            <= _get_context_id: <threading._MainThread object at 0x1054b8190>
+[...]3.11/site-packages/asgiref/local.py:82    line                              if not hasattr(context_obj, self._attr_name):
+[...]3.11/site-packages/asgiref/local.py:85    line                              return getattr(context_obj, self._attr_name)
+[...]3.11/site-packages/asgiref/local.py:85    return                         <= _get_storage: {'default': <django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>}
+[...]3.11/site-packages/asgiref/local.py:102   line                           if key in storage:
+[...]3.11/site-packages/asgiref/local.py:103   line                           return storage[key]
+[...]3.11/site-packages/asgiref/local.py:100   line                           with self._thread_lock:
+[...]3.11/site-packages/asgiref/local.py:100   return                      <= __getattr__: <django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>
+[...]n/django/django/utils/connection.py:58    return                   <= __getitem__: <django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>
+[...]jango/django/db/models/sql/query.py:349   line                     return connection.ops.compiler(self.compiler)(
+[...]ango/db/backends/base/operations.py:373   call                     => compiler(self=<django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>, compiler_name='SQLCompiler')
+[...]ango/db/backends/base/operations.py:379   line                        if self._cache is None:
+[...]ango/db/backends/base/operations.py:381   line                        return getattr(self._cache, compiler_name)
+[...]ango/db/backends/base/operations.py:381   return                   <= compiler: <class 'django.db.models.sql.compiler.SQLCompiler'>
+[...]jango/django/db/models/sql/query.py:350   line                     self, connection, using, elide_empty
+[...]jango/django/db/models/sql/query.py:349   line                     return connection.ops.compiler(self.compiler)(
+[...]go/django/db/models/sql/compiler.py:46    call                     => __init__(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, query=<django.db.models.sql.query.Query object at 0x107704590>, connection=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>, using='default', elide_empty=True)
+[...]go/django/db/models/sql/compiler.py:47    line                        self.query = query
+[...]go/django/db/models/sql/compiler.py:48    line                        self.connection = connection
+[...]go/django/db/models/sql/compiler.py:49    line                        self.using = using
+[...]go/django/db/models/sql/compiler.py:52    line                        self.elide_empty = elide_empty
+[...]go/django/db/models/sql/compiler.py:53    line                        self.quote_cache = {"*": "*"}
+[...]go/django/db/models/sql/compiler.py:58    line                        self.select = None
+[...]go/django/db/models/sql/compiler.py:59    line                        self.annotation_col_map = None
+[...]go/django/db/models/sql/compiler.py:60    line                        self.klass_info = None
+[...]go/django/db/models/sql/compiler.py:61    line                        self._meta_ordering = None
+[...]go/django/db/models/sql/compiler.py:61    return                   <= __init__: None
+[...]jango/django/db/models/sql/query.py:349   return                <= get_compiler: <django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>
+[...]rn/django/django/db/models/query.py:91    line                  results = compiler.execute_sql(
+[...]rn/django/django/db/models/query.py:92    line                  chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+[...]rn/django/django/db/models/query.py:91    line                  results = compiler.execute_sql(
+[...]go/django/db/models/sql/compiler.py:1532  call                  => execute_sql(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, result_type='multi', chunked_fetch=False, chunk_size=100)
+[...]go/django/db/models/sql/compiler.py:1547  line                     result_type = result_type or NO_RESULTS
+[...]go/django/db/models/sql/compiler.py:1548  line                     try:
+[...]go/django/db/models/sql/compiler.py:1549  line                     sql, params = self.as_sql()
+[...]go/django/db/models/sql/compiler.py:725   call                     => as_sql(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, with_limits=True, with_col_aliases=False)
+[...]go/django/db/models/sql/compiler.py:733   line                        refcounts_before = self.query.alias_refcount.copy()
+[...]go/django/db/models/sql/compiler.py:734   line                        try:
+[...]go/django/db/models/sql/compiler.py:735   line                        combinator = self.query.combinator
+[...]go/django/db/models/sql/compiler.py:736   line                        extra_select, order_by, group_by = self.pre_sql_setup(
+[...]go/django/db/models/sql/compiler.py:737   line                        with_col_aliases=with_col_aliases or bool(combinator),
+[...]go/django/db/models/sql/compiler.py:736   line                        extra_select, order_by, group_by = self.pre_sql_setup(
+[...]go/django/db/models/sql/compiler.py:78    call                        => pre_sql_setup(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, with_col_aliases=False)
+[...]go/django/db/models/sql/compiler.py:84    line                           self.setup_query(with_col_aliases=with_col_aliases)
+[...]go/django/db/models/sql/compiler.py:70    call                           => setup_query(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, with_col_aliases=False)
+[...]go/django/db/models/sql/compiler.py:71    line                              if all(self.query.alias_refcount[a] == 0 for a in self.query.alias_map):
+[...]go/django/db/models/sql/compiler.py:71    call                              => <genexpr>(.0=<dict_keyiterator object at 0x107c144a0>)
+[...]go/django/db/models/sql/compiler.py:71    line                                 if all(self.query.alias_refcount[a] == 0 for a in self.query.alias_map):
+[...]go/django/db/models/sql/compiler.py:71    return                            <= <genexpr>: None
+[...]go/django/db/models/sql/compiler.py:72    line                              self.query.get_initial_alias()
+[...]jango/django/db/models/sql/query.py:1066  call                              => get_initial_alias(self=<django.db.models.sql.query.Query object at 0x107704590>)
+[...]jango/django/db/models/sql/query.py:1071  line                                 if self.alias_map:
+[...]jango/django/db/models/sql/query.py:1074  line                                 elif self.model:
+[...]jango/django/db/models/sql/query.py:1075  line                                 alias = self.join(self.base_table_class(self.get_meta().db_table, None))
+[...]jango/django/db/models/sql/query.py:353   call                                 => get_meta(self=<django.db.models.sql.query.Query object at 0x107704590>)
+[...]jango/django/db/models/sql/query.py:359   line                                    if self.model:
+[...]jango/django/db/models/sql/query.py:360   line                                    return self.model._meta
+[...]jango/django/db/models/sql/query.py:360   return                               <= get_meta: <django.db.models.options.Options object at 0x107275390>
+[...]ngo/db/models/sql/datastructures.py:211   call                                 => __init__(self=<django.db.models.sql.datastructures.BaseTable object at 0x10766ded0>, table_name='polls_question', alias=None)
+[...]ngo/db/models/sql/datastructures.py:212   line                                    self.table_name = table_name
+[...]ngo/db/models/sql/datastructures.py:213   line                                    self.table_alias = alias
+[...]ngo/db/models/sql/datastructures.py:213   return                               <= __init__: None
+[...]jango/django/db/models/sql/query.py:1088  call                                 => join(self=<django.db.models.sql.query.Query object at 0x107704590>, join=<django.db.models.sql.datastructures.BaseTable object at 0x10766ded0>, reuse=None)
+[...]jango/django/db/models/sql/query.py:1101  line                                    reuse_aliases = [
+[...]jango/django/db/models/sql/query.py:1103  line                                    for a, j in self.alias_map.items()
+[...]jango/django/db/models/sql/query.py:1101  line                                    reuse_aliases = [
+[...]jango/django/db/models/sql/query.py:1101  call                                    => <listcomp>(.0=<dict_itemiterator object at 0x107c144a0>)
+[...]jango/django/db/models/sql/query.py:1101  line                                       reuse_aliases = [
+[...]jango/django/db/models/sql/query.py:1104  line                                       if (reuse is None or a in reuse) and j == join
+[...]jango/django/db/models/sql/query.py:1104  return                                  <= <listcomp>: []
+[...]jango/django/db/models/sql/query.py:1106  line                                    if reuse_aliases:
+[...]jango/django/db/models/sql/query.py:1117  line                                    alias, _ = self.table_alias(
+[...]jango/django/db/models/sql/query.py:1118  line                                    join.table_name, create=True, filtered_relation=join.filtered_relation
+[...]jango/django/db/models/sql/query.py:1117  line                                    alias, _ = self.table_alias(
+[...]jango/django/db/models/sql/query.py:866   call                                    => table_alias(self=<django.db.models.sql.query.Query object at 0x107704590>, table_name='polls_question', create=True, filtered_relation=None)
+[...]jango/django/db/models/sql/query.py:874   line                                       alias_list = self.table_map.get(table_name)
+[...]jango/django/db/models/sql/query.py:875   line                                       if not create and alias_list:
+[...]jango/django/db/models/sql/query.py:881   line                                       if alias_list:
+[...]jango/django/db/models/sql/query.py:887   line                                       filtered_relation.alias if filtered_relation is not None else table_name
+[...]jango/django/db/models/sql/query.py:886   line                                       alias = (
+[...]jango/django/db/models/sql/query.py:889   line                                       self.table_map[table_name] = [alias]
+[...]jango/django/db/models/sql/query.py:890   line                                       self.alias_refcount[alias] = 1
+[...]jango/django/db/models/sql/query.py:891   line                                       return alias, True
+[...]jango/django/db/models/sql/query.py:891   return                                  <= table_alias: ('polls_question', True)
+[...]jango/django/db/models/sql/query.py:1120  line                                    if join.join_type:
+[...]jango/django/db/models/sql/query.py:1126  line                                    join.table_alias = alias
+[...]jango/django/db/models/sql/query.py:1127  line                                    self.alias_map[alias] = join
+[...]jango/django/db/models/sql/query.py:1128  line                                    if filtered_relation := join.filtered_relation:
+[...]jango/django/db/models/sql/query.py:1140  line                                    return alias
+[...]jango/django/db/models/sql/query.py:1140  return                               <= join: 'polls_question'
+[...]jango/django/db/models/sql/query.py:1078  line                                 return alias
+[...]jango/django/db/models/sql/query.py:1078  return                            <= get_initial_alias: 'polls_question'
+[...]go/django/db/models/sql/compiler.py:73    line                              self.select, self.klass_info, self.annotation_col_map = self.get_select(
+[...]go/django/db/models/sql/compiler.py:74    line                              with_col_aliases=with_col_aliases,
+[...]go/django/db/models/sql/compiler.py:73    line                              self.select, self.klass_info, self.annotation_col_map = self.get_select(
+[...]go/django/db/models/sql/compiler.py:229   call                              => get_select(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, with_col_aliases=False)
+[...]go/django/db/models/sql/compiler.py:247   line                                 select = []
+[...]go/django/db/models/sql/compiler.py:248   line                                 klass_info = None
+[...]go/django/db/models/sql/compiler.py:249   line                                 annotations = {}
+[...]go/django/db/models/sql/compiler.py:250   line                                 select_idx = 0
+[...]go/django/db/models/sql/compiler.py:251   line                                 for alias, (sql, params) in self.query.extra_select.items():
+[...]jango/django/db/models/sql/query.py:2510  call                                 => extra_select(self=<django.db.models.sql.query.Query object at 0x107704590>)
+[...]jango/django/db/models/sql/query.py:2512  line                                    if self._extra_select_cache is not None:
+[...]jango/django/db/models/sql/query.py:2514  line                                    if not self.extra:
+[...]jango/django/db/models/sql/query.py:2515  line                                    return {}
+[...]jango/django/db/models/sql/query.py:2515  return                               <= extra_select: {}
+[...]go/django/db/models/sql/compiler.py:255   line                                 assert not (self.query.select and self.query.default_cols)
+[...]go/django/db/models/sql/compiler.py:256   line                                 select_mask = self.query.get_select_mask()
+[...]jango/django/db/models/sql/query.py:844   call                                 => get_select_mask(self=<django.db.models.sql.query.Query object at 0x107704590>)
+[...]jango/django/db/models/sql/query.py:853   line                                    field_names, defer = self.deferred_loading
+[...]jango/django/db/models/sql/query.py:854   line                                    if not field_names:
+[...]jango/django/db/models/sql/query.py:855   line                                    return {}
+[...]jango/django/db/models/sql/query.py:855   return                               <= get_select_mask: {}
+[...]go/django/db/models/sql/compiler.py:257   line                                 if self.query.default_cols:
+[...]go/django/db/models/sql/compiler.py:258   line                                 cols = self.get_default_columns(select_mask)
+[...]go/django/db/models/sql/compiler.py:950   call                                 => get_default_columns(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, select_mask={}, start_alias=None, opts=None, from_parent=None)
+[...]go/django/db/models/sql/compiler.py:964   line                                    result = []
+[...]go/django/db/models/sql/compiler.py:965   line                                    if opts is None:
+[...]go/django/db/models/sql/compiler.py:966   line                                    if (opts := self.query.get_meta()) is None:
+[...]jango/django/db/models/sql/query.py:353   call                                    => get_meta(self=<django.db.models.sql.query.Query object at 0x107704590>)
+[...]jango/django/db/models/sql/query.py:359   line                                       if self.model:
+[...]jango/django/db/models/sql/query.py:360   line                                       return self.model._meta
+[...]jango/django/db/models/sql/query.py:360   return                                  <= get_meta: <django.db.models.options.Options object at 0x107275390>
+[...]go/django/db/models/sql/compiler.py:968   line                                    start_alias = start_alias or self.query.get_initial_alias()
+[...]jango/django/db/models/sql/query.py:1066  call                                    => get_initial_alias(self=<django.db.models.sql.query.Query object at 0x107704590>)
+[...]jango/django/db/models/sql/query.py:1071  line                                       if self.alias_map:
+[...]jango/django/db/models/sql/query.py:1072  line                                       alias = self.base_table
+[...]n/django/django/utils/functional.py:39    call                                       => __get__(self=<django.utils.functional.cached_property object at 0x106d3b7d0>, instance=<django.db.models.sql.query.Query object at 0x107704590>, cls=<class 'django.db.models.sql.query.Query'>)
+[...]n/django/django/utils/functional.py:45    line                                          if instance is None:
+[...]n/django/django/utils/functional.py:47    line                                          res = instance.__dict__[self.name] = self.func(instance)
+[...]jango/django/db/models/sql/query.py:315   call                                          => base_table(self=<django.db.models.sql.query.Query object at 0x107704590>)
+[...]jango/django/db/models/sql/query.py:317   line                                             for alias in self.alias_map:
+[...]jango/django/db/models/sql/query.py:318   line                                             return alias
+[...]jango/django/db/models/sql/query.py:318   return                                        <= base_table: 'polls_question'
+[...]n/django/django/utils/functional.py:48    line                                          return res
+[...]n/django/django/utils/functional.py:48    return                                     <= __get__: 'polls_question'
+[...]jango/django/db/models/sql/query.py:1073  line                                       self.ref_alias(alias)
+[...]jango/django/db/models/sql/query.py:893   call                                       => ref_alias(self=<django.db.models.sql.query.Query object at 0x107704590>, alias='polls_question')
+[...]jango/django/db/models/sql/query.py:895   line                                          self.alias_refcount[alias] += 1
+[...]jango/django/db/models/sql/query.py:895   return                                     <= ref_alias: None
+[...]jango/django/db/models/sql/query.py:1078  line                                       return alias
+[...]jango/django/db/models/sql/query.py:1078  return                                  <= get_initial_alias: 'polls_question'
+[...]go/django/db/models/sql/compiler.py:972   line                                    seen_models = {None: start_alias}
+[...]go/django/db/models/sql/compiler.py:974   line                                    for field in opts.concrete_fields:
+[...]go/django/db/models/sql/compiler.py:975   line                                    model = field.model._meta.concrete_model
+[...]go/django/db/models/sql/compiler.py:978   line                                    if model == opts.model:
+[...]go/django/db/models/sql/compiler.py:979   line                                    model = None
+[...]go/django/db/models/sql/compiler.py:981   line                                    from_parent
+[...]go/django/db/models/sql/compiler.py:980   line                                    if (
+[...]go/django/db/models/sql/compiler.py:993   line                                    if select_mask and field not in select_mask:
+[...]go/django/db/models/sql/compiler.py:995   line                                    alias = self.query.join_parent_model(opts, model, start_alias, seen_models)
+[...]jango/django/db/models/sql/query.py:1142  call                                    => join_parent_model(self=<django.db.models.sql.query.Query object at 0x107704590>, opts=<django.db.models.options.Options object at 0x107275390>, model=None, alias='polls_question', seen={None: 'polls_question'})
+[...]jango/django/db/models/sql/query.py:1151  line                                       if model in seen:
+[...]jango/django/db/models/sql/query.py:1152  line                                       return seen[model]
+[...]jango/django/db/models/sql/query.py:1152  return                                  <= join_parent_model: 'polls_question'
+[...]go/django/db/models/sql/compiler.py:996   line                                    column = field.get_col(alias)
+[...]django/db/models/fields/__init__.py:539   call                                    => get_col(self=<django.db.models.fields.BigAutoField object at 0x10732fb10>, alias='polls_question', output_field=None)
+[...]django/db/models/fields/__init__.py:540   line                                       if alias == self.model._meta.db_table and (
+[...]django/db/models/fields/__init__.py:541   line                                       output_field is None or output_field == self
+[...]django/db/models/fields/__init__.py:543   line                                       return self.cached_col
+[...]django/db/models/fields/__init__.py:543   return                                  <= get_col: <django.db.models.expressions.Col object at 0x107660910>
+[...]go/django/db/models/sql/compiler.py:997   line                                    result.append(column)
+[...]go/django/db/models/sql/compiler.py:974   line                                    for field in opts.concrete_fields:
+[...]go/django/db/models/sql/compiler.py:975   line                                    model = field.model._meta.concrete_model
+[...]go/django/db/models/sql/compiler.py:978   line                                    if model == opts.model:
+[...]go/django/db/models/sql/compiler.py:979   line                                    model = None
+[...]go/django/db/models/sql/compiler.py:981   line                                    from_parent
+[...]go/django/db/models/sql/compiler.py:980   line                                    if (
+[...]go/django/db/models/sql/compiler.py:993   line                                    if select_mask and field not in select_mask:
+[...]go/django/db/models/sql/compiler.py:995   line                                    alias = self.query.join_parent_model(opts, model, start_alias, seen_models)
+[...]jango/django/db/models/sql/query.py:1142  call                                    => join_parent_model(self=<django.db.models.sql.query.Query object at 0x107704590>, opts=<django.db.models.options.Options object at 0x107275390>, model=None, alias='polls_question', seen={None: 'polls_question'})
+[...]jango/django/db/models/sql/query.py:1151  line                                       if model in seen:
+[...]jango/django/db/models/sql/query.py:1152  line                                       return seen[model]
+[...]jango/django/db/models/sql/query.py:1152  return                                  <= join_parent_model: 'polls_question'
+[...]go/django/db/models/sql/compiler.py:996   line                                    column = field.get_col(alias)
+[...]django/db/models/fields/__init__.py:539   call                                    => get_col(self=<django.db.models.fields.CharField object at 0x107275010>, alias='polls_question', output_field=None)
+[...]django/db/models/fields/__init__.py:540   line                                       if alias == self.model._meta.db_table and (
+[...]django/db/models/fields/__init__.py:541   line                                       output_field is None or output_field == self
+[...]django/db/models/fields/__init__.py:543   line                                       return self.cached_col
+[...]django/db/models/fields/__init__.py:543   return                                  <= get_col: <django.db.models.expressions.Col object at 0x107660990>
+[...]go/django/db/models/sql/compiler.py:997   line                                    result.append(column)
+[...]go/django/db/models/sql/compiler.py:974   line                                    for field in opts.concrete_fields:
+[...]go/django/db/models/sql/compiler.py:975   line                                    model = field.model._meta.concrete_model
+[...]go/django/db/models/sql/compiler.py:978   line                                    if model == opts.model:
+[...]go/django/db/models/sql/compiler.py:979   line                                    model = None
+[...]go/django/db/models/sql/compiler.py:981   line                                    from_parent
+[...]go/django/db/models/sql/compiler.py:980   line                                    if (
+[...]go/django/db/models/sql/compiler.py:993   line                                    if select_mask and field not in select_mask:
+[...]go/django/db/models/sql/compiler.py:995   line                                    alias = self.query.join_parent_model(opts, model, start_alias, seen_models)
+[...]jango/django/db/models/sql/query.py:1142  call                                    => join_parent_model(self=<django.db.models.sql.query.Query object at 0x107704590>, opts=<django.db.models.options.Options object at 0x107275390>, model=None, alias='polls_question', seen={None: 'polls_question'})
+[...]jango/django/db/models/sql/query.py:1151  line                                       if model in seen:
+[...]jango/django/db/models/sql/query.py:1152  line                                       return seen[model]
+[...]jango/django/db/models/sql/query.py:1152  return                                  <= join_parent_model: 'polls_question'
+[...]go/django/db/models/sql/compiler.py:996   line                                    column = field.get_col(alias)
+[...]django/db/models/fields/__init__.py:539   call                                    => get_col(self=<django.db.models.fields.DateTimeField object at 0x1072751d0>, alias='polls_question', output_field=None)
+[...]django/db/models/fields/__init__.py:540   line                                       if alias == self.model._meta.db_table and (
+[...]django/db/models/fields/__init__.py:541   line                                       output_field is None or output_field == self
+[...]django/db/models/fields/__init__.py:543   line                                       return self.cached_col
+[...]django/db/models/fields/__init__.py:543   return                                  <= get_col: <django.db.models.expressions.Col object at 0x107660a50>
+[...]go/django/db/models/sql/compiler.py:997   line                                    result.append(column)
+[...]go/django/db/models/sql/compiler.py:974   line                                    for field in opts.concrete_fields:
+[...]go/django/db/models/sql/compiler.py:998   line                                    return result
+[...]go/django/db/models/sql/compiler.py:998   return                               <= get_default_columns: [<django.db.models.expressions.Col object at 0x107660910>, <django.db.models.expressions.Col object at 0x107660990>, <django.db.models.expressions.Col object at 0x107660a50>]
+[...]go/django/db/models/sql/compiler.py:263   line                                 if cols:
+[...]go/django/db/models/sql/compiler.py:264   line                                 select_list = []
+[...]go/django/db/models/sql/compiler.py:265   line                                 for col in cols:
+[...]go/django/db/models/sql/compiler.py:266   line                                 select_list.append(select_idx)
+[...]go/django/db/models/sql/compiler.py:267   line                                 select.append((col, None))
+[...]go/django/db/models/sql/compiler.py:268   line                                 select_idx += 1
+[...]go/django/db/models/sql/compiler.py:265   line                                 for col in cols:
+[...]go/django/db/models/sql/compiler.py:266   line                                 select_list.append(select_idx)
+[...]go/django/db/models/sql/compiler.py:267   line                                 select.append((col, None))
+[...]go/django/db/models/sql/compiler.py:268   line                                 select_idx += 1
+[...]go/django/db/models/sql/compiler.py:265   line                                 for col in cols:
+[...]go/django/db/models/sql/compiler.py:266   line                                 select_list.append(select_idx)
+[...]go/django/db/models/sql/compiler.py:267   line                                 select.append((col, None))
+[...]go/django/db/models/sql/compiler.py:268   line                                 select_idx += 1
+[...]go/django/db/models/sql/compiler.py:265   line                                 for col in cols:
+[...]go/django/db/models/sql/compiler.py:270   line                                 "model": self.query.model,
+[...]go/django/db/models/sql/compiler.py:271   line                                 "select_fields": select_list,
+[...]go/django/db/models/sql/compiler.py:269   line                                 klass_info = {
+[...]go/django/db/models/sql/compiler.py:273   line                                 for alias, annotation in self.query.annotation_select.items():
+[...]jango/django/db/models/sql/query.py:2490  call                                 => annotation_select(self=<django.db.models.sql.query.Query object at 0x107704590>)
+[...]jango/django/db/models/sql/query.py:2496  line                                    if self._annotation_select_cache is not None:
+[...]jango/django/db/models/sql/query.py:2498  line                                    elif not self.annotations:
+[...]jango/django/db/models/sql/query.py:2499  line                                    return {}
+[...]jango/django/db/models/sql/query.py:2499  return                               <= annotation_select: {}
+[...]go/django/db/models/sql/compiler.py:278   line                                 if self.query.select_related:
+[...]go/django/db/models/sql/compiler.py:292   line                                 ret = []
+[...]go/django/db/models/sql/compiler.py:293   line                                 col_idx = 1
+[...]go/django/db/models/sql/compiler.py:294   line                                 for col, alias in select:
+[...]go/django/db/models/sql/compiler.py:295   line                                 try:
+[...]go/django/db/models/sql/compiler.py:296   line                                 sql, params = self.compile(col)
+[...]go/django/db/models/sql/compiler.py:541   call                                 => compile(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, node=<django.db.models.expressions.Col object at 0x107660910>)
+[...]go/django/db/models/sql/compiler.py:542   line                                    vendor_impl = getattr(node, "as_" + self.connection.vendor, None)
+[...]go/django/db/models/sql/compiler.py:543   line                                    if vendor_impl:
+[...]go/django/db/models/sql/compiler.py:546   line                                    sql, params = node.as_sql(self, self.connection)
+[...]ngo/django/db/models/expressions.py:1178  call                                    => as_sql(self=<django.db.models.expressions.Col object at 0x107660910>, compiler=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, connection=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>)
+[...]ngo/django/db/models/expressions.py:1179  line                                       alias, column = self.alias, self.target.column
+[...]ngo/django/db/models/expressions.py:1180  line                                       identifiers = (alias, column) if alias else (column,)
+[...]ngo/django/db/models/expressions.py:1181  line                                       sql = ".".join(map(compiler.quote_name_unless_alias, identifiers))
+[...]go/django/db/models/sql/compiler.py:519   call                                       => quote_name_unless_alias(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, name='polls_question')
+[...]go/django/db/models/sql/compiler.py:525   line                                          if name in self.quote_cache:
+[...]go/django/db/models/sql/compiler.py:528   line                                          (name in self.query.alias_map and name not in self.query.table_map)
+[...]go/django/db/models/sql/compiler.py:529   line                                          or name in self.query.extra_select
+[...]jango/django/db/models/sql/query.py:2510  call                                          => extra_select(self=<django.db.models.sql.query.Query object at 0x107704590>)
+[...]jango/django/db/models/sql/query.py:2512  line                                             if self._extra_select_cache is not None:
+[...]jango/django/db/models/sql/query.py:2514  line                                             if not self.extra:
+[...]jango/django/db/models/sql/query.py:2515  line                                             return {}
+[...]jango/django/db/models/sql/query.py:2515  return                                        <= extra_select: {}
+[...]go/django/db/models/sql/compiler.py:531   line                                          self.query.external_aliases.get(name)
+[...]go/django/db/models/sql/compiler.py:529   line                                          or name in self.query.extra_select
+[...]go/django/db/models/sql/compiler.py:537   line                                          r = self.connection.ops.quote_name(name)
+[...]o/db/backends/sqlite3/operations.py:187   call                                          => quote_name(self=<django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>, name='polls_question')
+[...]o/db/backends/sqlite3/operations.py:188   line                                             if name.startswith('"') and name.endswith('"'):
+[...]o/db/backends/sqlite3/operations.py:190   line                                             return '"%s"' % name
+[...]o/db/backends/sqlite3/operations.py:190   return                                        <= quote_name: '"polls_question"'
+[...]go/django/db/models/sql/compiler.py:538   line                                          self.quote_cache[name] = r
+[...]go/django/db/models/sql/compiler.py:539   line                                          return r
+[...]go/django/db/models/sql/compiler.py:539   return                                     <= quote_name_unless_alias: '"polls_question"'
+[...]go/django/db/models/sql/compiler.py:519   call                                       => quote_name_unless_alias(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, name='id')
+[...]go/django/db/models/sql/compiler.py:525   line                                          if name in self.quote_cache:
+[...]go/django/db/models/sql/compiler.py:528   line                                          (name in self.query.alias_map and name not in self.query.table_map)
+[...]go/django/db/models/sql/compiler.py:529   line                                          or name in self.query.extra_select
+[...]jango/django/db/models/sql/query.py:2510  call                                          => extra_select(self=<django.db.models.sql.query.Query object at 0x107704590>)
+[...]jango/django/db/models/sql/query.py:2512  line                                             if self._extra_select_cache is not None:
+[...]jango/django/db/models/sql/query.py:2514  line                                             if not self.extra:
+[...]jango/django/db/models/sql/query.py:2515  line                                             return {}
+[...]jango/django/db/models/sql/query.py:2515  return                                        <= extra_select: {}
+[...]go/django/db/models/sql/compiler.py:531   line                                          self.query.external_aliases.get(name)
+[...]go/django/db/models/sql/compiler.py:529   line                                          or name in self.query.extra_select
+[...]go/django/db/models/sql/compiler.py:537   line                                          r = self.connection.ops.quote_name(name)
+[...]o/db/backends/sqlite3/operations.py:187   call                                          => quote_name(self=<django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>, name='id')
+[...]o/db/backends/sqlite3/operations.py:188   line                                             if name.startswith('"') and name.endswith('"'):
+[...]o/db/backends/sqlite3/operations.py:190   line                                             return '"%s"' % name
+[...]o/db/backends/sqlite3/operations.py:190   return                                        <= quote_name: '"id"'
+[...]go/django/db/models/sql/compiler.py:538   line                                          self.quote_cache[name] = r
+[...]go/django/db/models/sql/compiler.py:539   line                                          return r
+[...]go/django/db/models/sql/compiler.py:539   return                                     <= quote_name_unless_alias: '"id"'
+[...]ngo/django/db/models/expressions.py:1182  line                                       return sql, []
+[...]ngo/django/db/models/expressions.py:1182  return                                  <= as_sql: ('"polls_question"."id"', [])
+[...]go/django/db/models/sql/compiler.py:547   line                                    return sql, params
+[...]go/django/db/models/sql/compiler.py:547   return                               <= compile: ('"polls_question"."id"', [])
+[...]go/django/db/models/sql/compiler.py:309   line                                 sql, params = col.select_format(self, sql, params)
+[...]ngo/django/db/models/expressions.py:472   call                                 => select_format(self=<django.db.models.expressions.Col object at 0x107660910>, compiler=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, sql='"polls_question"."id"', params=[])
+[...]ngo/django/db/models/expressions.py:477   line                                    if hasattr(self.output_field, "select_format"):
+[...]ngo/django/db/models/expressions.py:478   line                                    return self.output_field.select_format(compiler, sql, params)
+[...]django/db/models/fields/__init__.py:562   call                                    => select_format(self=<django.db.models.fields.BigAutoField object at 0x10732fb10>, compiler=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, sql='"polls_question"."id"', params=[])
+[...]django/db/models/fields/__init__.py:568   line                                       return sql, params
+[...]django/db/models/fields/__init__.py:568   return                                  <= select_format: ('"polls_question"."id"', [])
+[...]ngo/django/db/models/expressions.py:478   return                               <= select_format: ('"polls_question"."id"', [])
+[...]go/django/db/models/sql/compiler.py:310   line                                 if alias is None and with_col_aliases:
+[...]go/django/db/models/sql/compiler.py:313   line                                 ret.append((col, (sql, params), alias))
+[...]go/django/db/models/sql/compiler.py:294   line                                 for col, alias in select:
+[...]go/django/db/models/sql/compiler.py:295   line                                 try:
+[...]go/django/db/models/sql/compiler.py:296   line                                 sql, params = self.compile(col)
+[...]go/django/db/models/sql/compiler.py:541   call                                 => compile(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, node=<django.db.models.expressions.Col object at 0x107660990>)
+[...]go/django/db/models/sql/compiler.py:542   line                                    vendor_impl = getattr(node, "as_" + self.connection.vendor, None)
+[...]go/django/db/models/sql/compiler.py:543   line                                    if vendor_impl:
+[...]go/django/db/models/sql/compiler.py:546   line                                    sql, params = node.as_sql(self, self.connection)
+[...]ngo/django/db/models/expressions.py:1178  call                                    => as_sql(self=<django.db.models.expressions.Col object at 0x107660990>, compiler=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, connection=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>)
+[...]ngo/django/db/models/expressions.py:1179  line                                       alias, column = self.alias, self.target.column
+[...]ngo/django/db/models/expressions.py:1180  line                                       identifiers = (alias, column) if alias else (column,)
+[...]ngo/django/db/models/expressions.py:1181  line                                       sql = ".".join(map(compiler.quote_name_unless_alias, identifiers))
+[...]go/django/db/models/sql/compiler.py:519   call                                       => quote_name_unless_alias(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, name='polls_question')
+[...]go/django/db/models/sql/compiler.py:525   line                                          if name in self.quote_cache:
+[...]go/django/db/models/sql/compiler.py:526   line                                          return self.quote_cache[name]
+[...]go/django/db/models/sql/compiler.py:526   return                                     <= quote_name_unless_alias: '"polls_question"'
+[...]go/django/db/models/sql/compiler.py:519   call                                       => quote_name_unless_alias(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, name='question_text')
+[...]go/django/db/models/sql/compiler.py:525   line                                          if name in self.quote_cache:
+[...]go/django/db/models/sql/compiler.py:528   line                                          (name in self.query.alias_map and name not in self.query.table_map)
+[...]go/django/db/models/sql/compiler.py:529   line                                          or name in self.query.extra_select
+[...]jango/django/db/models/sql/query.py:2510  call                                          => extra_select(self=<django.db.models.sql.query.Query object at 0x107704590>)
+[...]jango/django/db/models/sql/query.py:2512  line                                             if self._extra_select_cache is not None:
+[...]jango/django/db/models/sql/query.py:2514  line                                             if not self.extra:
+[...]jango/django/db/models/sql/query.py:2515  line                                             return {}
+[...]jango/django/db/models/sql/query.py:2515  return                                        <= extra_select: {}
+[...]go/django/db/models/sql/compiler.py:531   line                                          self.query.external_aliases.get(name)
+[...]go/django/db/models/sql/compiler.py:529   line                                          or name in self.query.extra_select
+[...]go/django/db/models/sql/compiler.py:537   line                                          r = self.connection.ops.quote_name(name)
+[...]o/db/backends/sqlite3/operations.py:187   call                                          => quote_name(self=<django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>, name='question_text')
+[...]o/db/backends/sqlite3/operations.py:188   line                                             if name.startswith('"') and name.endswith('"'):
+[...]o/db/backends/sqlite3/operations.py:190   line                                             return '"%s"' % name
+[...]o/db/backends/sqlite3/operations.py:190   return                                        <= quote_name: '"question_text"'
+[...]go/django/db/models/sql/compiler.py:538   line                                          self.quote_cache[name] = r
+[...]go/django/db/models/sql/compiler.py:539   line                                          return r
+[...]go/django/db/models/sql/compiler.py:539   return                                     <= quote_name_unless_alias: '"question_text"'
+[...]ngo/django/db/models/expressions.py:1182  line                                       return sql, []
+[...]ngo/django/db/models/expressions.py:1182  return                                  <= as_sql: ('"polls_question"."question_text"', [])
+[...]go/django/db/models/sql/compiler.py:547   line                                    return sql, params
+[...]go/django/db/models/sql/compiler.py:547   return                               <= compile: ('"polls_question"."question_text"', [])
+[...]go/django/db/models/sql/compiler.py:309   line                                 sql, params = col.select_format(self, sql, params)
+[...]ngo/django/db/models/expressions.py:472   call                                 => select_format(self=<django.db.models.expressions.Col object at 0x107660990>, compiler=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, sql='"polls_question"."question_text"', params=[])
+[...]ngo/django/db/models/expressions.py:477   line                                    if hasattr(self.output_field, "select_format"):
+[...]ngo/django/db/models/expressions.py:478   line                                    return self.output_field.select_format(compiler, sql, params)
+[...]django/db/models/fields/__init__.py:562   call                                    => select_format(self=<django.db.models.fields.CharField object at 0x107275010>, compiler=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, sql='"polls_question"."question_text"', params=[])
+[...]django/db/models/fields/__init__.py:568   line                                       return sql, params
+[...]django/db/models/fields/__init__.py:568   return                                  <= select_format: ('"polls_question"."question_text"', [])
+[...]ngo/django/db/models/expressions.py:478   return                               <= select_format: ('"polls_question"."question_text"', [])
+[...]go/django/db/models/sql/compiler.py:310   line                                 if alias is None and with_col_aliases:
+[...]go/django/db/models/sql/compiler.py:313   line                                 ret.append((col, (sql, params), alias))
+[...]go/django/db/models/sql/compiler.py:294   line                                 for col, alias in select:
+[...]go/django/db/models/sql/compiler.py:295   line                                 try:
+[...]go/django/db/models/sql/compiler.py:296   line                                 sql, params = self.compile(col)
+[...]go/django/db/models/sql/compiler.py:541   call                                 => compile(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, node=<django.db.models.expressions.Col object at 0x107660a50>)
+[...]go/django/db/models/sql/compiler.py:542   line                                    vendor_impl = getattr(node, "as_" + self.connection.vendor, None)
+[...]go/django/db/models/sql/compiler.py:543   line                                    if vendor_impl:
+[...]go/django/db/models/sql/compiler.py:546   line                                    sql, params = node.as_sql(self, self.connection)
+[...]ngo/django/db/models/expressions.py:1178  call                                    => as_sql(self=<django.db.models.expressions.Col object at 0x107660a50>, compiler=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, connection=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>)
+[...]ngo/django/db/models/expressions.py:1179  line                                       alias, column = self.alias, self.target.column
+[...]ngo/django/db/models/expressions.py:1180  line                                       identifiers = (alias, column) if alias else (column,)
+[...]ngo/django/db/models/expressions.py:1181  line                                       sql = ".".join(map(compiler.quote_name_unless_alias, identifiers))
+[...]go/django/db/models/sql/compiler.py:519   call                                       => quote_name_unless_alias(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, name='polls_question')
+[...]go/django/db/models/sql/compiler.py:525   line                                          if name in self.quote_cache:
+[...]go/django/db/models/sql/compiler.py:526   line                                          return self.quote_cache[name]
+[...]go/django/db/models/sql/compiler.py:526   return                                     <= quote_name_unless_alias: '"polls_question"'
+[...]go/django/db/models/sql/compiler.py:519   call                                       => quote_name_unless_alias(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, name='pub_date')
+[...]go/django/db/models/sql/compiler.py:525   line                                          if name in self.quote_cache:
+[...]go/django/db/models/sql/compiler.py:528   line                                          (name in self.query.alias_map and name not in self.query.table_map)
+[...]go/django/db/models/sql/compiler.py:529   line                                          or name in self.query.extra_select
+[...]jango/django/db/models/sql/query.py:2510  call                                          => extra_select(self=<django.db.models.sql.query.Query object at 0x107704590>)
+[...]jango/django/db/models/sql/query.py:2512  line                                             if self._extra_select_cache is not None:
+[...]jango/django/db/models/sql/query.py:2514  line                                             if not self.extra:
+[...]jango/django/db/models/sql/query.py:2515  line                                             return {}
+[...]jango/django/db/models/sql/query.py:2515  return                                        <= extra_select: {}
+[...]go/django/db/models/sql/compiler.py:531   line                                          self.query.external_aliases.get(name)
+[...]go/django/db/models/sql/compiler.py:529   line                                          or name in self.query.extra_select
+[...]go/django/db/models/sql/compiler.py:537   line                                          r = self.connection.ops.quote_name(name)
+[...]o/db/backends/sqlite3/operations.py:187   call                                          => quote_name(self=<django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>, name='pub_date')
+[...]o/db/backends/sqlite3/operations.py:188   line                                             if name.startswith('"') and name.endswith('"'):
+[...]o/db/backends/sqlite3/operations.py:190   line                                             return '"%s"' % name
+[...]o/db/backends/sqlite3/operations.py:190   return                                        <= quote_name: '"pub_date"'
+[...]go/django/db/models/sql/compiler.py:538   line                                          self.quote_cache[name] = r
+[...]go/django/db/models/sql/compiler.py:539   line                                          return r
+[...]go/django/db/models/sql/compiler.py:539   return                                     <= quote_name_unless_alias: '"pub_date"'
+[...]ngo/django/db/models/expressions.py:1182  line                                       return sql, []
+[...]ngo/django/db/models/expressions.py:1182  return                                  <= as_sql: ('"polls_question"."pub_date"', [])
+[...]go/django/db/models/sql/compiler.py:547   line                                    return sql, params
+[...]go/django/db/models/sql/compiler.py:547   return                               <= compile: ('"polls_question"."pub_date"', [])
+[...]go/django/db/models/sql/compiler.py:309   line                                 sql, params = col.select_format(self, sql, params)
+[...]ngo/django/db/models/expressions.py:472   call                                 => select_format(self=<django.db.models.expressions.Col object at 0x107660a50>, compiler=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, sql='"polls_question"."pub_date"', params=[])
+[...]ngo/django/db/models/expressions.py:477   line                                    if hasattr(self.output_field, "select_format"):
+[...]ngo/django/db/models/expressions.py:478   line                                    return self.output_field.select_format(compiler, sql, params)
+[...]django/db/models/fields/__init__.py:562   call                                    => select_format(self=<django.db.models.fields.DateTimeField object at 0x1072751d0>, compiler=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, sql='"polls_question"."pub_date"', params=[])
+[...]django/db/models/fields/__init__.py:568   line                                       return sql, params
+[...]django/db/models/fields/__init__.py:568   return                                  <= select_format: ('"polls_question"."pub_date"', [])
+[...]ngo/django/db/models/expressions.py:478   return                               <= select_format: ('"polls_question"."pub_date"', [])
+[...]go/django/db/models/sql/compiler.py:310   line                                 if alias is None and with_col_aliases:
+[...]go/django/db/models/sql/compiler.py:313   line                                 ret.append((col, (sql, params), alias))
+[...]go/django/db/models/sql/compiler.py:294   line                                 for col, alias in select:
+[...]go/django/db/models/sql/compiler.py:314   line                                 return ret, klass_info, annotations
+[...]go/django/db/models/sql/compiler.py:314   return                            <= get_select: ([(<django.db.models.expressions.Col object at 0x107660910>, ('"polls_question"."id"', []), None), (<django.db.models.expressions.Col object at 0x107660990>, ('"polls_question"."question_text"', []), None), (<django.db.models.expressions.Col object at 0x107660a50>, ('"polls_question"."pub_date"', []), None)], {'model': <django.db.models.base.ModelBase object at 0x1070929d0>, 'select_fields': [0, 1, 2]}, {})
+[...]go/django/db/models/sql/compiler.py:76    line                              self.col_count = len(self.select)
+[...]go/django/db/models/sql/compiler.py:76    return                         <= setup_query: None
+[...]go/django/db/models/sql/compiler.py:85    line                           order_by = self.get_order_by()
+[...]go/django/db/models/sql/compiler.py:448   call                           => get_order_by(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>)
+[...]go/django/db/models/sql/compiler.py:457   line                              result = []
+[...]go/django/db/models/sql/compiler.py:458   line                              seen = set()
+[...]go/django/db/models/sql/compiler.py:459   line                              for expr, is_ref in self._order_by_pairs():
+[...]go/django/db/models/sql/compiler.py:316   call                              => _order_by_pairs(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>)
+[...]go/django/db/models/sql/compiler.py:317   line                                 if self.query.extra_order_by:
+[...]go/django/db/models/sql/compiler.py:319   line                                 elif not self.query.default_ordering:
+[...]go/django/db/models/sql/compiler.py:321   line                                 elif self.query.order_by:
+[...]go/django/db/models/sql/compiler.py:323   line                                 elif (meta := self.query.get_meta()) and meta.ordering:
+[...]jango/django/db/models/sql/query.py:353   call                                 => get_meta(self=<django.db.models.sql.query.Query object at 0x107704590>)
+[...]jango/django/db/models/sql/query.py:359   line                                    if self.model:
+[...]jango/django/db/models/sql/query.py:360   line                                    return self.model._meta
+[...]jango/django/db/models/sql/query.py:360   return                               <= get_meta: <django.db.models.options.Options object at 0x107275390>
+[...]go/django/db/models/sql/compiler.py:327   line                                 ordering = []
+[...]go/django/db/models/sql/compiler.py:328   line                                 if self.query.standard_ordering:
+[...]go/django/db/models/sql/compiler.py:329   line                                 default_order, _ = ORDER_DIR["ASC"]
+[...]go/django/db/models/sql/compiler.py:333   line                                 selected_exprs = {}
+[...]go/django/db/models/sql/compiler.py:336   line                                 if ordering and (select := self.select):
+[...]go/django/db/models/sql/compiler.py:343   line                                 for field in ordering:
+[...]go/django/db/models/sql/compiler.py:343   return                            <= _order_by_pairs: None
+[...]go/django/db/models/sql/compiler.py:507   line                              return result
+[...]go/django/db/models/sql/compiler.py:507   return                         <= get_order_by: []
+[...]go/django/db/models/sql/compiler.py:86    line                           self.where, self.having, self.qualify = self.query.where.split_having_qualify(
+[...]go/django/db/models/sql/compiler.py:87    line                           must_group_by=self.query.group_by is not None
+[...]go/django/db/models/sql/compiler.py:86    line                           self.where, self.having, self.qualify = self.query.where.split_having_qualify(
+[...]jango/django/db/models/sql/where.py:39    call                           => split_having_qualify(self=<django.db.models.sql.where.WhereNode object at 0x107d1ecd0>, negated=False, must_group_by=False)
+[...]jango/django/db/models/sql/where.py:46    line                              if not self.contains_aggregate and not self.contains_over_clause:
+[...]n/django/django/utils/functional.py:39    call                              => __get__(self=<django.utils.functional.cached_property object at 0x106d3a950>, instance=<django.db.models.sql.where.WhereNode object at 0x107d1ecd0>, cls=<class 'django.db.models.sql.where.WhereNode'>)
+[...]n/django/django/utils/functional.py:45    line                                 if instance is None:
+[...]n/django/django/utils/functional.py:47    line                                 res = instance.__dict__[self.name] = self.func(instance)
+[...]jango/django/db/models/sql/where.py:247   call                                 => contains_aggregate(self=<django.db.models.sql.where.WhereNode object at 0x107d1ecd0>)
+[...]jango/django/db/models/sql/where.py:249   line                                    return self._contains_aggregate(self)
+[...]jango/django/db/models/sql/where.py:241   call                                    => _contains_aggregate(cls=<class 'django.db.models.sql.where.WhereNode'>, obj=<django.db.models.sql.where.WhereNode object at 0x107d1ecd0>)
+[...]jango/django/db/models/sql/where.py:243   line                                       if isinstance(obj, tree.Node):
+[...]jango/django/db/models/sql/where.py:244   line                                       return any(cls._contains_aggregate(c) for c in obj.children)
+[...]jango/django/db/models/sql/where.py:244   call                                       => <genexpr>(.0=<list_iterator object at 0x1076598a0>)
+[...]jango/django/db/models/sql/where.py:244   line                                          return any(cls._contains_aggregate(c) for c in obj.children)
+[...]jango/django/db/models/sql/where.py:244   return                                     <= <genexpr>: None
+[...]jango/django/db/models/sql/where.py:244   return                                  <= _contains_aggregate: False
+[...]jango/django/db/models/sql/where.py:249   return                               <= contains_aggregate: False
+[...]n/django/django/utils/functional.py:48    line                                 return res
+[...]n/django/django/utils/functional.py:48    return                            <= __get__: False
+[...]n/django/django/utils/functional.py:39    call                              => __get__(self=<django.utils.functional.cached_property object at 0x106d3aa10>, instance=<django.db.models.sql.where.WhereNode object at 0x107d1ecd0>, cls=<class 'django.db.models.sql.where.WhereNode'>)
+[...]n/django/django/utils/functional.py:45    line                                 if instance is None:
+[...]n/django/django/utils/functional.py:47    line                                 res = instance.__dict__[self.name] = self.func(instance)
+[...]jango/django/db/models/sql/where.py:257   call                                 => contains_over_clause(self=<django.db.models.sql.where.WhereNode object at 0x107d1ecd0>)
+[...]jango/django/db/models/sql/where.py:259   line                                    return self._contains_over_clause(self)
+[...]jango/django/db/models/sql/where.py:251   call                                    => _contains_over_clause(cls=<class 'django.db.models.sql.where.WhereNode'>, obj=<django.db.models.sql.where.WhereNode object at 0x107d1ecd0>)
+[...]jango/django/db/models/sql/where.py:253   line                                       if isinstance(obj, tree.Node):
+[...]jango/django/db/models/sql/where.py:254   line                                       return any(cls._contains_over_clause(c) for c in obj.children)
+[...]jango/django/db/models/sql/where.py:254   call                                       => <genexpr>(.0=<list_iterator object at 0x1076598a0>)
+[...]jango/django/db/models/sql/where.py:254   line                                          return any(cls._contains_over_clause(c) for c in obj.children)
+[...]jango/django/db/models/sql/where.py:254   return                                     <= <genexpr>: None
+[...]jango/django/db/models/sql/where.py:254   return                                  <= _contains_over_clause: False
+[...]jango/django/db/models/sql/where.py:259   return                               <= contains_over_clause: False
+[...]n/django/django/utils/functional.py:48    line                                 return res
+[...]n/django/django/utils/functional.py:48    return                            <= __get__: False
+[...]jango/django/db/models/sql/where.py:47    line                              return self, None, None
+[...]jango/django/db/models/sql/where.py:47    return                         <= split_having_qualify: (<django.db.models.sql.where.WhereNode object at 0x107d1ecd0>, None, None)
+[...]go/django/db/models/sql/compiler.py:89    line                           extra_select = self.get_extra_select(order_by, self.select)
+[...]go/django/db/models/sql/compiler.py:509   call                           => get_extra_select(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, order_by=[], select=[(<django.db.models.expressions.Col object at 0x107660910>, ('"polls_question"."id"', []), None), (<django.db.models.expressions.Col object at 0x107660990>, ('"polls_question"."question_text"', []), None), (<django.db.models.expressions.Col object at 0x107660a50>, ('"polls_question"."pub_date"', []), None)])
+[...]go/django/db/models/sql/compiler.py:510   line                              extra_select = []
+[...]go/django/db/models/sql/compiler.py:511   line                              if self.query.distinct and not self.query.distinct_fields:
+[...]go/django/db/models/sql/compiler.py:517   line                              return extra_select
+[...]go/django/db/models/sql/compiler.py:517   return                         <= get_extra_select: []
+[...]go/django/db/models/sql/compiler.py:90    line                           self.has_extra_select = bool(extra_select)
+[...]go/django/db/models/sql/compiler.py:91    line                           group_by = self.get_group_by(self.select + extra_select, order_by)
+[...]go/django/db/models/sql/compiler.py:94    call                           => get_group_by(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, select=[(<django.db.models.expressions.Col object at 0x107660910>, ('"polls_question"."id"', []), None), (<django.db.models.expressions.Col object at 0x107660990>, ('"polls_question"."question_text"', []), None), (<django.db.models.expressions.Col object at 0x107660a50>, ('"polls_question"."pub_date"', []), None)], order_by=[])
+[...]go/django/db/models/sql/compiler.py:132   line                              if self.query.group_by is None:
+[...]go/django/db/models/sql/compiler.py:133   line                              return []
+[...]go/django/db/models/sql/compiler.py:133   return                         <= get_group_by: []
+[...]go/django/db/models/sql/compiler.py:92    line                           return extra_select, order_by, group_by
+[...]go/django/db/models/sql/compiler.py:92    return                      <= pre_sql_setup: ([], [], [])
+[...]go/django/db/models/sql/compiler.py:739   line                        for_update_part = None
+[...]go/django/db/models/sql/compiler.py:741   line                        with_limit_offset = with_limits and self.query.is_sliced
+[...]jango/django/db/models/sql/query.py:2125  call                        => is_sliced(self=<django.db.models.sql.query.Query object at 0x107704590>)
+[...]jango/django/db/models/sql/query.py:2127  line                           return self.low_mark != 0 or self.high_mark is not None
+[...]jango/django/db/models/sql/query.py:2127  return                      <= is_sliced: True
+[...]go/django/db/models/sql/compiler.py:742   line                        combinator = self.query.combinator
+[...]go/django/db/models/sql/compiler.py:743   line                        features = self.connection.features
+[...]go/django/db/models/sql/compiler.py:744   line                        if combinator:
+[...]go/django/db/models/sql/compiler.py:754   line                        elif self.qualify:
+[...]go/django/db/models/sql/compiler.py:758   line                        distinct_fields, distinct_params = self.get_distinct()
+[...]go/django/db/models/sql/compiler.py:1000  call                        => get_distinct(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>)
+[...]go/django/db/models/sql/compiler.py:1007  line                           result = []
+[...]go/django/db/models/sql/compiler.py:1008  line                           params = []
+[...]go/django/db/models/sql/compiler.py:1009  line                           opts = self.query.get_meta()
+[...]jango/django/db/models/sql/query.py:353   call                           => get_meta(self=<django.db.models.sql.query.Query object at 0x107704590>)
+[...]jango/django/db/models/sql/query.py:359   line                              if self.model:
+[...]jango/django/db/models/sql/query.py:360   line                              return self.model._meta
+[...]jango/django/db/models/sql/query.py:360   return                         <= get_meta: <django.db.models.options.Options object at 0x107275390>
+[...]go/django/db/models/sql/compiler.py:1011  line                           for name in self.query.distinct_fields:
+[...]go/django/db/models/sql/compiler.py:1024  line                           return result, params
+[...]go/django/db/models/sql/compiler.py:1024  return                      <= get_distinct: ([], [])
+[...]go/django/db/models/sql/compiler.py:761   line                        from_, f_params = self.get_from_clause()
+[...]go/django/db/models/sql/compiler.py:1106  call                        => get_from_clause(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>)
+[...]go/django/db/models/sql/compiler.py:1117  line                           result = []
+[...]go/django/db/models/sql/compiler.py:1118  line                           params = []
+[...]go/django/db/models/sql/compiler.py:1119  line                           for alias in tuple(self.query.alias_map):
+[...]go/django/db/models/sql/compiler.py:1120  line                           if not self.query.alias_refcount[alias]:
+[...]go/django/db/models/sql/compiler.py:1122  line                           try:
+[...]go/django/db/models/sql/compiler.py:1123  line                           from_clause = self.query.alias_map[alias]
+[...]go/django/db/models/sql/compiler.py:1128  line                           clause_sql, clause_params = self.compile(from_clause)
+[...]go/django/db/models/sql/compiler.py:541   call                           => compile(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, node=<django.db.models.sql.datastructures.BaseTable object at 0x10766ded0>)
+[...]go/django/db/models/sql/compiler.py:542   line                              vendor_impl = getattr(node, "as_" + self.connection.vendor, None)
+[...]go/django/db/models/sql/compiler.py:543   line                              if vendor_impl:
+[...]go/django/db/models/sql/compiler.py:546   line                              sql, params = node.as_sql(self, self.connection)
+[...]ngo/db/models/sql/datastructures.py:215   call                              => as_sql(self=<django.db.models.sql.datastructures.BaseTable object at 0x10766ded0>, compiler=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, connection=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>)
+[...]ngo/db/models/sql/datastructures.py:217   line                                 "" if self.table_alias == self.table_name else (" %s" % self.table_alias)
+[...]ngo/db/models/sql/datastructures.py:216   line                                 alias_str = (
+[...]ngo/db/models/sql/datastructures.py:219   line                                 base_sql = compiler.quote_name_unless_alias(self.table_name)
+[...]go/django/db/models/sql/compiler.py:519   call                                 => quote_name_unless_alias(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, name='polls_question')
+[...]go/django/db/models/sql/compiler.py:525   line                                    if name in self.quote_cache:
+[...]go/django/db/models/sql/compiler.py:526   line                                    return self.quote_cache[name]
+[...]go/django/db/models/sql/compiler.py:526   return                               <= quote_name_unless_alias: '"polls_question"'
+[...]ngo/db/models/sql/datastructures.py:220   line                                 return base_sql + alias_str, []
+[...]ngo/db/models/sql/datastructures.py:220   return                            <= as_sql: ('"polls_question"', [])
+[...]go/django/db/models/sql/compiler.py:547   line                              return sql, params
+[...]go/django/db/models/sql/compiler.py:547   return                         <= compile: ('"polls_question"', [])
+[...]go/django/db/models/sql/compiler.py:1129  line                           result.append(clause_sql)
+[...]go/django/db/models/sql/compiler.py:1130  line                           params.extend(clause_params)
+[...]go/django/db/models/sql/compiler.py:1119  line                           for alias in tuple(self.query.alias_map):
+[...]go/django/db/models/sql/compiler.py:1131  line                           for t in self.query.extra_tables:
+[...]go/django/db/models/sql/compiler.py:1141  line                           return result, params
+[...]go/django/db/models/sql/compiler.py:1141  return                      <= get_from_clause: (['"polls_question"'], [])
+[...]go/django/db/models/sql/compiler.py:762   line                        try:
+[...]go/django/db/models/sql/compiler.py:764   line                        self.compile(self.where) if self.where is not None else ("", [])
+[...]go/django/db/models/sql/compiler.py:541   call                        => compile(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, node=<django.db.models.sql.where.WhereNode object at 0x107d1ecd0>)
+[...]go/django/db/models/sql/compiler.py:542   line                           vendor_impl = getattr(node, "as_" + self.connection.vendor, None)
+[...]go/django/db/models/sql/compiler.py:543   line                           if vendor_impl:
+[...]go/django/db/models/sql/compiler.py:546   line                           sql, params = node.as_sql(self, self.connection)
+[...]jango/django/db/models/sql/where.py:115   call                           => as_sql(self=<django.db.models.sql.where.WhereNode object at 0x107d1ecd0>, compiler=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, connection=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>)
+[...]jango/django/db/models/sql/where.py:122   line                              result = []
+[...]jango/django/db/models/sql/where.py:123   line                              result_params = []
+[...]jango/django/db/models/sql/where.py:124   line                              if self.connector == AND:
+[...]jango/django/db/models/sql/where.py:125   line                              full_needed, empty_needed = len(self.children), 1
+[...]jango/django/db/models/sql/where.py:129   line                              if self.connector == XOR and not connection.features.supports_logical_xor:
+[...]jango/django/db/models/sql/where.py:148   line                              for child in self.children:
+[...]jango/django/db/models/sql/where.py:176   line                              conn = " %s " % self.connector
+[...]jango/django/db/models/sql/where.py:177   line                              sql_string = conn.join(result)
+[...]jango/django/db/models/sql/where.py:178   line                              if not sql_string:
+[...]jango/django/db/models/sql/where.py:179   line                              raise FullResultSet
+[...]jango/django/db/models/sql/where.py:179   exception                       ! as_sql: (<class 'django.core.exceptions.FullResultSet'>, FullResultSet(), <traceback object at 0x107d1ec80>)
+[...]jango/django/db/models/sql/where.py:179   return                         <= as_sql: None
+[...]go/django/db/models/sql/compiler.py:546   exception                    ! compile: (<class 'django.core.exceptions.FullResultSet'>, FullResultSet(), <traceback object at 0x107d1f380>)
+[...]go/django/db/models/sql/compiler.py:546   return                      <= compile: None
+[...]go/django/db/models/sql/compiler.py:764   exception                 ! as_sql: (<class 'django.core.exceptions.FullResultSet'>, FullResultSet(), <traceback object at 0x107d1f300>)
+[...]go/django/db/models/sql/compiler.py:766   line                        except EmptyResultSet:
+[...]go/django/db/models/sql/compiler.py:771   line                        except FullResultSet:
+[...]go/django/db/models/sql/compiler.py:772   line                        where, w_params = "", []
+[...]go/django/db/models/sql/compiler.py:773   line                        try:
+[...]go/django/db/models/sql/compiler.py:776   line                        if self.having is not None
+[...]go/django/db/models/sql/compiler.py:777   line                        else ("", [])
+[...]go/django/db/models/sql/compiler.py:774   line                        having, h_params = (
+[...]go/django/db/models/sql/compiler.py:781   line                        result = ["SELECT"]
+[...]go/django/db/models/sql/compiler.py:782   line                        params = []
+[...]go/django/db/models/sql/compiler.py:784   line                        if self.query.distinct:
+[...]go/django/db/models/sql/compiler.py:792   line                        out_cols = []
+[...]go/django/db/models/sql/compiler.py:793   line                        for _, (s_sql, s_params), alias in self.select + extra_select:
+[...]go/django/db/models/sql/compiler.py:794   line                        if alias:
+[...]go/django/db/models/sql/compiler.py:799   line                        params.extend(s_params)
+[...]go/django/db/models/sql/compiler.py:800   line                        out_cols.append(s_sql)
+[...]go/django/db/models/sql/compiler.py:793   line                        for _, (s_sql, s_params), alias in self.select + extra_select:
+[...]go/django/db/models/sql/compiler.py:794   line                        if alias:
+[...]go/django/db/models/sql/compiler.py:799   line                        params.extend(s_params)
+[...]go/django/db/models/sql/compiler.py:800   line                        out_cols.append(s_sql)
+[...]go/django/db/models/sql/compiler.py:793   line                        for _, (s_sql, s_params), alias in self.select + extra_select:
+[...]go/django/db/models/sql/compiler.py:794   line                        if alias:
+[...]go/django/db/models/sql/compiler.py:799   line                        params.extend(s_params)
+[...]go/django/db/models/sql/compiler.py:800   line                        out_cols.append(s_sql)
+[...]go/django/db/models/sql/compiler.py:793   line                        for _, (s_sql, s_params), alias in self.select + extra_select:
+[...]go/django/db/models/sql/compiler.py:802   line                        result += [", ".join(out_cols)]
+[...]go/django/db/models/sql/compiler.py:803   line                        if from_:
+[...]go/django/db/models/sql/compiler.py:804   line                        result += ["FROM", *from_]
+[...]go/django/db/models/sql/compiler.py:807   line                        params.extend(f_params)
+[...]go/django/db/models/sql/compiler.py:809   line                        if self.query.select_for_update and features.has_select_for_update:
+[...]go/django/db/models/sql/compiler.py:859   line                        if for_update_part and features.for_update_after_from:
+[...]go/django/db/models/sql/compiler.py:862   line                        if where:
+[...]go/django/db/models/sql/compiler.py:866   line                        grouping = []
+[...]go/django/db/models/sql/compiler.py:867   line                        for g_sql, g_params in group_by:
+[...]go/django/db/models/sql/compiler.py:870   line                        if grouping:
+[...]go/django/db/models/sql/compiler.py:879   line                        if having:
+[...]go/django/db/models/sql/compiler.py:883   line                        if self.query.explain_info:
+[...]go/django/db/models/sql/compiler.py:892   line                        if order_by:
+[...]go/django/db/models/sql/compiler.py:903   line                        if with_limit_offset:
+[...]go/django/db/models/sql/compiler.py:904   line                        result.append(
+[...]go/django/db/models/sql/compiler.py:905   line                        self.connection.ops.limit_offset_sql(
+[...]go/django/db/models/sql/compiler.py:906   line                        self.query.low_mark, self.query.high_mark
+[...]go/django/db/models/sql/compiler.py:905   line                        self.connection.ops.limit_offset_sql(
+[...]ango/db/backends/base/operations.py:260   call                        => limit_offset_sql(self=<django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>, low_mark=0, high_mark=1)
+[...]ango/db/backends/base/operations.py:262   line                           limit, offset = self._get_limit_offset_params(low_mark, high_mark)
+[...]ango/db/backends/base/operations.py:252   call                           => _get_limit_offset_params(self=<django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>, low_mark=0, high_mark=1)
+[...]ango/db/backends/base/operations.py:253   line                              offset = low_mark or 0
+[...]ango/db/backends/base/operations.py:254   line                              if high_mark is not None:
+[...]ango/db/backends/base/operations.py:255   line                              return (high_mark - offset), offset
+[...]ango/db/backends/base/operations.py:255   return                         <= _get_limit_offset_params: (1, 0)
+[...]ango/db/backends/base/operations.py:263   line                           return " ".join(
+[...]ango/db/backends/base/operations.py:266   line                           ("LIMIT %d" % limit) if limit else None,
+[...]ango/db/backends/base/operations.py:267   line                           ("OFFSET %d" % offset) if offset else None,
+[...]ango/db/backends/base/operations.py:265   line                           for sql in (
+[...]ango/db/backends/base/operations.py:263   line                           return " ".join(
+[...]ango/db/backends/base/operations.py:263   call                           => <genexpr>(.0=<tuple_iterator object at 0x107659ae0>)
+[...]ango/db/backends/base/operations.py:263   line                              return " ".join(
+[...]ango/db/backends/base/operations.py:265   line                              for sql in (
+[...]ango/db/backends/base/operations.py:269   line                              if sql
+[...]ango/db/backends/base/operations.py:263   line                              return " ".join(
+[...]ango/db/backends/base/operations.py:264   line                              sql
+[...]ango/db/backends/base/operations.py:263   line                              return " ".join(
+[...]ango/db/backends/base/operations.py:263   return                         <= <genexpr>: 'LIMIT 1'
+[...]ango/db/backends/base/operations.py:263   call                           => <genexpr>(.0=<tuple_iterator object at 0x107659ae0>)
+[...]ango/db/backends/base/operations.py:263   line                              return " ".join(
+[...]ango/db/backends/base/operations.py:265   line                              for sql in (
+[...]ango/db/backends/base/operations.py:269   line                              if sql
+[...]ango/db/backends/base/operations.py:263   line                              return " ".join(
+[...]ango/db/backends/base/operations.py:263   line                              return " ".join(
+[...]ango/db/backends/base/operations.py:263   return                         <= <genexpr>: None
+[...]ango/db/backends/base/operations.py:263   return                      <= limit_offset_sql: 'LIMIT 1'
+[...]go/django/db/models/sql/compiler.py:904   line                        result.append(
+[...]go/django/db/models/sql/compiler.py:910   line                        if for_update_part and not features.for_update_after_from:
+[...]go/django/db/models/sql/compiler.py:913   line                        if self.query.subquery and extra_select:
+[...]go/django/db/models/sql/compiler.py:945   line                        return " ".join(result), tuple(params)
+[...]go/django/db/models/sql/compiler.py:948   line                        self.query.reset_refcounts(refcounts_before)
+[...]jango/django/db/models/sql/query.py:957   call                        => reset_refcounts(self=<django.db.models.sql.query.Query object at 0x107704590>, to_counts={})
+[...]jango/django/db/models/sql/query.py:962   line                           for alias, cur_refcount in self.alias_refcount.copy().items():
+[...]jango/django/db/models/sql/query.py:963   line                           unref_amount = cur_refcount - to_counts.get(alias, 0)
+[...]jango/django/db/models/sql/query.py:964   line                           self.unref_alias(alias, unref_amount)
+[...]jango/django/db/models/sql/query.py:897   call                           => unref_alias(self=<django.db.models.sql.query.Query object at 0x107704590>, alias='polls_question', amount=2)
+[...]jango/django/db/models/sql/query.py:899   line                              self.alias_refcount[alias] -= amount
+[...]jango/django/db/models/sql/query.py:899   return                         <= unref_alias: None
+[...]jango/django/db/models/sql/query.py:962   line                           for alias, cur_refcount in self.alias_refcount.copy().items():
+[...]jango/django/db/models/sql/query.py:962   return                      <= reset_refcounts: None
+[...]go/django/db/models/sql/compiler.py:948   return                   <= as_sql: ('SELECT "polls_question"."id", "polls_question"."question_text", "polls_question"."pub_date" FROM "polls_question" LIMIT 1', ())
+[...]go/django/db/models/sql/compiler.py:1550  line                     if not sql:
+[...]go/django/db/models/sql/compiler.py:1557  line                     if chunked_fetch:
+[...]go/django/db/models/sql/compiler.py:1560  line                     cursor = self.connection.cursor()
+[...]earn/django/django/utils/asyncio.py:15    call                     => inner(*args=(<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>,), **kwargs={})
+[...]earn/django/django/utils/asyncio.py:18    line                        try:
+[...]earn/django/django/utils/asyncio.py:19    line                        get_running_loop()
+[...]earn/django/django/utils/asyncio.py:19    exception                 ! inner: (<class 'RuntimeError'>, RuntimeError('no running event loop'), <traceback object at 0x107d1f340>)
+[...]earn/django/django/utils/asyncio.py:20    line                        except RuntimeError:
+[...]earn/django/django/utils/asyncio.py:21    line                        pass
+[...]earn/django/django/utils/asyncio.py:26    line                        return func(*args, **kwargs)
+[...]ngo/django/db/backends/base/base.py:313   call                        => cursor(self=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>)
+[...]ngo/django/db/backends/base/base.py:316   line                           return self._cursor()
+[...]ngo/django/db/backends/base/base.py:290   call                           => _cursor(self=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>, name=None)
+[...]ngo/django/db/backends/base/base.py:291   line                              self.close_if_health_check_failed()
+[...]ngo/django/db/backends/base/base.py:574   call                              => close_if_health_check_failed(self=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>)
+[...]ngo/django/db/backends/base/base.py:577   line                                 self.connection is None
+[...]ngo/django/db/backends/base/base.py:578   line                                 or not self.health_check_enabled
+[...]ngo/django/db/backends/base/base.py:577   line                                 self.connection is None
+[...]ngo/django/db/backends/base/base.py:581   line                                 return
+[...]ngo/django/db/backends/base/base.py:581   return                            <= close_if_health_check_failed: None
+[...]ngo/django/db/backends/base/base.py:292   line                              self.ensure_connection()
+[...]earn/django/django/utils/asyncio.py:15    call                              => inner(*args=(<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>,), **kwargs={})
+[...]earn/django/django/utils/asyncio.py:18    line                                 try:
+[...]earn/django/django/utils/asyncio.py:19    line                                 get_running_loop()
+[...]earn/django/django/utils/asyncio.py:19    exception                          ! inner: (<class 'RuntimeError'>, RuntimeError('no running event loop'), <traceback object at 0x107d1f2c0>)
+[...]earn/django/django/utils/asyncio.py:20    line                                 except RuntimeError:
+[...]earn/django/django/utils/asyncio.py:21    line                                 pass
+[...]earn/django/django/utils/asyncio.py:26    line                                 return func(*args, **kwargs)
+[...]ngo/django/db/backends/base/base.py:270   call                                 => ensure_connection(self=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>)
+[...]ngo/django/db/backends/base/base.py:273   line                                    if self.connection is None:
+[...]ngo/django/db/backends/base/base.py:273   return                               <= ensure_connection: None
+[...]earn/django/django/utils/asyncio.py:26    return                            <= inner: None
+[...]ngo/django/db/backends/base/base.py:293   line                              with self.wrap_database_errors:
+[...]nts/Learn/django/django/db/utils.py:67    call                              => __enter__(self=<django.db.utils.DatabaseErrorWrapper object at 0x107661250>)
+[...]nts/Learn/django/django/db/utils.py:68    line                                 pass
+[...]nts/Learn/django/django/db/utils.py:68    return                            <= __enter__: None
+[...]ngo/django/db/backends/base/base.py:294   line                              return self._prepare_cursor(self.create_cursor(name))
+[...]/django/db/backends/sqlite3/base.py:189   call                              => create_cursor(self=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>, name=None)
+[...]/django/db/backends/sqlite3/base.py:190   line                                 return self.connection.cursor(factory=SQLiteCursorWrapper)
+[...]/django/db/backends/sqlite3/base.py:190   return                            <= create_cursor: <django.db.backends.sqlite3.base.SQLiteCursorWrapper object at 0x107d0b920>
+[...]ngo/django/db/backends/base/base.py:279   call                              => _prepare_cursor(self=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>, cursor=<django.db.backends.sqlite3.base.SQLiteCursorWrapper object at 0x107d0b920>)
+[...]ngo/django/db/backends/base/base.py:283   line                                 self.validate_thread_sharing()
+[...]ngo/django/db/backends/base/base.py:633   call                                 => validate_thread_sharing(self=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>)
+[...]ngo/django/db/backends/base/base.py:640   line                                    if not (self.allow_thread_sharing or self._thread_ident == _thread.get_ident()):
+[...]ngo/django/db/backends/base/base.py:616   call                                    => allow_thread_sharing(self=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>)
+[...]ngo/django/db/backends/base/base.py:618   line                                       with self._thread_sharing_lock:
+[...]ngo/django/db/backends/base/base.py:619   line                                       return self._thread_sharing_count > 0
+[...]ngo/django/db/backends/base/base.py:618   line                                       with self._thread_sharing_lock:
+[...]ngo/django/db/backends/base/base.py:618   return                                  <= allow_thread_sharing: False
+[...]ngo/django/db/backends/base/base.py:640   return                               <= validate_thread_sharing: None
+[...]ngo/django/db/backends/base/base.py:284   line                                 if self.queries_logged:
+[...]ngo/django/db/backends/base/base.py:169   call                                 => queries_logged(self=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>)
+[...]ngo/django/db/backends/base/base.py:171   line                                    return self.force_debug_cursor or settings.DEBUG
+[...]n/django/django/utils/functional.py:276   call                                    => __getattribute__(self=<django.conf.LazySettings object at 0x105945e10>, name='DEBUG')
+[...]n/django/django/utils/functional.py:277   line                                       if name == "_wrapped":
+[...]n/django/django/utils/functional.py:280   line                                       value = super().__getattribute__(name)
+[...]n/django/django/utils/functional.py:283   line                                       if not getattr(value, "_mask_wrapped", True):
+[...]n/django/django/utils/functional.py:285   line                                       return value
+[...]n/django/django/utils/functional.py:285   return                                  <= __getattribute__: True
+[...]ngo/django/db/backends/base/base.py:171   return                               <= queries_logged: True
+[...]ngo/django/db/backends/base/base.py:285   line                                 wrapped_cursor = self.make_debug_cursor(cursor)
+[...]ngo/django/db/backends/base/base.py:672   call                                 => make_debug_cursor(self=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>, cursor=<django.db.backends.sqlite3.base.SQLiteCursorWrapper object at 0x107d0b920>)
+[...]ngo/django/db/backends/base/base.py:674   line                                    return utils.CursorDebugWrapper(cursor, self)
+[...]/django/django/db/backends/utils.py:18    call                                    => __init__(self=<django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>, cursor=<django.db.backends.sqlite3.base.SQLiteCursorWrapper object at 0x107d0b920>, db=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>)
+[...]/django/django/db/backends/utils.py:19    line                                       self.cursor = cursor
+[...]/django/django/db/backends/utils.py:20    line                                       self.db = db
+[...]/django/django/db/backends/utils.py:20    return                                  <= __init__: None
+[...]ngo/django/db/backends/base/base.py:674   return                               <= make_debug_cursor: <django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>
+[...]ngo/django/db/backends/base/base.py:288   line                                 return wrapped_cursor
+[...]ngo/django/db/backends/base/base.py:288   return                            <= _prepare_cursor: <django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>
+[...]ngo/django/db/backends/base/base.py:293   line                              with self.wrap_database_errors:
+[...]nts/Learn/django/django/db/utils.py:70    call                              => __exit__(self=<django.db.utils.DatabaseErrorWrapper object at 0x107661250>, exc_type=None, exc_value=None, traceback=None)
+[...]nts/Learn/django/django/db/utils.py:71    line                                 if exc_type is None:
+[...]nts/Learn/django/django/db/utils.py:72    line                                 return
+[...]nts/Learn/django/django/db/utils.py:72    return                            <= __exit__: None
+[...]ngo/django/db/backends/base/base.py:293   return                         <= _cursor: <django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>
+[...]ngo/django/db/backends/base/base.py:316   return                      <= cursor: <django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>
+[...]earn/django/django/utils/asyncio.py:26    return                   <= inner: <django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>
+[...]go/django/db/models/sql/compiler.py:1561  line                     try:
+[...]go/django/db/models/sql/compiler.py:1562  line                     cursor.execute(sql, params)
+[...]/django/django/db/backends/utils.py:120   call                     => execute(self=<django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>, sql='SELECT "polls_question"."id", "polls_question"."question_text", "polls_question"."pub_date" FROM "polls_question" LIMIT 1', params=())
+[...]/django/django/db/backends/utils.py:121   line                        with self.debug_sql(sql, params, use_last_executed_query=True):
+[...]/django/django/db/backends/utils.py:128   call                        => debug_sql(self=<django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>, sql='SELECT "polls_question"."id", "polls_question"."question_text", "polls_question"."pub_date" FROM "polls_question" LIMIT 1', params=(), use_last_executed_query=True, many=False)
+[...]/django/django/db/backends/utils.py:132   line                           start = time.monotonic()
+[...]/django/django/db/backends/utils.py:133   line                           try:
+[...]/django/django/db/backends/utils.py:134   line                           yield
+[...]/django/django/db/backends/utils.py:134   return                      <= debug_sql: None
+[...]/django/django/db/backends/utils.py:122   line                        return super().execute(sql, params)
+[...]/django/django/db/backends/utils.py:78    call                        => execute(self=<django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>, sql='SELECT "polls_question"."id", "polls_question"."question_text", "polls_question"."pub_date" FROM "polls_question" LIMIT 1', params=())
+[...]/django/django/db/backends/utils.py:79    line                           return self._execute_with_wrappers(
+[...]/django/django/db/backends/utils.py:80    line                           sql, params, many=False, executor=self._execute
+[...]/django/django/db/backends/utils.py:79    line                           return self._execute_with_wrappers(
+[...]/django/django/db/backends/utils.py:88    call                           => _execute_with_wrappers(self=<django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>, sql='SELECT "polls_question"."id", "polls_question"."question_text", "polls_question"."pub_date" FROM "polls_question" LIMIT 1', params=(), many=False, executor=<bound method CursorWrapper._execute of <django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>>)
+[...]/django/django/db/backends/utils.py:89    line                              context = {"connection": self.db, "cursor": self}
+[...]/django/django/db/backends/utils.py:90    line                              for wrapper in reversed(self.db.execute_wrappers):
+[...]/django/django/db/backends/utils.py:92    line                              return executor(sql, params, many, context)
+[...]/django/django/db/backends/utils.py:94    call                              => _execute(self=<django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>, sql='SELECT "polls_question"."id", "polls_question"."question_text", "polls_question"."pub_date" FROM "polls_question" LIMIT 1', params=(), *ignored_wrapper_args=(False, {'connection': <django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>, 'cursor': <django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>}))
+[...]/django/django/db/backends/utils.py:97    line                                 if not apps.ready and not apps.stored_app_configs:
+[...]/django/django/db/backends/utils.py:99    line                                 self.db.validate_no_broken_transaction()
+[...]ngo/django/db/backends/base/base.py:515   call                                 => validate_no_broken_transaction(self=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>)
+[...]ngo/django/db/backends/base/base.py:516   line                                    if self.needs_rollback:
+[...]ngo/django/db/backends/base/base.py:516   return                               <= validate_no_broken_transaction: None
+[...]/django/django/db/backends/utils.py:100   line                                 with self.db.wrap_database_errors:
+[...]nts/Learn/django/django/db/utils.py:67    call                                 => __enter__(self=<django.db.utils.DatabaseErrorWrapper object at 0x107661250>)
+[...]nts/Learn/django/django/db/utils.py:68    line                                    pass
+[...]nts/Learn/django/django/db/utils.py:68    return                               <= __enter__: None
+[...]/django/django/db/backends/utils.py:101   line                                 if params is None:
+[...]/django/django/db/backends/utils.py:105   line                                 return self.cursor.execute(sql, params)
+[...]/django/db/backends/sqlite3/base.py:322   call                                 => execute(self=<django.db.backends.sqlite3.base.SQLiteCursorWrapper object at 0x107d0b920>, query='SELECT "polls_question"."id", "polls_question"."question_text", "polls_question"."pub_date" FROM "polls_question" LIMIT 1', params=())
+[...]/django/db/backends/sqlite3/base.py:323   line                                    if params is None:
+[...]/django/db/backends/sqlite3/base.py:326   line                                    param_names = list(params) if isinstance(params, Mapping) else None
+                            <frozen abc>:117   call                                    => __instancecheck__(cls=<abc.ABCMeta object at 0x12200eca0>, instance=())
+                            <frozen abc>:119   line                                       ??? NO SOURCE: Source code string for '<frozen abc>' is empty.
+                            <frozen abc>:119   return                                  <= __instancecheck__: False
+[...]/django/db/backends/sqlite3/base.py:327   line                                    query = self.convert_query(query, param_names=param_names)
+[...]/django/db/backends/sqlite3/base.py:341   call                                    => convert_query(self=<django.db.backends.sqlite3.base.SQLiteCursorWrapper object at 0x107d0b920>, query='SELECT "polls_question"."id", "polls_question"."question_text", "polls_question"."pub_date" FROM "polls_question" LIMIT 1', param_names=None)
+[...]/django/db/backends/sqlite3/base.py:342   line                                       if param_names is None:
+[...]/django/db/backends/sqlite3/base.py:344   line                                       return FORMAT_QMARK_REGEX.sub("?", query).replace("%%", "%")
+[...]n/django/django/utils/functional.py:276   call                                       => __getattribute__(self=<django.utils.functional.SimpleLazyObject object at 0x1072ffc10>, name='sub')
+[...]n/django/django/utils/functional.py:277   line                                          if name == "_wrapped":
+[...]n/django/django/utils/functional.py:280   line                                          value = super().__getattribute__(name)
+[...]n/django/django/utils/functional.py:280   exception                                   ! __getattribute__: (<class 'AttributeError'>, AttributeError("'SimpleLazyObject' object has no attribute 'sub'"), <traceback object at 0x107d1f6c0>)
+[...]n/django/django/utils/functional.py:280   return                                     <= __getattribute__: None
+[...]n/django/django/utils/functional.py:249   call                                       => inner(self=<django.utils.functional.SimpleLazyObject object at 0x1072ffc10>, *args=('sub',))
+[...]n/django/django/utils/functional.py:250   line                                          if (_wrapped := self._wrapped) is empty:
+[...]n/django/django/utils/functional.py:276   call                                          => __getattribute__(self=<django.utils.functional.SimpleLazyObject object at 0x1072ffc10>, name='_wrapped')
+[...]n/django/django/utils/functional.py:277   line                                             if name == "_wrapped":
+[...]n/django/django/utils/functional.py:279   line                                             return super().__getattribute__(name)
+[...]n/django/django/utils/functional.py:279   return                                        <= __getattribute__: re.compile('(?<!%)%s', flags=re.UNICODE)
+[...]n/django/django/utils/functional.py:253   line                                          return func(_wrapped, *args)
+[...]n/django/django/utils/functional.py:253   return                                     <= inner: <built-in method sub of re.Pattern object at 0x1076549e0>
+[...]/django/db/backends/sqlite3/base.py:344   return                                  <= convert_query: 'SELECT "polls_question"."id", "polls_question"."question_text", "polls_question"."pub_date" FROM "polls_question" LIMIT 1'
+[...]/django/db/backends/sqlite3/base.py:328   line                                    return super().execute(query, params)
+[...]/django/db/backends/sqlite3/base.py:328   return                               <= execute: <django.db.backends.sqlite3.base.SQLiteCursorWrapper object at 0x107d0b920>
+[...]/django/django/db/backends/utils.py:100   line                                 with self.db.wrap_database_errors:
+[...]nts/Learn/django/django/db/utils.py:70    call                                 => __exit__(self=<django.db.utils.DatabaseErrorWrapper object at 0x107661250>, exc_type=None, exc_value=None, traceback=None)
+[...]nts/Learn/django/django/db/utils.py:71    line                                    if exc_type is None:
+[...]nts/Learn/django/django/db/utils.py:72    line                                    return
+[...]nts/Learn/django/django/db/utils.py:72    return                               <= __exit__: None
+[...]/django/django/db/backends/utils.py:100   return                            <= _execute: <django.db.backends.sqlite3.base.SQLiteCursorWrapper object at 0x107d0b920>
+[...]/django/django/db/backends/utils.py:92    return                         <= _execute_with_wrappers: <django.db.backends.sqlite3.base.SQLiteCursorWrapper object at 0x107d0b920>
+[...]/django/django/db/backends/utils.py:79    return                      <= execute: <django.db.backends.sqlite3.base.SQLiteCursorWrapper object at 0x107d0b920>
+[...]/django/django/db/backends/utils.py:121   line                        with self.debug_sql(sql, params, use_last_executed_query=True):
+[...]/django/django/db/backends/utils.py:134   call                        => debug_sql(self=<django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>, sql='SELECT "polls_question"."id", "polls_question"."question_text", "polls_question"."pub_date" FROM "polls_question" LIMIT 1', params=(), use_last_executed_query=True, many=False)
+[...]/django/django/db/backends/utils.py:136   line                           stop = time.monotonic()
+[...]/django/django/db/backends/utils.py:137   line                           duration = stop - start
+[...]/django/django/db/backends/utils.py:138   line                           if use_last_executed_query:
+[...]/django/django/db/backends/utils.py:139   line                           sql = self.db.ops.last_executed_query(self.cursor, sql, params)
+[...]o/db/backends/sqlite3/operations.py:169   call                           => last_executed_query(self=<django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>, cursor=<django.db.backends.sqlite3.base.SQLiteCursorWrapper object at 0x107d0b920>, sql='SELECT "polls_question"."id", "polls_question"."question_text", "polls_question"."pub_date" FROM "polls_question" LIMIT 1', params=())
+[...]o/db/backends/sqlite3/operations.py:174   line                              if params:
+[...]o/db/backends/sqlite3/operations.py:185   line                              return sql
+[...]o/db/backends/sqlite3/operations.py:185   return                         <= last_executed_query: 'SELECT "polls_question"."id", "polls_question"."question_text", "polls_question"."pub_date" FROM "polls_question" LIMIT 1'
+[...]/django/django/db/backends/utils.py:140   line                           try:
+[...]/django/django/db/backends/utils.py:141   line                           times = len(params) if many else ""
+[...]/django/django/db/backends/utils.py:145   line                           self.db.queries_log.append(
+[...]/django/django/db/backends/utils.py:147   line                           "sql": "%s times: %s" % (times, sql) if many else sql,
+[...]/django/django/db/backends/utils.py:148   line                           "time": "%.3f" % duration,
+[...]/django/django/db/backends/utils.py:146   line                           {
+[...]/django/django/db/backends/utils.py:145   line                           self.db.queries_log.append(
+[...]/django/django/db/backends/utils.py:151   line                           logger.debug(
+[...]/django/django/db/backends/utils.py:152   line                           "(%.3f) %s; args=%s; alias=%s",
+[...]/django/django/db/backends/utils.py:153   line                           duration,
+[...]/django/django/db/backends/utils.py:154   line                           sql,
+[...]/django/django/db/backends/utils.py:155   line                           params,
+[...]/django/django/db/backends/utils.py:156   line                           self.db.alias,
+[...]/django/django/db/backends/utils.py:158   line                           "duration": duration,
+[...]/django/django/db/backends/utils.py:159   line                           "sql": sql,
+[...]/django/django/db/backends/utils.py:160   line                           "params": params,
+[...]/django/django/db/backends/utils.py:161   line                           "alias": self.db.alias,
+[...]/django/django/db/backends/utils.py:157   line                           extra={
+[...]/django/django/db/backends/utils.py:151   line                           logger.debug(
+[...]/django/django/db/backends/utils.py:151   return                      <= debug_sql: None
+[...]/django/django/db/backends/utils.py:121   return                   <= execute: <django.db.backends.sqlite3.base.SQLiteCursorWrapper object at 0x107d0b920>
+[...]go/django/db/models/sql/compiler.py:1568  line                     if result_type == CURSOR:
+[...]go/django/db/models/sql/compiler.py:1571  line                     if result_type == SINGLE:
+[...]go/django/db/models/sql/compiler.py:1580  line                     if result_type == NO_RESULTS:
+[...]go/django/db/models/sql/compiler.py:1584  line                     result = cursor_iter(
+[...]go/django/db/models/sql/compiler.py:1585  line                     cursor,
+[...]go/django/db/models/sql/compiler.py:1586  line                     self.connection.features.empty_fetchmany_value,
+[...]go/django/db/models/sql/compiler.py:1587  line                     self.col_count if self.has_extra_select else None,
+[...]go/django/db/models/sql/compiler.py:1588  line                     chunk_size,
+[...]go/django/db/models/sql/compiler.py:1584  line                     result = cursor_iter(
+[...]go/django/db/models/sql/compiler.py:1590  line                     if not chunked_fetch or not self.connection.features.can_use_chunked_reads:
+[...]go/django/db/models/sql/compiler.py:1595  line                     return list(result)
+[...]go/django/db/models/sql/compiler.py:2090  call                     => cursor_iter(cursor=<django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>, sentinel=[], col_count=None, itersize=100)
+[...]go/django/db/models/sql/compiler.py:2095  line                        try:
+[...]go/django/db/models/sql/compiler.py:2096  line                        for rows in iter((lambda: cursor.fetchmany(itersize)), sentinel):
+[...]go/django/db/models/sql/compiler.py:2096  call                        => <lambda>()
+[...]go/django/db/models/sql/compiler.py:2096  line                           for rows in iter((lambda: cursor.fetchmany(itersize)), sentinel):
+[...]/django/django/db/backends/utils.py:30    call                           => __getattr__(self=<django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>, attr='fetchmany')
+[...]/django/django/db/backends/utils.py:31    line                              cursor_attr = getattr(self.cursor, attr)
+[...]/django/django/db/backends/utils.py:32    line                              if attr in CursorWrapper.WRAP_ERROR_ATTRS:
+[...]/django/django/db/backends/utils.py:33    line                              return self.db.wrap_database_errors(cursor_attr)
+[...]nts/Learn/django/django/db/utils.py:93    call                              => __call__(self=<django.db.utils.DatabaseErrorWrapper object at 0x107661250>, func=<built-in method fetchmany of SQLiteCursorWrapper object at 0x107d0b920>)
+[...]nts/Learn/django/django/db/utils.py:96    line                                 def inner(*args, **kwargs):
+[...]nts/Learn/django/django/db/utils.py:100   line                                 return inner
+[...]nts/Learn/django/django/db/utils.py:100   return                            <= __call__: <function DatabaseErrorWrapper.__call__.<locals>.inner at 0x107d30f40>
+[...]/django/django/db/backends/utils.py:33    return                         <= __getattr__: <function DatabaseErrorWrapper.__call__.<locals>.inner at 0x107d30f40>
+[...]nts/Learn/django/django/db/utils.py:96    call                           => inner(*args=(100,), **kwargs={})
+[...]nts/Learn/django/django/db/utils.py:97    line                              with self:
+[...]nts/Learn/django/django/db/utils.py:67    call                              => __enter__(self=<django.db.utils.DatabaseErrorWrapper object at 0x107661250>)
+[...]nts/Learn/django/django/db/utils.py:68    line                                 pass
+[...]nts/Learn/django/django/db/utils.py:68    return                            <= __enter__: None
+[...]nts/Learn/django/django/db/utils.py:98    line                              return func(*args, **kwargs)
+[...]/django/db/backends/sqlite3/base.py:31    call                              => <lambda>(s=b'2023-11-08 23:52:21.573273')
+[...]/django/db/backends/sqlite3/base.py:31    line                                 return lambda s: conv_func(s.decode())
+[...]rn/django/django/utils/dateparse.py:104   call                                 => parse_datetime(value='2023-11-08 23:52:21.573273')
+[...]rn/django/django/utils/dateparse.py:113   line                                    try:
+[...]rn/django/django/utils/dateparse.py:114   line                                    return datetime.datetime.fromisoformat(value)
+[...]rn/django/django/utils/dateparse.py:114   return                               <= parse_datetime: datetime(2023, 11, 8, 23, 52, 21, 573273, tzinfo=None, fold=0)
+[...]/django/db/backends/sqlite3/base.py:31    return                            <= <lambda>: datetime(2023, 11, 8, 23, 52, 21, 573273, tzinfo=None, fold=0)
+[...]nts/Learn/django/django/db/utils.py:97    line                              with self:
+[...]nts/Learn/django/django/db/utils.py:70    call                              => __exit__(self=<django.db.utils.DatabaseErrorWrapper object at 0x107661250>, exc_type=None, exc_value=None, traceback=None)
+[...]nts/Learn/django/django/db/utils.py:71    line                                 if exc_type is None:
+[...]nts/Learn/django/django/db/utils.py:72    line                                 return
+[...]nts/Learn/django/django/db/utils.py:72    return                            <= __exit__: None
+[...]nts/Learn/django/django/db/utils.py:97    return                         <= inner: [(1, 'are you gay?', datetime(2023, 11, 8, 23, 52, 21, 573273, tzinfo=None, fold=0))]
+[...]go/django/db/models/sql/compiler.py:2096  return                      <= <lambda>: [(1, 'are you gay?', datetime(2023, 11, 8, 23, 52, 21, 573273, tzinfo=None, fold=0))]
+[...]go/django/db/models/sql/compiler.py:2097  line                        yield rows if col_count is None else [r[:col_count] for r in rows]
+[...]go/django/db/models/sql/compiler.py:2097  return                   <= cursor_iter: [(1, 'are you gay?', datetime(2023, 11, 8, 23, 52, 21, 573273, tzinfo=None, fold=0))]
+[...]go/django/db/models/sql/compiler.py:2097  call                     => cursor_iter(cursor=<django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>, sentinel=[], col_count=None, itersize=100)
+[...]go/django/db/models/sql/compiler.py:2096  line                        for rows in iter((lambda: cursor.fetchmany(itersize)), sentinel):
+[...]go/django/db/models/sql/compiler.py:2096  call                        => <lambda>()
+[...]go/django/db/models/sql/compiler.py:2096  line                           for rows in iter((lambda: cursor.fetchmany(itersize)), sentinel):
+[...]/django/django/db/backends/utils.py:30    call                           => __getattr__(self=<django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>, attr='fetchmany')
+[...]/django/django/db/backends/utils.py:31    line                              cursor_attr = getattr(self.cursor, attr)
+[...]/django/django/db/backends/utils.py:32    line                              if attr in CursorWrapper.WRAP_ERROR_ATTRS:
+[...]/django/django/db/backends/utils.py:33    line                              return self.db.wrap_database_errors(cursor_attr)
+[...]nts/Learn/django/django/db/utils.py:93    call                              => __call__(self=<django.db.utils.DatabaseErrorWrapper object at 0x107661250>, func=<built-in method fetchmany of SQLiteCursorWrapper object at 0x107d0b920>)
+[...]nts/Learn/django/django/db/utils.py:96    line                                 def inner(*args, **kwargs):
+[...]nts/Learn/django/django/db/utils.py:100   line                                 return inner
+[...]nts/Learn/django/django/db/utils.py:100   return                            <= __call__: <function DatabaseErrorWrapper.__call__.<locals>.inner at 0x107d30f40>
+[...]/django/django/db/backends/utils.py:33    return                         <= __getattr__: <function DatabaseErrorWrapper.__call__.<locals>.inner at 0x107d30f40>
+[...]nts/Learn/django/django/db/utils.py:96    call                           => inner(*args=(100,), **kwargs={})
+[...]nts/Learn/django/django/db/utils.py:97    line                              with self:
+[...]nts/Learn/django/django/db/utils.py:67    call                              => __enter__(self=<django.db.utils.DatabaseErrorWrapper object at 0x107661250>)
+[...]nts/Learn/django/django/db/utils.py:68    line                                 pass
+[...]nts/Learn/django/django/db/utils.py:68    return                            <= __enter__: None
+[...]nts/Learn/django/django/db/utils.py:98    line                              return func(*args, **kwargs)
+[...]nts/Learn/django/django/db/utils.py:97    line                              with self:
+[...]nts/Learn/django/django/db/utils.py:70    call                              => __exit__(self=<django.db.utils.DatabaseErrorWrapper object at 0x107661250>, exc_type=None, exc_value=None, traceback=None)
+[...]nts/Learn/django/django/db/utils.py:71    line                                 if exc_type is None:
+[...]nts/Learn/django/django/db/utils.py:72    line                                 return
+[...]nts/Learn/django/django/db/utils.py:72    return                            <= __exit__: None
+[...]nts/Learn/django/django/db/utils.py:97    return                         <= inner: []
+[...]go/django/db/models/sql/compiler.py:2096  return                      <= <lambda>: []
+[...]go/django/db/models/sql/compiler.py:2099  line                        cursor.close()
+[...]/django/django/db/backends/utils.py:30    call                        => __getattr__(self=<django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>, attr='close')
+[...]/django/django/db/backends/utils.py:31    line                           cursor_attr = getattr(self.cursor, attr)
+[...]/django/django/db/backends/utils.py:32    line                           if attr in CursorWrapper.WRAP_ERROR_ATTRS:
+[...]/django/django/db/backends/utils.py:35    line                           return cursor_attr
+[...]/django/django/db/backends/utils.py:35    return                      <= __getattr__: <built-in method close of SQLiteCursorWrapper object at 0x107d0b920>
+[...]go/django/db/models/sql/compiler.py:2099  return                   <= cursor_iter: None
+[...]go/django/db/models/sql/compiler.py:1595  return                <= execute_sql: [[(1, 'are you gay?', datetime(2023, 11, 8, 23, 52, 21, 573273, tzinfo=None, fold=0))]]
+[...]rn/django/django/db/models/query.py:95    line                  compiler.select,
+[...]rn/django/django/db/models/query.py:96    line                  compiler.klass_info,
+[...]rn/django/django/db/models/query.py:97    line                  compiler.annotation_col_map,
+[...]rn/django/django/db/models/query.py:94    line                  select, klass_info, annotation_col_map = (
+[...]rn/django/django/db/models/query.py:99    line                  model_cls = klass_info["model"]
+[...]rn/django/django/db/models/query.py:100   line                  select_fields = klass_info["select_fields"]
+[...]rn/django/django/db/models/query.py:101   line                  model_fields_start, model_fields_end = select_fields[0], select_fields[-1] + 1
+[...]rn/django/django/db/models/query.py:102   line                  init_list = [
+[...]rn/django/django/db/models/query.py:103   line                  f[0].target.attname for f in select[model_fields_start:model_fields_end]
+[...]rn/django/django/db/models/query.py:102   line                  init_list = [
+[...]rn/django/django/db/models/query.py:102   call                  => <listcomp>(.0=<list_iterator object at 0x1076597e0>)
+[...]rn/django/django/db/models/query.py:102   line                     init_list = [
+[...]rn/django/django/db/models/query.py:103   line                     f[0].target.attname for f in select[model_fields_start:model_fields_end]
+[...]rn/django/django/db/models/query.py:102   line                     init_list = [
+[...]rn/django/django/db/models/query.py:102   line                     init_list = [
+[...]rn/django/django/db/models/query.py:103   line                     f[0].target.attname for f in select[model_fields_start:model_fields_end]
+[...]rn/django/django/db/models/query.py:102   line                     init_list = [
+[...]rn/django/django/db/models/query.py:102   line                     init_list = [
+[...]rn/django/django/db/models/query.py:103   line                     f[0].target.attname for f in select[model_fields_start:model_fields_end]
+[...]rn/django/django/db/models/query.py:102   line                     init_list = [
+[...]rn/django/django/db/models/query.py:102   line                     init_list = [
+[...]rn/django/django/db/models/query.py:102   return                <= <listcomp>: ['id', 'question_text', 'pub_date']
+[...]rn/django/django/db/models/query.py:105   line                  related_populators = get_related_populators(klass_info, select, db)
+[...]rn/django/django/db/models/query.py:2725  call                  => get_related_populators(klass_info={'model': <django.db.models.base.ModelBase object at 0x1070929d0>, 'select_fields': [0, 1, 2]}, select=[(<django.db.models.expressions.Col object at 0x107660910>, ('"polls_question"."id"', []), None), (<django.db.models.expressions.Col object at 0x107660990>, ('"polls_question"."question_text"', []), None), (<django.db.models.expressions.Col object at 0x107660a50>, ('"polls_question"."pub_date"', []), None)], db='default')
+[...]rn/django/django/db/models/query.py:2726  line                     iterators = []
+[...]rn/django/django/db/models/query.py:2727  line                     related_klass_infos = klass_info.get("related_klass_infos", [])
+[...]rn/django/django/db/models/query.py:2728  line                     for rel_klass_info in related_klass_infos:
+[...]rn/django/django/db/models/query.py:2731  line                     return iterators
+[...]rn/django/django/db/models/query.py:2731  return                <= get_related_populators: []
+[...]rn/django/django/db/models/query.py:106   line                  known_related_objects = [
+[...]rn/django/django/db/models/query.py:119   line                  for field, related_objs in queryset._known_related_objects.items()
+[...]rn/django/django/db/models/query.py:106   line                  known_related_objects = [
+[...]rn/django/django/db/models/query.py:106   call                  => <listcomp>(.0=<dict_itemiterator object at 0x107ce0a40>)
+[...]rn/django/django/db/models/query.py:106   line                     known_related_objects = [
+[...]rn/django/django/db/models/query.py:106   return                <= <listcomp>: []
+[...]rn/django/django/db/models/query.py:121   line                  for row in compiler.results_iter(results):
+[...]go/django/db/models/sql/compiler.py:1504  call                  => results_iter(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, results=[[(1, 'are you gay?', datetime(2023, 11, 8, 23, 52, 21, 573273, tzinfo=None, fold=0))]], tuple_expected=False, chunked_fetch=False, chunk_size=100)
+[...]go/django/db/models/sql/compiler.py:1512  line                     if results is None:
+[...]go/django/db/models/sql/compiler.py:1516  line                     fields = [s[0] for s in self.select[0 : self.col_count]]
+[...]go/django/db/models/sql/compiler.py:1516  call                     => <listcomp>(.0=<list_iterator object at 0x1076596c0>)
+[...]go/django/db/models/sql/compiler.py:1516  line                        fields = [s[0] for s in self.select[0 : self.col_count]]
+[...]go/django/db/models/sql/compiler.py:1516  line                        fields = [s[0] for s in self.select[0 : self.col_count]]
+[...]go/django/db/models/sql/compiler.py:1516  line                        fields = [s[0] for s in self.select[0 : self.col_count]]
+[...]go/django/db/models/sql/compiler.py:1516  line                        fields = [s[0] for s in self.select[0 : self.col_count]]
+[...]go/django/db/models/sql/compiler.py:1516  return                   <= <listcomp>: [<django.db.models.expressions.Col object at 0x107660910>, <django.db.models.expressions.Col object at 0x107660990>, <django.db.models.expressions.Col object at 0x107660a50>]
+[...]go/django/db/models/sql/compiler.py:1517  line                     converters = self.get_converters(fields)
+[...]go/django/db/models/sql/compiler.py:1483  call                     => get_converters(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, expressions=[<django.db.models.expressions.Col object at 0x107660910>, <django.db.models.expressions.Col object at 0x107660990>, <django.db.models.expressions.Col object at 0x107660a50>])
+[...]go/django/db/models/sql/compiler.py:1484  line                        converters = {}
+[...]go/django/db/models/sql/compiler.py:1485  line                        for i, expression in enumerate(expressions):
+[...]go/django/db/models/sql/compiler.py:1486  line                        if expression:
+[...]go/django/db/models/sql/compiler.py:1487  line                        backend_converters = self.connection.ops.get_db_converters(expression)
+[...]o/db/backends/sqlite3/operations.py:294   call                        => get_db_converters(self=<django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>, expression=<django.db.models.expressions.Col object at 0x107660910>)
+[...]o/db/backends/sqlite3/operations.py:295   line                           converters = super().get_db_converters(expression)
+[...]ango/db/backends/base/operations.py:642   call                           => get_db_converters(self=<django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>, expression=<django.db.models.expressions.Col object at 0x107660910>)
+[...]ango/db/backends/base/operations.py:649   line                              return []
+[...]ango/db/backends/base/operations.py:649   return                         <= get_db_converters: []
+[...]o/db/backends/sqlite3/operations.py:296   line                           internal_type = expression.output_field.get_internal_type()
+[...]django/db/models/fields/__init__.py:2857  call                           => get_internal_type(self=<django.db.models.fields.BigAutoField object at 0x10732fb10>)
+[...]django/db/models/fields/__init__.py:2858  line                              return "BigAutoField"
+[...]django/db/models/fields/__init__.py:2858  return                         <= get_internal_type: 'BigAutoField'
+[...]o/db/backends/sqlite3/operations.py:297   line                           if internal_type == "DateTimeField":
+[...]o/db/backends/sqlite3/operations.py:299   line                           elif internal_type == "DateField":
+[...]o/db/backends/sqlite3/operations.py:301   line                           elif internal_type == "TimeField":
+[...]o/db/backends/sqlite3/operations.py:303   line                           elif internal_type == "DecimalField":
+[...]o/db/backends/sqlite3/operations.py:305   line                           elif internal_type == "UUIDField":
+[...]o/db/backends/sqlite3/operations.py:307   line                           elif internal_type == "BooleanField":
+[...]o/db/backends/sqlite3/operations.py:309   line                           return converters
+[...]o/db/backends/sqlite3/operations.py:309   return                      <= get_db_converters: []
+[...]go/django/db/models/sql/compiler.py:1488  line                        field_converters = expression.get_db_converters(self.connection)
+[...]ngo/django/db/models/expressions.py:1194  call                        => get_db_converters(self=<django.db.models.expressions.Col object at 0x107660910>, connection=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>)
+[...]ngo/django/db/models/expressions.py:1195  line                           if self.target == self.output_field:
+[...]django/db/models/fields/__init__.py:672   call                           => __eq__(self=<django.db.models.fields.BigAutoField object at 0x10732fb10>, other=<django.db.models.fields.BigAutoField object at 0x10732fb10>)
+[...]django/db/models/fields/__init__.py:674   line                              if isinstance(other, Field):
+[...]django/db/models/fields/__init__.py:675   line                              return self.creation_counter == other.creation_counter and getattr(
+[...]django/db/models/fields/__init__.py:676   line                              self, "model", None
+[...]django/db/models/fields/__init__.py:675   line                              return self.creation_counter == other.creation_counter and getattr(
+[...]django/db/models/fields/__init__.py:677   line                              ) == getattr(other, "model", None)
+[...]django/db/models/fields/__init__.py:675   line                              return self.creation_counter == other.creation_counter and getattr(
+[...]django/db/models/fields/__init__.py:675   return                         <= __eq__: True
+[...]ngo/django/db/models/expressions.py:1196  line                           return self.output_field.get_db_converters(connection)
+[...]django/db/models/fields/__init__.py:917   call                           => get_db_converters(self=<django.db.models.fields.BigAutoField object at 0x10732fb10>, connection=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>)
+[...]django/db/models/fields/__init__.py:918   line                              if hasattr(self, "from_db_value"):
+[...]django/db/models/fields/__init__.py:920   line                              return []
+[...]django/db/models/fields/__init__.py:920   return                         <= get_db_converters: []
+[...]ngo/django/db/models/expressions.py:1196  return                      <= get_db_converters: []
+[...]go/django/db/models/sql/compiler.py:1489  line                        if backend_converters or field_converters:
+[...]go/django/db/models/sql/compiler.py:1485  line                        for i, expression in enumerate(expressions):
+[...]go/django/db/models/sql/compiler.py:1486  line                        if expression:
+[...]go/django/db/models/sql/compiler.py:1487  line                        backend_converters = self.connection.ops.get_db_converters(expression)
+[...]o/db/backends/sqlite3/operations.py:294   call                        => get_db_converters(self=<django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>, expression=<django.db.models.expressions.Col object at 0x107660990>)
+[...]o/db/backends/sqlite3/operations.py:295   line                           converters = super().get_db_converters(expression)
+[...]ango/db/backends/base/operations.py:642   call                           => get_db_converters(self=<django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>, expression=<django.db.models.expressions.Col object at 0x107660990>)
+[...]ango/db/backends/base/operations.py:649   line                              return []
+[...]ango/db/backends/base/operations.py:649   return                         <= get_db_converters: []
+[...]o/db/backends/sqlite3/operations.py:296   line                           internal_type = expression.output_field.get_internal_type()
+[...]django/db/models/fields/__init__.py:1275  call                           => get_internal_type(self=<django.db.models.fields.CharField object at 0x107275010>)
+[...]django/db/models/fields/__init__.py:1276  line                              return "CharField"
+[...]django/db/models/fields/__init__.py:1276  return                         <= get_internal_type: 'CharField'
+[...]o/db/backends/sqlite3/operations.py:297   line                           if internal_type == "DateTimeField":
+[...]o/db/backends/sqlite3/operations.py:299   line                           elif internal_type == "DateField":
+[...]o/db/backends/sqlite3/operations.py:301   line                           elif internal_type == "TimeField":
+[...]o/db/backends/sqlite3/operations.py:303   line                           elif internal_type == "DecimalField":
+[...]o/db/backends/sqlite3/operations.py:305   line                           elif internal_type == "UUIDField":
+[...]o/db/backends/sqlite3/operations.py:307   line                           elif internal_type == "BooleanField":
+[...]o/db/backends/sqlite3/operations.py:309   line                           return converters
+[...]o/db/backends/sqlite3/operations.py:309   return                      <= get_db_converters: []
+[...]go/django/db/models/sql/compiler.py:1488  line                        field_converters = expression.get_db_converters(self.connection)
+[...]ngo/django/db/models/expressions.py:1194  call                        => get_db_converters(self=<django.db.models.expressions.Col object at 0x107660990>, connection=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>)
+[...]ngo/django/db/models/expressions.py:1195  line                           if self.target == self.output_field:
+[...]django/db/models/fields/__init__.py:672   call                           => __eq__(self=<django.db.models.fields.CharField object at 0x107275010>, other=<django.db.models.fields.CharField object at 0x107275010>)
+[...]django/db/models/fields/__init__.py:674   line                              if isinstance(other, Field):
+[...]django/db/models/fields/__init__.py:675   line                              return self.creation_counter == other.creation_counter and getattr(
+[...]django/db/models/fields/__init__.py:676   line                              self, "model", None
+[...]django/db/models/fields/__init__.py:675   line                              return self.creation_counter == other.creation_counter and getattr(
+[...]django/db/models/fields/__init__.py:677   line                              ) == getattr(other, "model", None)
+[...]django/db/models/fields/__init__.py:675   line                              return self.creation_counter == other.creation_counter and getattr(
+[...]django/db/models/fields/__init__.py:675   return                         <= __eq__: True
+[...]ngo/django/db/models/expressions.py:1196  line                           return self.output_field.get_db_converters(connection)
+[...]django/db/models/fields/__init__.py:917   call                           => get_db_converters(self=<django.db.models.fields.CharField object at 0x107275010>, connection=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>)
+[...]django/db/models/fields/__init__.py:918   line                              if hasattr(self, "from_db_value"):
+[...]django/db/models/fields/__init__.py:920   line                              return []
+[...]django/db/models/fields/__init__.py:920   return                         <= get_db_converters: []
+[...]ngo/django/db/models/expressions.py:1196  return                      <= get_db_converters: []
+[...]go/django/db/models/sql/compiler.py:1489  line                        if backend_converters or field_converters:
+[...]go/django/db/models/sql/compiler.py:1485  line                        for i, expression in enumerate(expressions):
+[...]go/django/db/models/sql/compiler.py:1486  line                        if expression:
+[...]go/django/db/models/sql/compiler.py:1487  line                        backend_converters = self.connection.ops.get_db_converters(expression)
+[...]o/db/backends/sqlite3/operations.py:294   call                        => get_db_converters(self=<django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>, expression=<django.db.models.expressions.Col object at 0x107660a50>)
+[...]o/db/backends/sqlite3/operations.py:295   line                           converters = super().get_db_converters(expression)
+[...]ango/db/backends/base/operations.py:642   call                           => get_db_converters(self=<django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>, expression=<django.db.models.expressions.Col object at 0x107660a50>)
+[...]ango/db/backends/base/operations.py:649   line                              return []
+[...]ango/db/backends/base/operations.py:649   return                         <= get_db_converters: []
+[...]o/db/backends/sqlite3/operations.py:296   line                           internal_type = expression.output_field.get_internal_type()
+[...]django/db/models/fields/__init__.py:1574  call                           => get_internal_type(self=<django.db.models.fields.DateTimeField object at 0x1072751d0>)
+[...]django/db/models/fields/__init__.py:1575  line                              return "DateTimeField"
+[...]django/db/models/fields/__init__.py:1575  return                         <= get_internal_type: 'DateTimeField'
+[...]o/db/backends/sqlite3/operations.py:297   line                           if internal_type == "DateTimeField":
+[...]o/db/backends/sqlite3/operations.py:298   line                           converters.append(self.convert_datetimefield_value)
+[...]o/db/backends/sqlite3/operations.py:309   line                           return converters
+[...]o/db/backends/sqlite3/operations.py:309   return                      <= get_db_converters: [<bound method DatabaseOperations.convert_datetimefield_value of <django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>>]
+[...]go/django/db/models/sql/compiler.py:1488  line                        field_converters = expression.get_db_converters(self.connection)
+[...]ngo/django/db/models/expressions.py:1194  call                        => get_db_converters(self=<django.db.models.expressions.Col object at 0x107660a50>, connection=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>)
+[...]ngo/django/db/models/expressions.py:1195  line                           if self.target == self.output_field:
+[...]django/db/models/fields/__init__.py:672   call                           => __eq__(self=<django.db.models.fields.DateTimeField object at 0x1072751d0>, other=<django.db.models.fields.DateTimeField object at 0x1072751d0>)
+[...]django/db/models/fields/__init__.py:674   line                              if isinstance(other, Field):
+[...]django/db/models/fields/__init__.py:675   line                              return self.creation_counter == other.creation_counter and getattr(
+[...]django/db/models/fields/__init__.py:676   line                              self, "model", None
+[...]django/db/models/fields/__init__.py:675   line                              return self.creation_counter == other.creation_counter and getattr(
+[...]django/db/models/fields/__init__.py:677   line                              ) == getattr(other, "model", None)
+[...]django/db/models/fields/__init__.py:675   line                              return self.creation_counter == other.creation_counter and getattr(
+[...]django/db/models/fields/__init__.py:675   return                         <= __eq__: True
+[...]ngo/django/db/models/expressions.py:1196  line                           return self.output_field.get_db_converters(connection)
+[...]django/db/models/fields/__init__.py:917   call                           => get_db_converters(self=<django.db.models.fields.DateTimeField object at 0x1072751d0>, connection=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>)
+[...]django/db/models/fields/__init__.py:918   line                              if hasattr(self, "from_db_value"):
+[...]django/db/models/fields/__init__.py:920   line                              return []
+[...]django/db/models/fields/__init__.py:920   return                         <= get_db_converters: []
+[...]ngo/django/db/models/expressions.py:1196  return                      <= get_db_converters: []
+[...]go/django/db/models/sql/compiler.py:1489  line                        if backend_converters or field_converters:
+[...]go/django/db/models/sql/compiler.py:1490  line                        converters[i] = (backend_converters + field_converters, expression)
+[...]go/django/db/models/sql/compiler.py:1485  line                        for i, expression in enumerate(expressions):
+[...]go/django/db/models/sql/compiler.py:1491  line                        return converters
+[...]go/django/db/models/sql/compiler.py:1491  return                   <= get_converters: {2: ([<bound method DatabaseOperations.convert_datetimefield_value of <django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>>], <django.db.models.expressions.Col object at 0x107660a50>)}
+[...]go/django/db/models/sql/compiler.py:1518  line                     rows = chain.from_iterable(results)
+[...]go/django/db/models/sql/compiler.py:1519  line                     if converters:
+[...]go/django/db/models/sql/compiler.py:1520  line                     rows = self.apply_converters(rows, converters)
+[...]go/django/db/models/sql/compiler.py:1521  line                     if tuple_expected:
+[...]go/django/db/models/sql/compiler.py:1523  line                     return rows
+[...]go/django/db/models/sql/compiler.py:1523  return                <= results_iter: <generator object SQLCompiler.apply_converters at 0x10765c680>
+[...]go/django/db/models/sql/compiler.py:1493  call                  => apply_converters(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, rows=<itertools.chain object at 0x1076596c0>, converters={2: ([<bound method DatabaseOperations.convert_datetimefield_value of <django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>>], <django.db.models.expressions.Col object at 0x107660a50>)})
+[...]go/django/db/models/sql/compiler.py:1494  line                     connection = self.connection
+[...]go/django/db/models/sql/compiler.py:1495  line                     converters = list(converters.items())
+[...]go/django/db/models/sql/compiler.py:1496  line                     for row in map(list, rows):
+[...]go/django/db/models/sql/compiler.py:1497  line                     for pos, (convs, expression) in converters:
+[...]go/django/db/models/sql/compiler.py:1498  line                     value = row[pos]
+[...]go/django/db/models/sql/compiler.py:1499  line                     for converter in convs:
+[...]go/django/db/models/sql/compiler.py:1500  line                     value = converter(value, expression, connection)
+[...]o/db/backends/sqlite3/operations.py:311   call                     => convert_datetimefield_value(self=<django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>, value=datetime(2023, 11, 8, 23, 52, 21, 573273, tzinfo=None, fold=0), expression=<django.db.models.expressions.Col object at 0x107660a50>, connection=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>)
+[...]o/db/backends/sqlite3/operations.py:312   line                        if value is not None:
+[...]o/db/backends/sqlite3/operations.py:313   line                        if not isinstance(value, datetime.datetime):
+[...]o/db/backends/sqlite3/operations.py:315   line                        if settings.USE_TZ and not timezone.is_aware(value):
+[...]n/django/django/utils/functional.py:276   call                        => __getattribute__(self=<django.conf.LazySettings object at 0x105945e10>, name='USE_TZ')
+[...]n/django/django/utils/functional.py:277   line                           if name == "_wrapped":
+[...]n/django/django/utils/functional.py:280   line                           value = super().__getattribute__(name)
+[...]n/django/django/utils/functional.py:283   line                           if not getattr(value, "_mask_wrapped", True):
+[...]n/django/django/utils/functional.py:285   line                           return value
+[...]n/django/django/utils/functional.py:285   return                      <= __getattribute__: True
+[...]arn/django/django/utils/timezone.py:211   call                        => is_aware(value=datetime(2023, 11, 8, 23, 52, 21, 573273, tzinfo=None, fold=0))
+[...]arn/django/django/utils/timezone.py:221   line                           return value.utcoffset() is not None
+[...]arn/django/django/utils/timezone.py:221   return                      <= is_aware: False
+[...]o/db/backends/sqlite3/operations.py:316   line                        value = timezone.make_aware(value, self.connection.timezone)
+[...]arn/django/django/utils/timezone.py:237   call                        => make_aware(value=datetime(2023, 11, 8, 23, 52, 21, 573273, tzinfo=None, fold=0), timezone=<datetime.timezone object at 0x1055000d0>)
+[...]arn/django/django/utils/timezone.py:239   line                           if timezone is None:
+[...]arn/django/django/utils/timezone.py:242   line                           if is_aware(value):
+[...]arn/django/django/utils/timezone.py:211   call                           => is_aware(value=datetime(2023, 11, 8, 23, 52, 21, 573273, tzinfo=None, fold=0))
+[...]arn/django/django/utils/timezone.py:221   line                              return value.utcoffset() is not None
+[...]arn/django/django/utils/timezone.py:221   return                         <= is_aware: False
+[...]arn/django/django/utils/timezone.py:245   line                           return value.replace(tzinfo=timezone)
+[...]arn/django/django/utils/timezone.py:245   return                      <= make_aware: datetime(2023, 11, 8, 23, 52, 21, 573273, tzinfo=<datetime.timezone object at 0x1055000d0>, fold=0)
+[...]o/db/backends/sqlite3/operations.py:317   line                        return value
+[...]o/db/backends/sqlite3/operations.py:317   return                   <= convert_datetimefield_value: datetime(2023, 11, 8, 23, 52, 21, 573273, tzinfo=<datetime.timezone object at 0x1055000d0>, fold=0)
+[...]go/django/db/models/sql/compiler.py:1499  line                     for converter in convs:
+[...]go/django/db/models/sql/compiler.py:1501  line                     row[pos] = value
+[...]go/django/db/models/sql/compiler.py:1497  line                     for pos, (convs, expression) in converters:
+[...]go/django/db/models/sql/compiler.py:1502  line                     yield row
+[...]go/django/db/models/sql/compiler.py:1502  return                <= apply_converters: [1, 'are you gay?', datetime(2023, 11, 8, 23, 52, 21, 573273, tzinfo=<datetime.timezone object at 0x1055000d0>, fold=0)]
+[...]rn/django/django/db/models/query.py:122   line                  obj = model_cls.from_db(
+[...]rn/django/django/db/models/query.py:123   line                  db, init_list, row[model_fields_start:model_fields_end]
+[...]rn/django/django/db/models/query.py:122   line                  obj = model_cls.from_db(
+[...]arn/django/django/db/models/base.py:574   call                  => from_db(cls=<django.db.models.base.ModelBase object at 0x1070929d0>, db='default', field_names=['id', 'question_text', 'pub_date'], values=[1, 'are you gay?', datetime(2023, 11, 8, 23, 52, 21, 573273, tzinfo=<datetime.timezone object at 0x1055000d0>, fold=0)])
+[...]arn/django/django/db/models/base.py:576   line                     if len(values) != len(cls._meta.concrete_fields):
+[...]arn/django/django/db/models/base.py:582   line                     new = cls(*values)
+[...]arn/django/django/db/models/base.py:460   call                     => __init__(self=<polls.models.Question object at 0x107d1f6d0>, *args=(1, 'are you gay?', datetime(2023, 11, 8, 23, 52, 21, 573273, tzinfo=<datetime.timezone object at 0x1055000d0>, fold=0)), **kwargs={})
+[...]arn/django/django/db/models/base.py:462   line                        cls = self.__class__
+[...]arn/django/django/db/models/base.py:463   line                        opts = self._meta
+[...]arn/django/django/db/models/base.py:464   line                        _setattr = setattr
+[...]arn/django/django/db/models/base.py:465   line                        _DEFERRED = DEFERRED
+[...]arn/django/django/db/models/base.py:466   line                        if opts.abstract:
+[...]arn/django/django/db/models/base.py:469   line                        pre_init.send(sender=cls, args=args, kwargs=kwargs)
+[...]jango/django/dispatch/dispatcher.py:159   call                        => send(self=<django.db.models.signals.ModelSignal object at 0x1068ab090>, sender=<django.db.models.base.ModelBase object at 0x1070929d0>, **named={'args': (1, 'are you gay?', datetime(2023, 11, 8, 23, 52, 21, 573273, tzinfo=<datetime.timezone object at 0x1055000d0>, fold=0)), 'kwargs': {}})
+[...]jango/django/dispatch/dispatcher.py:182   line                           not self.receivers
+[...]jango/django/dispatch/dispatcher.py:181   line                           if (
+[...]jango/django/dispatch/dispatcher.py:185   line                           return []
+[...]jango/django/dispatch/dispatcher.py:185   return                      <= send: []
+[...]arn/django/django/db/models/base.py:472   line                        self._state = ModelState()
+[...]arn/django/django/db/models/base.py:478   line                        if len(args) > len(opts.concrete_fields):
+[...]arn/django/django/db/models/base.py:482   line                        if not kwargs:
+[...]arn/django/django/db/models/base.py:483   line                        fields_iter = iter(opts.concrete_fields)
+[...]arn/django/django/db/models/base.py:488   line                        for val, field in zip(args, fields_iter):
+[...]arn/django/django/db/models/base.py:489   line                        if val is _DEFERRED:
+[...]arn/django/django/db/models/base.py:491   line                        _setattr(self, field.attname, val)
+[...]arn/django/django/db/models/base.py:488   line                        for val, field in zip(args, fields_iter):
+[...]arn/django/django/db/models/base.py:489   line                        if val is _DEFERRED:
+[...]arn/django/django/db/models/base.py:491   line                        _setattr(self, field.attname, val)
+[...]arn/django/django/db/models/base.py:488   line                        for val, field in zip(args, fields_iter):
+[...]arn/django/django/db/models/base.py:489   line                        if val is _DEFERRED:
+[...]arn/django/django/db/models/base.py:491   line                        _setattr(self, field.attname, val)
+[...]arn/django/django/db/models/base.py:488   line                        for val, field in zip(args, fields_iter):
+[...]arn/django/django/db/models/base.py:508   line                        for field in fields_iter:
+[...]arn/django/django/db/models/base.py:548   line                        if kwargs:
+[...]arn/django/django/db/models/base.py:571   line                        super().__init__()
+[...]arn/django/django/db/models/base.py:572   line                        post_init.send(sender=cls, instance=self)
+[...]jango/django/dispatch/dispatcher.py:159   call                        => send(self=<django.db.models.signals.ModelSignal object at 0x1068ab6d0>, sender=<django.db.models.base.ModelBase object at 0x1070929d0>, **named={'instance': <polls.models.Question object at 0x107d1f6d0>})
+[...]jango/django/dispatch/dispatcher.py:182   line                           not self.receivers
+[...]jango/django/dispatch/dispatcher.py:181   line                           if (
+[...]jango/django/dispatch/dispatcher.py:185   line                           return []
+[...]jango/django/dispatch/dispatcher.py:185   return                      <= send: []
+[...]arn/django/django/db/models/base.py:572   return                   <= __init__: None
+[...]arn/django/django/db/models/base.py:583   line                     new._state.adding = False
+[...]arn/django/django/db/models/base.py:584   line                     new._state.db = db
+[...]arn/django/django/db/models/base.py:585   line                     return new
+[...]arn/django/django/db/models/base.py:585   return                <= from_db: <polls.models.Question object at 0x107d1f6d0>
+[...]rn/django/django/db/models/query.py:125   line                  for rel_populator in related_populators:
+[...]rn/django/django/db/models/query.py:127   line                  if annotation_col_map:
+[...]rn/django/django/db/models/query.py:132   line                  for field, rel_objs, rel_getter in known_related_objects:
+[...]rn/django/django/db/models/query.py:144   line                  yield obj
+[...]rn/django/django/db/models/query.py:144   return             <= __iter__: <polls.models.Question object at 0x107d1f6d0>
+[...]rn/django/django/db/models/query.py:144   call               => __iter__(self=<django.db.models.query.ModelIterable object at 0x1073ae450>)
+[...]rn/django/django/db/models/query.py:121   line                  for row in compiler.results_iter(results):
+[...]go/django/db/models/sql/compiler.py:1502  call                  => apply_converters(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, rows=<itertools.chain object at 0x1076596c0>, converters=[(2, ([<bound method DatabaseOperations.convert_datetimefield_value of ...>], <django.db.models.expressions.Col object at 0x107660a50>))])
+[...]go/django/db/models/sql/compiler.py:1496  line                     for row in map(list, rows):
+[...]go/django/db/models/sql/compiler.py:1496  return                <= apply_converters: None
+[...]rn/django/django/db/models/query.py:121   return             <= __iter__: None
+[...]rn/django/django/db/models/query.py:1927  line               if self._prefetch_related_lookups and not self._prefetch_done:
