@@ -237,10 +237,10 @@ class TraceCompiler:
             os.makedirs(self._output_path / class_path, exist_ok=True)
 
             p = self._output_path / class_path / class_file
-
+            
             if p.exists():
                 with p.open(mode="a") as file:
                     file.write(self._build_file(class_name, func_dict))
-
-            with p.open(mode="w") as file:
-                file.write(self._build_file(class_name, func_dict))
+            else:
+                with p.open(mode="w") as file:
+                    file.write(self._build_file(class_name, func_dict))
