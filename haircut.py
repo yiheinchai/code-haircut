@@ -300,7 +300,7 @@ class TraceCompiler:
             return
 
         if line.line_type == "line":
-            if self._check_line_visited(line):
+            if self._check_block_line_visited(line) or self._check_line_added(line):
                 # this is to deal with return statements that are in a block that span multiple lines
                 # the multi-line return statement will be read back on forth, ignore when it reads back
                 return
@@ -333,8 +333,17 @@ class TraceCompiler:
     def _check_global_line_jump(self):
         return self._line_log[-1].line_no - self._line_log[-2].line_no > 1
 
-    def _check_line_visited(self, line):
+    def _check_block_line_visited(self, line):
         return line.line_no in self._stack[-1].visited_line_nos
+
+    def _check_line_added(self, line):
+        curr_block = self._stack[-1]
+
+        if curr_block.class_name not in self.classes or curr_block.func_name not in self.classes[curr_block.class_name]:
+            return False
+
+        return line.line_no in self.classes[curr_block.class_name][curr_block.func_name].lines
+    
 
     def _check_is_in_block(self):
         if len(self._stack) == 0:
@@ -393,10 +402,11 @@ class TraceCompiler:
                 class_file = Path(class_info[-1] + ".py")
             
             if len(class_info) >= 3:   
-                class_name = class_info[-1]
                 class_file = Path(class_info[-2] + ".py")
                 class_path = Path("/".join(class_info[:-2]))
 
+            class_name = class_info[-1]
+            
             os.makedirs(self._output_path / class_path, exist_ok=True)
 
             p = self._output_path / class_path / class_file

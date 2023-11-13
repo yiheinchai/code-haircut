@@ -1,5 +1,88 @@
-[...]jango/django/db/models/sql/query.py:1066  call                              => get_initial_alias(self=<django.db.models.sql.query.Query object at 0x107704590>)
-[...]jango/django/db/models/sql/query.py:1071  line                                 if self.alias_map:
-[...]jango/django/db/models/sql/query.py:1074  line                                 elif self.model:
-[...]jango/django/db/models/sql/query.py:1075  line                                 alias = self.join(self.base_table_class(self.get_meta().db_table, None))
-[...]jango/django/db/models/sql/query.py:1078  return                            <= get_initial_alias: 'polls_question'
+[...]go/django/db/models/sql/compiler.py:950   call                                 => get_default_columns(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, select_mask={}, start_alias=None, opts=None, from_parent=None)
+[...]go/django/db/models/sql/compiler.py:964   line                                    result = []
+[...]go/django/db/models/sql/compiler.py:965   line                                    if opts is None:
+[...]go/django/db/models/sql/compiler.py:966   line                                    if (opts := self.query.get_meta()) is None:
+[...]jango/django/db/models/sql/query.py:353   call                                    => get_meta(self=<django.db.models.sql.query.Query object at 0x107704590>)
+[...]jango/django/db/models/sql/query.py:359   line                                       if self.model:
+[...]jango/django/db/models/sql/query.py:360   line                                       return self.model._meta
+[...]jango/django/db/models/sql/query.py:360   return                                  <= get_meta: <django.db.models.options.Options object at 0x107275390>
+[...]go/django/db/models/sql/compiler.py:968   line                                    start_alias = start_alias or self.query.get_initial_alias()
+[...]jango/django/db/models/sql/query.py:1066  call                                    => get_initial_alias(self=<django.db.models.sql.query.Query object at 0x107704590>)
+[...]jango/django/db/models/sql/query.py:1071  line                                       if self.alias_map:
+[...]jango/django/db/models/sql/query.py:1072  line                                       alias = self.base_table
+[...]n/django/django/utils/functional.py:39    call                                       => __get__(self=<django.utils.functional.cached_property object at 0x106d3b7d0>, instance=<django.db.models.sql.query.Query object at 0x107704590>, cls=<class 'django.db.models.sql.query.Query'>)
+[...]n/django/django/utils/functional.py:45    line                                          if instance is None:
+[...]n/django/django/utils/functional.py:47    line                                          res = instance.__dict__[self.name] = self.func(instance)
+[...]jango/django/db/models/sql/query.py:315   call                                          => base_table(self=<django.db.models.sql.query.Query object at 0x107704590>)
+[...]jango/django/db/models/sql/query.py:317   line                                             for alias in self.alias_map:
+[...]jango/django/db/models/sql/query.py:318   line                                             return alias
+[...]jango/django/db/models/sql/query.py:318   return                                        <= base_table: 'polls_question'
+[...]n/django/django/utils/functional.py:48    line                                          return res
+[...]n/django/django/utils/functional.py:48    return                                     <= __get__: 'polls_question'
+[...]jango/django/db/models/sql/query.py:1073  line                                       self.ref_alias(alias)
+[...]jango/django/db/models/sql/query.py:893   call                                       => ref_alias(self=<django.db.models.sql.query.Query object at 0x107704590>, alias='polls_question')
+[...]jango/django/db/models/sql/query.py:895   line                                          self.alias_refcount[alias] += 1
+[...]jango/django/db/models/sql/query.py:895   return                                     <= ref_alias: None
+[...]jango/django/db/models/sql/query.py:1078  line                                       return alias
+[...]jango/django/db/models/sql/query.py:1078  return                                  <= get_initial_alias: 'polls_question'
+[...]go/django/db/models/sql/compiler.py:972   line                                    seen_models = {None: start_alias}
+[...]go/django/db/models/sql/compiler.py:974   line                                    for field in opts.concrete_fields:
+[...]go/django/db/models/sql/compiler.py:975   line                                    model = field.model._meta.concrete_model
+[...]go/django/db/models/sql/compiler.py:978   line                                    if model == opts.model:
+[...]go/django/db/models/sql/compiler.py:979   line                                    model = None
+[...]go/django/db/models/sql/compiler.py:981   line                                    from_parent
+[...]go/django/db/models/sql/compiler.py:980   line                                    if (
+[...]go/django/db/models/sql/compiler.py:993   line                                    if select_mask and field not in select_mask:
+[...]go/django/db/models/sql/compiler.py:995   line                                    alias = self.query.join_parent_model(opts, model, start_alias, seen_models)
+[...]jango/django/db/models/sql/query.py:1142  call                                    => join_parent_model(self=<django.db.models.sql.query.Query object at 0x107704590>, opts=<django.db.models.options.Options object at 0x107275390>, model=None, alias='polls_question', seen={None: 'polls_question'})
+[...]jango/django/db/models/sql/query.py:1151  line                                       if model in seen:
+[...]jango/django/db/models/sql/query.py:1152  line                                       return seen[model]
+[...]jango/django/db/models/sql/query.py:1152  return                                  <= join_parent_model: 'polls_question'
+[...]go/django/db/models/sql/compiler.py:996   line                                    column = field.get_col(alias)
+[...]django/db/models/fields/__init__.py:539   call                                    => get_col(self=<django.db.models.fields.BigAutoField object at 0x10732fb10>, alias='polls_question', output_field=None)
+[...]django/db/models/fields/__init__.py:540   line                                       if alias == self.model._meta.db_table and (
+[...]django/db/models/fields/__init__.py:541   line                                       output_field is None or output_field == self
+[...]django/db/models/fields/__init__.py:543   line                                       return self.cached_col
+[...]django/db/models/fields/__init__.py:543   return                                  <= get_col: <django.db.models.expressions.Col object at 0x107660910>
+[...]go/django/db/models/sql/compiler.py:997   line                                    result.append(column)
+[...]go/django/db/models/sql/compiler.py:974   line                                    for field in opts.concrete_fields:
+[...]go/django/db/models/sql/compiler.py:975   line                                    model = field.model._meta.concrete_model
+[...]go/django/db/models/sql/compiler.py:978   line                                    if model == opts.model:
+[...]go/django/db/models/sql/compiler.py:979   line                                    model = None
+[...]go/django/db/models/sql/compiler.py:981   line                                    from_parent
+[...]go/django/db/models/sql/compiler.py:980   line                                    if (
+[...]go/django/db/models/sql/compiler.py:993   line                                    if select_mask and field not in select_mask:
+[...]go/django/db/models/sql/compiler.py:995   line                                    alias = self.query.join_parent_model(opts, model, start_alias, seen_models)
+[...]jango/django/db/models/sql/query.py:1142  call                                    => join_parent_model(self=<django.db.models.sql.query.Query object at 0x107704590>, opts=<django.db.models.options.Options object at 0x107275390>, model=None, alias='polls_question', seen={None: 'polls_question'})
+[...]jango/django/db/models/sql/query.py:1151  line                                       if model in seen:
+[...]jango/django/db/models/sql/query.py:1152  line                                       return seen[model]
+[...]jango/django/db/models/sql/query.py:1152  return                                  <= join_parent_model: 'polls_question'
+[...]go/django/db/models/sql/compiler.py:996   line                                    column = field.get_col(alias)
+[...]django/db/models/fields/__init__.py:539   call                                    => get_col(self=<django.db.models.fields.CharField object at 0x107275010>, alias='polls_question', output_field=None)
+[...]django/db/models/fields/__init__.py:540   line                                       if alias == self.model._meta.db_table and (
+[...]django/db/models/fields/__init__.py:541   line                                       output_field is None or output_field == self
+[...]django/db/models/fields/__init__.py:543   line                                       return self.cached_col
+[...]django/db/models/fields/__init__.py:543   return                                  <= get_col: <django.db.models.expressions.Col object at 0x107660990>
+[...]go/django/db/models/sql/compiler.py:997   line                                    result.append(column)
+[...]go/django/db/models/sql/compiler.py:974   line                                    for field in opts.concrete_fields:
+[...]go/django/db/models/sql/compiler.py:975   line                                    model = field.model._meta.concrete_model
+[...]go/django/db/models/sql/compiler.py:978   line                                    if model == opts.model:
+[...]go/django/db/models/sql/compiler.py:979   line                                    model = None
+[...]go/django/db/models/sql/compiler.py:981   line                                    from_parent
+[...]go/django/db/models/sql/compiler.py:980   line                                    if (
+[...]go/django/db/models/sql/compiler.py:993   line                                    if select_mask and field not in select_mask:
+[...]go/django/db/models/sql/compiler.py:995   line                                    alias = self.query.join_parent_model(opts, model, start_alias, seen_models)
+[...]jango/django/db/models/sql/query.py:1142  call                                    => join_parent_model(self=<django.db.models.sql.query.Query object at 0x107704590>, opts=<django.db.models.options.Options object at 0x107275390>, model=None, alias='polls_question', seen={None: 'polls_question'})
+[...]jango/django/db/models/sql/query.py:1151  line                                       if model in seen:
+[...]jango/django/db/models/sql/query.py:1152  line                                       return seen[model]
+[...]jango/django/db/models/sql/query.py:1152  return                                  <= join_parent_model: 'polls_question'
+[...]go/django/db/models/sql/compiler.py:996   line                                    column = field.get_col(alias)
+[...]django/db/models/fields/__init__.py:539   call                                    => get_col(self=<django.db.models.fields.DateTimeField object at 0x1072751d0>, alias='polls_question', output_field=None)
+[...]django/db/models/fields/__init__.py:540   line                                       if alias == self.model._meta.db_table and (
+[...]django/db/models/fields/__init__.py:541   line                                       output_field is None or output_field == self
+[...]django/db/models/fields/__init__.py:543   line                                       return self.cached_col
+[...]django/db/models/fields/__init__.py:543   return                                  <= get_col: <django.db.models.expressions.Col object at 0x107660a50>
+[...]go/django/db/models/sql/compiler.py:997   line                                    result.append(column)
+[...]go/django/db/models/sql/compiler.py:974   line                                    for field in opts.concrete_fields:
+[...]go/django/db/models/sql/compiler.py:998   line                                    return result
+[...]go/django/db/models/sql/compiler.py:998   return                               <= get_default_columns: [<django.db.models.expressions.Col object at 0x107660910>, <django.db.models.expressions.Col object at 0x107660990>, <django.db.models.expressions.Col object at 0x107660a50>]

@@ -1,4 +1,4 @@
-class Local:
+class SyncToAsync:
 	def get_current_task():
 		try:
 			return asyncio.current_task()

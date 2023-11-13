@@ -1,4 +1,4 @@
-class WhereNode:
+class class:
 	def create(cls=<class 'django.db.models.sql.where.WhereNode'>, children=None, connector='AND', negated=False):
 		obj = Node(children, connector or cls.default, negated)
 		obj.__class__ = cls

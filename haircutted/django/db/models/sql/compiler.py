@@ -102,8 +102,8 @@ class SQLCompiler:
 		ret = []
 		col_idx = 1
 		for col, alias in select:
-		try:
-		sql, params = self.compile(col)
+			try:
+				sql, params = self.compile(col)
 		sql, params = col.select_format(self, sql, params)
 		ret.append((col, (sql, params), alias))
 		return ret, klass_info, annotations
@@ -114,9 +114,9 @@ class SQLCompiler:
 		start_alias = start_alias or self.query.get_initial_alias()
 		seen_models = {None: start_alias}
 		for field in opts.concrete_fields:
-		model = field.model._meta.concrete_model
+			model = field.model._meta.concrete_model
 		if model == opts.model:
-		model = None
+			model = None
 		if (
 		from_parent
 		alias = self.query.join_parent_model(opts, model, start_alias, seen_models)
