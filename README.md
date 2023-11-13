@@ -1,4 +1,4 @@
-# CodeHaircut
+# CodeHaircut 💇🏻‍♂️
 
 Give you codebase a haircut.
 
