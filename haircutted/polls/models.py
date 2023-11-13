@@ -9,8 +9,6 @@ class Question:
 		if not kwargs:
 			fields_iter = iter(opts.concrete_fields)
 		_setattr(self, field.attname, val)
-		_setattr(self, field.attname, val)
-		_setattr(self, field.attname, val)
 		super().__init__()
 		post_init.send(sender=cls, instance=self)
 

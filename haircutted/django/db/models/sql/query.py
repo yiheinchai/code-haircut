@@ -44,8 +44,6 @@ class Query:
 		if low is not None:
 			if self.high_mark is not None:
 				self.low_mark = min(self.high_mark, self.low_mark + low)
-			if self.high_mark is not None:
-				self.low_mark = min(self.high_mark, self.low_mark + low)
 		qs._fetch_all()
 
 
@@ -57,8 +55,6 @@ class Query:
 			alias = self.join(self.base_table_class(self.get_meta().db_table, None))
 			self.select, self.klass_info, self.annotation_col_map = self.get_select(
 			with_col_aliases=with_col_aliases,
-			self.select, self.klass_info, self.annotation_col_map = self.get_select(
-		def get_initial_alias(self=<django.db.models.sql.query.Query object at 0x107704590>):
 		if self.alias_map:
 			alias = self.base_table
 			seen_models = {None: start_alias}
@@ -73,25 +69,20 @@ class Query:
 
 	def get_meta(self=<django.db.models.sql.query.Query object at 0x107704590>):
 		return alias
-		def get_meta(self=<django.db.models.sql.query.Query object at 0x107704590>):
 		start_alias = start_alias or self.query.get_initial_alias()
-		def get_meta(self=<django.db.models.sql.query.Query object at 0x107704590>):
 		ordering = []
 		if self.query.standard_ordering:
 			default_order, _ = ORDER_DIR["ASC"]
 		selected_exprs = {}
 		return result
-		def get_meta(self=<django.db.models.sql.query.Query object at 0x107704590>):
 		return result, params
 
 
 	def join(self=<django.db.models.sql.query.Query object at 0x107704590>, join=<django.db.models.sql.datastructures.BaseTable object at 0x10766ded0>, reuse=None):
 		reuse_aliases = [
 		for a, j in self.alias_map.items()
-		reuse_aliases = [
 		alias, _ = self.table_alias(
 		join.table_name, create=True, filtered_relation=join.filtered_relation
-		alias, _ = self.table_alias(
 		join.table_alias = alias
 		self.alias_map[alias] = join
 		return alias
@@ -109,25 +100,6 @@ class Query:
 	def extra_select(self=<django.db.models.sql.query.Query object at 0x107704590>):
 		assert not (self.query.select and self.query.default_cols)
 		select_mask = self.query.get_select_mask()
-		def extra_select(self=<django.db.models.sql.query.Query object at 0x107704590>):
-		self.query.external_aliases.get(name)
-		or name in self.query.extra_select
-		r = self.connection.ops.quote_name(name)
-		self.quote_cache[name] = r
-		return r
-		def extra_select(self=<django.db.models.sql.query.Query object at 0x107704590>):
-		self.query.external_aliases.get(name)
-		or name in self.query.extra_select
-		r = self.connection.ops.quote_name(name)
-		self.quote_cache[name] = r
-		return r
-		def extra_select(self=<django.db.models.sql.query.Query object at 0x107704590>):
-		self.query.external_aliases.get(name)
-		or name in self.query.extra_select
-		r = self.connection.ops.quote_name(name)
-		self.quote_cache[name] = r
-		return r
-		def extra_select(self=<django.db.models.sql.query.Query object at 0x107704590>):
 		self.query.external_aliases.get(name)
 		or name in self.query.extra_select
 		r = self.connection.ops.quote_name(name)
@@ -159,54 +131,9 @@ class Query:
 		from_parent
 		if (
 		alias = self.query.join_parent_model(opts, model, start_alias, seen_models)
-		def join_parent_model(self=<django.db.models.sql.query.Query object at 0x107704590>, opts=<django.db.models.options.Options object at 0x107275390>, model=None, alias='polls_question', seen={None: 'polls_question'}):
-		column = field.get_col(alias)
-		result.append(column)
-		for field in opts.concrete_fields:
-			model = field.model._meta.concrete_model
-		if model == opts.model:
-			model = None
-		from_parent
-		if (
-		alias = self.query.join_parent_model(opts, model, start_alias, seen_models)
-		def join_parent_model(self=<django.db.models.sql.query.Query object at 0x107704590>, opts=<django.db.models.options.Options object at 0x107275390>, model=None, alias='polls_question', seen={None: 'polls_question'}):
-		column = field.get_col(alias)
-		result.append(column)
 		return result
 		if cols:
 			select_list = []
-			for col in cols:
-				select_list.append(select_idx)
-				select.append((col, None))
-				select_idx += 1
-				for col in cols:
-					select_list.append(select_idx)
-					select.append((col, None))
-					select_idx += 1
-					for col in cols:
-						select_list.append(select_idx)
-						select.append((col, None))
-						select_idx += 1
-			for col in cols:
-				select_list.append(select_idx)
-				select.append((col, None))
-				select_idx += 1
-				for col in cols:
-					select_list.append(select_idx)
-					select.append((col, None))
-					select_idx += 1
-					for col in cols:
-						select_list.append(select_idx)
-						select.append((col, None))
-						select_idx += 1
-				for col in cols:
-					select_list.append(select_idx)
-					select.append((col, None))
-					select_idx += 1
-					for col in cols:
-						select_list.append(select_idx)
-						select.append((col, None))
-						select_idx += 1
 					for col in cols:
 						select_list.append(select_idx)
 						select.append((col, None))
@@ -220,8 +147,6 @@ class Query:
 		ret = []
 		col_idx = 1
 		for col, alias in select:
-			try:
-				sql, params = self.compile(col)
 			try:
 				sql, params = self.compile(col)
 

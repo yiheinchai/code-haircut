@@ -8,7 +8,6 @@ class CursorDebugWrapper:
 		def execute(self=<django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>, sql='SELECT "polls_question"."id", "polls_question"."question_text", "polls_question"."pub_date" FROM "polls_question" LIMIT 1', params=()):
 		return self._execute_with_wrappers(
 		sql, params, many=False, executor=self._execute
-		return self._execute_with_wrappers(
 
 
 	def debug_sql(self=<django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>, sql='SELECT "polls_question"."id", "polls_question"."question_text", "polls_question"."pub_date" FROM "polls_question" LIMIT 1', params=(), use_last_executed_query=True, many=False):
@@ -25,7 +24,6 @@ class CursorDebugWrapper:
 		"sql": "%s times: %s" % (times, sql) if many else sql,
 		"time": "%.3f" % duration,
 		{
-		self.db.queries_log.append(
 		logger.debug(
 		"(%.3f) %s; args=%s; alias=%s",
 		duration,
@@ -37,7 +35,6 @@ class CursorDebugWrapper:
 		"params": params,
 		"alias": self.db.alias,
 		extra={
-		logger.debug(
 
 
 	def _execute_with_wrappers(self=<django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>, sql='SELECT "polls_question"."id", "polls_question"."question_text", "polls_question"."pub_date" FROM "polls_question" LIMIT 1', params=(), many=False, executor=<bound method CursorWrapper._execute of <django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>>):
@@ -48,7 +45,6 @@ class CursorDebugWrapper:
 		self.connection.features.empty_fetchmany_value,
 		self.col_count if self.has_extra_select else None,
 		chunk_size,
-		result = cursor_iter(
 		return list(result)
 
 
@@ -56,15 +52,9 @@ class CursorDebugWrapper:
 		self.db.validate_no_broken_transaction()
 
 
-	def __getattr__(self=<django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>, attr='fetchmany'):
+	def __getattr__(self=<django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>, attr='close'):
 		cursor_attr = getattr(self.cursor, attr)
 		if attr in CursorWrapper.WRAP_ERROR_ATTRS:
 			return self.db.wrap_database_errors(cursor_attr)
-		def __getattr__(self=<django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>, attr='fetchmany'):
-		cursor_attr = getattr(self.cursor, attr)
-		if attr in CursorWrapper.WRAP_ERROR_ATTRS:
-			return self.db.wrap_database_errors(cursor_attr)
-		def __getattr__(self=<django.db.backends.utils.CursorDebugWrapper object at 0x107d1f090>, attr='close'):
-		cursor_attr = getattr(self.cursor, attr)
 		return cursor_attr
 

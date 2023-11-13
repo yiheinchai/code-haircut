@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['ftransform', 'FTransform', 'split_meta_data_and_code_for_line', 'split_meta_data_and_code', 'RegexNoMatchError',
-           'Line', 'StackItem', 'BlockStackItem', 'TraceCompiler']
+           'Line', 'StackItem', 'BlockStackItem', 'LineDictOrdered', 'TraceCompiler']
 
 # %% haircut.ipynb 2
 import pandas as pd
@@ -77,16 +77,26 @@ class BlockStackItem(StackItem):
         return self._lines
 
     @property
-    def line_indices(self):
-        return [line.line_no for line in self._lines]
-
-    @property
     def line_codes(self):
         return [line.line_code for line in self._lines]
 
-    def __repr__(self):
-        return self._lines[0].line_code + "\n".join(['\t' + line.line_code for line in self._lines[1:]])
+class LineDictOrdered:
+    def __init__(self) -> None:
+        self._lines = {}
 
+    def add_line(self, line: Line):
+        line_no = line.line_no
+        line_code = line.line_code
+
+        self._lines[line_no] = line_code
+
+    def add_line_many(self, lines: list[Line]):
+        for line in lines:
+            self.add_line(line)
+
+    def to_list(self):
+        return list(self._lines.values())
+    
 
 class TraceCompiler:
     classes= {}
@@ -182,48 +192,47 @@ class TraceCompiler:
             raise
 
     def _add_line(self, class_name, func_name, line):
-        self.classes[class_name].setdefault(func_name, []).append(line)
+        self.classes[class_name].setdefault(func_name, LineDictOrdered()).add_line(line)
 
     def _add_line_many(self, class_name, func_name, lines):
-        self.classes[class_name].setdefault(func_name, []).extend(lines)
+        self.classes[class_name].setdefault(func_name, LineDictOrdered()).add_line_many(lines)
 
-    def _compile_func_calls(self, code_snippet):
+    def _compile_func_calls(self, line):
 
         # Skip lambda functions TODO: might want to handle this better in the future
-        if "genexpr" in code_snippet or "listcomp" in code_snippet or "lambda" in code_snippet:
+        if "genexpr" in line.line_code or "listcomp" in line.line_code or "lambda" in line.line_code:
             self._stack.append(StackItem(None, 'lambda', skip=True))
             return
 
         # Skip decorators TODO:might want to handle this better in the future
-        if "=> inner(" in code_snippet:
+        if "=> inner(" in line.line_code:
             self._stack.append(StackItem(None, 'lambda', skip=True))
             return
 
-        func_name = self._get_func_name(code_snippet)
-        class_name = self._get_class_name(code_snippet)
+        func_name = self._get_func_name(line.line_code)
+        class_name = self._get_class_name(line.line_code)
+        line = Line(line.line_no, f"def {line.line_code[3:]}:")
 
         self._stack.append(StackItem(class_name, func_name))
 
         if class_name not in self.classes:
             self.classes[class_name] = {}
         
-        self._add_line(class_name, func_name, f"def {code_snippet[3:]}:")
+        self._add_line(class_name, func_name, line)
 
-    def _compile_line_in_block(self, code_snippet, line_no):
+    def _compile_line_in_block(self, line: Line):
         # For lines that are in a block within the function OR in a nested block
         if self._check_is_in_block():
-            line = Line(line_no, code_snippet)
             line.tab()
             self._stack[-1].add_line(line)
             return
         
-        code_snippet = code_snippet.strip()
         class_name = self._stack[-1].class_name
         func_name = self._stack[-1].func_name
 
-        self._add_line(class_name, func_name, code_snippet)
+        self._add_line(class_name, func_name, line)
 
-    def _compile_func_return(self, code_snippet):
+    def _compile_func_return(self):
         self._stack.pop()
 
     def _compile_block_return(self):
@@ -243,46 +252,46 @@ class TraceCompiler:
             self._compile_block_return()
         
     
-        self._add_line_many(block.class_name, block.func_name, block.line_codes)
+        self._add_line_many(block.class_name, block.func_name, block.lines)
 
-    def _compile_block_entry(self, code_snippet, line_no):
+    def _compile_block_entry(self, line: Line):
         parent_block = self._stack[-1]
 
         parent_class_name, parent_func_name = parent_block.class_name, parent_block.func_name
-        block_type = code_snippet.split(" ")[0]
+        block_type = line.line_code.split(" ")[0]
 
-        self._stack.append(BlockStackItem(parent_class_name, parent_func_name, block_type, Line(line_no, code_snippet)))
+        self._stack.append(BlockStackItem(parent_class_name, parent_func_name, block_type, line))
 
-    def _compile_line(self, code_snippet, line_no):
+    def _compile_line(self, line: Line):
         if self._check_is_in_block() and self._check_line_jump():
             # TODO: if -> nested if -> nested else - the code in nested else will not be added to top level if (as it is considered a line jump)
             self._compile_block_return()
             # Do not return has we have not yet processed the current line
             # Just only know that current line is no longer in block
 
-        if code_snippet.startswith("<="):
-            self._compile_func_return(code_snippet)
+        if line.line_code.startswith("<="):
+            self._compile_func_return()
             return
 
-        if code_snippet.startswith("=>"):
-            self._compile_func_calls(code_snippet)
+        if line.line_code.startswith("=>"):
+            self._compile_func_calls(line)
             return
 
         # Skip functions marked to skip, eg. lambda functions
         if self._stack[-1].skip:
             return
 
-        if code_snippet.startswith(("if", "elif", "else", "for", "with", 'while', 'try', 'except', 'finally')) and code_snippet.endswith(":"):
-            self._compile_block_entry(code_snippet, line_no)
+        if line.line_code.startswith(("if", "elif", "else", "for", "with", 'while', 'try', 'except', 'finally')) and line.line_code.endswith(":"):
+            self._compile_block_entry(line)
             return
         
-        self._compile_line_in_block(code_snippet, line_no)
+        self._compile_line_in_block(line)
 
-    def _log_line(self, code_snippet, line_no):
+    def _log_line(self, line):
         "History of last 5 lines processed. Useful to track back to find more info abt called function"
         if len(self._line_log) > 10:
                 self._line_log = self._line_log[-10:]
-        self._line_log.append(Line(line_no, code_snippet))
+        self._line_log.append(line)
 
     def _check_line_jump(self):
         return self._line_log[-1].line_no - self._line_log[-2].line_no > 1
@@ -300,8 +309,10 @@ class TraceCompiler:
             indent = int(row["indent"])
             code_snippet = row["code"].strip()
 
-            self._log_line(code_snippet, line_no)
-            self._compile_line(code_snippet, line_no)
+            line = Line(line_no, code_snippet)
+
+            self._log_line(line)
+            self._compile_line(line)
 
     def _build_class(self, class_name):
         return f"class {class_name}:"
@@ -317,6 +328,7 @@ class TraceCompiler:
 
         code.append(self._build_class(class_name))
         for func_code in func_dict.values():
+            func_code = func_code.to_list()
             code.append(self._build_func(func_code))
             code.append('\n')
 

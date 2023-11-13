@@ -39,25 +39,13 @@ class SQLCompiler:
 		result = []
 
 
-	def compile(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, node=<django.db.models.expressions.Col object at 0x107660910>):
-		vendor_impl = getattr(node, "as_" + self.connection.vendor, None)
-		sql, params = node.as_sql(self, self.connection)
-		def compile(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, node=<django.db.models.expressions.Col object at 0x107660990>):
-		vendor_impl = getattr(node, "as_" + self.connection.vendor, None)
-		sql, params = node.as_sql(self, self.connection)
-		def compile(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, node=<django.db.models.expressions.Col object at 0x107660a50>):
+	def compile(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, node=<django.db.models.sql.where.WhereNode object at 0x107d1ecd0>):
 		vendor_impl = getattr(node, "as_" + self.connection.vendor, None)
 		sql, params = node.as_sql(self, self.connection)
 		self.col_count = len(self.select)
-		def compile(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, node=<django.db.models.sql.datastructures.BaseTable object at 0x10766ded0>):
-		vendor_impl = getattr(node, "as_" + self.connection.vendor, None)
-		sql, params = node.as_sql(self, self.connection)
 		result.append(clause_sql)
 		params.extend(clause_params)
 		return result, params
-		def compile(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, node=<django.db.models.sql.where.WhereNode object at 0x107d1ecd0>):
-		vendor_impl = getattr(node, "as_" + self.connection.vendor, None)
-		sql, params = node.as_sql(self, self.connection)
 		! as_sql: (<class 'django.core.exceptions.FullResultSet'>, FullResultSet(), <traceback object at 0x107d1f300>)
 		except FullResultSet:
 			where, w_params = "", []
@@ -67,10 +55,6 @@ class SQLCompiler:
 		result = ["SELECT"]
 		params = []
 		out_cols = []
-		params.extend(s_params)
-		out_cols.append(s_sql)
-		params.extend(s_params)
-		out_cols.append(s_sql)
 		params.extend(s_params)
 		out_cols.append(s_sql)
 		result += [", ".join(out_cols)]
@@ -83,24 +67,8 @@ class SQLCompiler:
 	def quote_name_unless_alias(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, name='polls_question'):
 		(name in self.query.alias_map and name not in self.query.table_map)
 		or name in self.query.extra_select
-		def quote_name_unless_alias(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, name='id'):
-		(name in self.query.alias_map and name not in self.query.table_map)
-		or name in self.query.extra_select
 		return sql, []
 		return sql, params
-		def quote_name_unless_alias(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, name='polls_question'):
-		def quote_name_unless_alias(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, name='question_text'):
-		(name in self.query.alias_map and name not in self.query.table_map)
-		or name in self.query.extra_select
-		return sql, []
-		return sql, params
-		def quote_name_unless_alias(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, name='polls_question'):
-		def quote_name_unless_alias(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, name='pub_date'):
-		(name in self.query.alias_map and name not in self.query.table_map)
-		or name in self.query.extra_select
-		return sql, []
-		return sql, params
-		def quote_name_unless_alias(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, name='polls_question'):
 		return base_sql + alias_str, []
 
 
@@ -112,7 +80,6 @@ class SQLCompiler:
 	def _order_by_pairs(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>):
 		self.where, self.having, self.qualify = self.query.where.split_having_qualify(
 		must_group_by=self.query.group_by is not None
-		self.where, self.having, self.qualify = self.query.where.split_having_qualify(
 
 
 	def get_extra_select(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, order_by=[], select=[(<django.db.models.expressions.Col object at 0x107660910>, ('"polls_question"."id"', []), None), (<django.db.models.expressions.Col object at 0x107660990>, ('"polls_question"."question_text"', []), None), (<django.db.models.expressions.Col object at 0x107660a50>, ('"polls_question"."pub_date"', []), None)]):
@@ -151,29 +118,7 @@ class SQLCompiler:
 
 	def get_converters(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, expressions=[<django.db.models.expressions.Col object at 0x107660910>, <django.db.models.expressions.Col object at 0x107660990>, <django.db.models.expressions.Col object at 0x107660a50>]):
 		converters = {}
-		for i, expression in enumerate(expressions):
-			if expression:
-				backend_converters = self.connection.ops.get_db_converters(expression)
-			if expression:
-				backend_converters = self.connection.ops.get_db_converters(expression)
-		field_converters = expression.get_db_converters(self.connection)
-		if backend_converters or field_converters:
 			for i, expression in enumerate(expressions):
-				if expression:
-					backend_converters = self.connection.ops.get_db_converters(expression)
-			for i, expression in enumerate(expressions):
-				if expression:
-					backend_converters = self.connection.ops.get_db_converters(expression)
-				if expression:
-					backend_converters = self.connection.ops.get_db_converters(expression)
-		field_converters = expression.get_db_converters(self.connection)
-		if backend_converters or field_converters:
-			for i, expression in enumerate(expressions):
-				if expression:
-					backend_converters = self.connection.ops.get_db_converters(expression)
-			for i, expression in enumerate(expressions):
-				if expression:
-					backend_converters = self.connection.ops.get_db_converters(expression)
 				if expression:
 					backend_converters = self.connection.ops.get_db_converters(expression)
 		field_converters = expression.get_db_converters(self.connection)
@@ -190,13 +135,6 @@ class SQLCompiler:
 				value = row[pos]
 				for converter in convs:
 					value = converter(value, expression, connection)
-			for pos, (convs, expression) in converters:
-				value = row[pos]
-				for converter in convs:
-					value = converter(value, expression, connection)
-				for converter in convs:
-					value = converter(value, expression, connection)
 		row[pos] = value
-		yield row
 		def apply_converters(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, rows=<itertools.chain object at 0x1076596c0>, converters=[(2, ([<bound method DatabaseOperations.convert_datetimefield_value of ...>], <django.db.models.expressions.Col object at 0x107660a50>))]):
 

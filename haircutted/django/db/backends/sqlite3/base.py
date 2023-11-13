@@ -11,7 +11,6 @@ class DatabaseWrapper:
 	def close_if_health_check_failed(self=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>):
 		self.connection is None
 		or not self.health_check_enabled
-		self.connection is None
 		return
 
 
