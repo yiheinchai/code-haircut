@@ -3,13 +3,7 @@ class Col:
 		alias, column = self.alias, self.target.column
 		identifiers = (alias, column) if alias else (column,)
 		sql = ".".join(map(compiler.quote_name_unless_alias, identifiers))
-		sql, params = col.select_format(self, sql, params)
-		ret.append((col, (sql, params), alias))
-		for col, alias in select:
-			try:
-				sql, params = self.compile(col)
-		return ret, klass_info, annotations
-		order_by = self.get_order_by()
+		return sql, []
 
 
 	def select_format(self=<django.db.models.expressions.Col object at 0x107660a50>, compiler=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, sql='"polls_question"."pub_date"', params=[]):

@@ -77,6 +77,10 @@ class BlockStackItem(StackItem):
         return self._lines
 
     @property
+    def line_nos(self):
+        return [line.line_no for line in self._lines]
+
+    @property
     def line_codes(self):
         return [line.line_code for line in self._lines]
 
@@ -96,6 +100,10 @@ class LineDictOrdered:
 
     def to_list(self):
         return list(self._lines.values())
+
+    @property
+    def lines(self):
+        return self._lines
     
 
 class TraceCompiler:
@@ -269,7 +277,17 @@ class TraceCompiler:
             # Do not return has we have not yet processed the current line
             # Just only know that current line is no longer in block
 
+        if self._check_is_in_block() and self._check_line_in_block(line.line_no):
+            # this is to deal with return statements that are in a block that span multiple lines
+            # the multi-line return statement will be read back on forth, ignore when it reads back
+            self._line_log.pop()
+            return
+
         if line.line_code.startswith("<="):
+            # Before closing the function, make sure all unclosed blocks are closed
+            if self._check_is_in_block():
+                self._compile_block_return()
+
             self._compile_func_return()
             return
 
@@ -301,6 +319,9 @@ class TraceCompiler:
             return False
 
         return isinstance(self._stack[-1], BlockStackItem)
+
+    def _check_line_in_block(self, line_no):
+        return line_no in self._stack[-1].line_nos
 
     def compile(self):
         for index, row in self._df.iterrows():

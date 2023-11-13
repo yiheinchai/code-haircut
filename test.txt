@@ -1,8 +1,11 @@
-[...]jango/django/db/models/sql/query.py:2098  call            => set_limits(self=<django.db.models.sql.query.Query object at 0x107704590>, low=0, high=1)
-[...]jango/django/db/models/sql/query.py:2107  line               if high is not None:
-[...]jango/django/db/models/sql/query.py:2108  line               if self.high_mark is not None:
-[...]jango/django/db/models/sql/query.py:2111  line               self.high_mark = self.low_mark + high
-[...]jango/django/db/models/sql/query.py:2112  line               if low is not None:
-[...]jango/django/db/models/sql/query.py:2113  line               if self.high_mark is not None:
-[...]jango/django/db/models/sql/query.py:2114  line               self.low_mark = min(self.high_mark, self.low_mark + low)
-[...]jango/django/db/models/sql/query.py:2118  line               if self.low_mark == self.high_mark:
+[...]ngo/django/db/models/expressions.py:1194  call                        => get_db_converters(self=<django.db.models.expressions.Col object at 0x107660910>, connection=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>)
+[...]ngo/django/db/models/expressions.py:1195  line                           if self.target == self.output_field:
+[...]django/db/models/fields/__init__.py:672   call                           => __eq__(self=<django.db.models.fields.BigAutoField object at 0x10732fb10>, other=<django.db.models.fields.BigAutoField object at 0x10732fb10>)
+[...]django/db/models/fields/__init__.py:674   line                              if isinstance(other, Field):
+[...]django/db/models/fields/__init__.py:675   line                              return self.creation_counter == other.creation_counter and getattr(
+[...]django/db/models/fields/__init__.py:676   line                              self, "model", None
+[...]django/db/models/fields/__init__.py:675   line                              return self.creation_counter == other.creation_counter and getattr(
+[...]django/db/models/fields/__init__.py:677   line                              ) == getattr(other, "model", None)
+[...]django/db/models/fields/__init__.py:675   line                              return self.creation_counter == other.creation_counter and getattr(
+[...]django/db/models/fields/__init__.py:675   return                         <= __eq__: True
+[...]ngo/django/db/models/expressions.py:1196  line                           return self.output_field.get_db_converters(connection)

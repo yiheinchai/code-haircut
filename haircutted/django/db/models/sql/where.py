@@ -11,16 +11,16 @@ class WhereNode:
 
 
 	def split_having_qualify(self=<django.db.models.sql.where.WhereNode object at 0x107d1ecd0>, negated=False, must_group_by=False):
+		if not self.contains_aggregate and not self.contains_over_clause:
+			return self, None, None
 
 
 	def contains_aggregate(self=<django.db.models.sql.where.WhereNode object at 0x107d1ecd0>):
 		return self._contains_aggregate(self)
-		return res
 
 
 	def contains_over_clause(self=<django.db.models.sql.where.WhereNode object at 0x107d1ecd0>):
 		return self._contains_over_clause(self)
-		return res
 
 
 	def as_sql(self=<django.db.models.sql.where.WhereNode object at 0x107d1ecd0>, compiler=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, connection=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>):
@@ -30,5 +30,6 @@ class WhereNode:
 			full_needed, empty_needed = len(self.children), 1
 		conn = " %s " % self.connector
 		sql_string = conn.join(result)
-		! compile: (<class 'django.core.exceptions.FullResultSet'>, FullResultSet(), <traceback object at 0x107d1f380>)
+		if not sql_string:
+			raise FullResultSet
 

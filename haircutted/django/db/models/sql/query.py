@@ -44,38 +44,27 @@ class Query:
 		if low is not None:
 			if self.high_mark is not None:
 				self.low_mark = min(self.high_mark, self.low_mark + low)
-		qs._fetch_all()
 
 
 	def get_compiler(self=<django.db.models.sql.query.Query object at 0x107704590>, using='default', connection=None, elide_empty=True):
+		if using:
+			connection = connections[using]
+		return connection.ops.compiler(self.compiler)(
+		self, connection, using, elide_empty
 
 
 	def get_initial_alias(self=<django.db.models.sql.query.Query object at 0x107704590>):
 		elif self.model:
 			alias = self.join(self.base_table_class(self.get_meta().db_table, None))
-			self.select, self.klass_info, self.annotation_col_map = self.get_select(
-			with_col_aliases=with_col_aliases,
+		return alias
 		if self.alias_map:
 			alias = self.base_table
-			seen_models = {None: start_alias}
-		for field in opts.concrete_fields:
-			model = field.model._meta.concrete_model
-		if model == opts.model:
-			model = None
-		from_parent
-		if (
-		alias = self.query.join_parent_model(opts, model, start_alias, seen_models)
+		self.ref_alias(alias)
 
 
 	def get_meta(self=<django.db.models.sql.query.Query object at 0x107704590>):
-		return alias
-		start_alias = start_alias or self.query.get_initial_alias()
-		ordering = []
-		if self.query.standard_ordering:
-			default_order, _ = ORDER_DIR["ASC"]
-		selected_exprs = {}
-		return result
-		return result, params
+		if self.model:
+			return self.model._meta
 
 
 	def join(self=<django.db.models.sql.query.Query object at 0x107704590>, join=<django.db.models.sql.datastructures.BaseTable object at 0x10766ded0>, reuse=None):
@@ -98,23 +87,19 @@ class Query:
 
 
 	def extra_select(self=<django.db.models.sql.query.Query object at 0x107704590>):
-		assert not (self.query.select and self.query.default_cols)
-		select_mask = self.query.get_select_mask()
-		self.query.external_aliases.get(name)
-		or name in self.query.extra_select
-		r = self.connection.ops.quote_name(name)
-		self.quote_cache[name] = r
-		return r
+		if not self.extra:
+			return {}
 
 
 	def get_select_mask(self=<django.db.models.sql.query.Query object at 0x107704590>):
 		field_names, defer = self.deferred_loading
-		if self.query.default_cols:
-			cols = self.get_default_columns(select_mask)
+		if not field_names:
+			return {}
 
 
 	def base_table(self=<django.db.models.sql.query.Query object at 0x107704590>):
-		return res
+		for alias in self.alias_map:
+			return alias
 
 
 	def ref_alias(self=<django.db.models.sql.query.Query object at 0x107704590>, alias='polls_question'):
@@ -122,33 +107,13 @@ class Query:
 
 
 	def join_parent_model(self=<django.db.models.sql.query.Query object at 0x107704590>, opts=<django.db.models.options.Options object at 0x107275390>, model=None, alias='polls_question', seen={None: 'polls_question'}):
-		column = field.get_col(alias)
-		result.append(column)
-		for field in opts.concrete_fields:
-			model = field.model._meta.concrete_model
-		if model == opts.model:
-			model = None
-		from_parent
-		if (
-		alias = self.query.join_parent_model(opts, model, start_alias, seen_models)
-		return result
-		if cols:
-			select_list = []
-					for col in cols:
-						select_list.append(select_idx)
-						select.append((col, None))
-						select_idx += 1
-		"model": self.query.model,
-		"select_fields": select_list,
-		klass_info = {
+		if model in seen:
+			return seen[model]
 
 
 	def annotation_select(self=<django.db.models.sql.query.Query object at 0x107704590>):
-		ret = []
-		col_idx = 1
-		for col, alias in select:
-			try:
-				sql, params = self.compile(col)
+		elif not self.annotations:
+			return {}
 
 
 	def is_sliced(self=<django.db.models.sql.query.Query object at 0x107704590>):

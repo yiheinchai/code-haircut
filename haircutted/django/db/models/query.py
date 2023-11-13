@@ -21,6 +21,7 @@ class QuerySet:
 		isinstance(k, slice)
 		qs = self._chain()
 		qs.query.set_limits(k, k + 1)
+		qs._fetch_all()
 
 
 	def _chain(self=<django.db.models.query.QuerySet object at 0x107c7a350>):
@@ -66,5 +67,22 @@ class ModelIterable:
 		queryset = self.queryset
 		db = queryset.db
 		compiler = queryset.query.get_compiler(using=db)
+		results = compiler.execute_sql(
+		chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+		compiler.select,
+		compiler.klass_info,
+		compiler.annotation_col_map,
+		select, klass_info, annotation_col_map = (
+		model_cls = klass_info["model"]
+		select_fields = klass_info["select_fields"]
+		model_fields_start, model_fields_end = select_fields[0], select_fields[-1] + 1
+		init_list = [
+		f[0].target.attname for f in select[model_fields_start:model_fields_end]
+		related_populators = get_related_populators(klass_info, select, db)
+		known_related_objects = [
+		for field, related_objs in queryset._known_related_objects.items()
+		for row in compiler.results_iter(results):
+			obj = model_cls.from_db(
+			db, init_list, row[model_fields_start:model_fields_end]
 		def __iter__(self=<django.db.models.query.ModelIterable object at 0x1073ae450>):
 

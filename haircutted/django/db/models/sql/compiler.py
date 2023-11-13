@@ -13,40 +13,32 @@ class SQLCompiler:
 
 	def execute_sql(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, result_type='multi', chunked_fetch=False, chunk_size=100):
 		result_type = result_type or NO_RESULTS
+		try:
+			sql, params = self.as_sql()
+		cursor = self.connection.cursor()
+		try:
+			cursor.execute(sql, params)
+		result = cursor_iter(
+		cursor,
+		self.connection.features.empty_fetchmany_value,
+		self.col_count if self.has_extra_select else None,
+		chunk_size,
+		return list(result)
 
 
 	def as_sql(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, with_limits=True, with_col_aliases=False):
 		refcounts_before = self.query.alias_refcount.copy()
-
-
-	def pre_sql_setup(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, with_col_aliases=False):
-		self.setup_query(with_col_aliases=with_col_aliases)
-
-
-	def setup_query(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, with_col_aliases=False):
-		if all(self.query.alias_refcount[a] == 0 for a in self.query.alias_map):
-			self.query.get_initial_alias()
-
-
-	def get_select(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, with_col_aliases=False):
-		select = []
-		klass_info = None
-		annotations = {}
-		select_idx = 0
-
-
-	def get_default_columns(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, select_mask={}, start_alias=None, opts=None, from_parent=None):
-		result = []
-
-
-	def compile(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, node=<django.db.models.sql.where.WhereNode object at 0x107d1ecd0>):
-		vendor_impl = getattr(node, "as_" + self.connection.vendor, None)
-		sql, params = node.as_sql(self, self.connection)
-		self.col_count = len(self.select)
-		result.append(clause_sql)
-		params.extend(clause_params)
-		return result, params
-		! as_sql: (<class 'django.core.exceptions.FullResultSet'>, FullResultSet(), <traceback object at 0x107d1f300>)
+		try:
+			combinator = self.query.combinator
+			extra_select, order_by, group_by = self.pre_sql_setup(
+			with_col_aliases=with_col_aliases or bool(combinator),
+		for_update_part = None
+		with_limit_offset = with_limits and self.query.is_sliced
+		combinator = self.query.combinator
+		features = self.connection.features
+		distinct_fields, distinct_params = self.get_distinct()
+		from_, f_params = self.get_from_clause()
+		self.compile(self.where) if self.where is not None else ("", [])
 		except FullResultSet:
 			where, w_params = "", []
 		if self.having is not None
@@ -62,24 +54,107 @@ class SQLCompiler:
 			result += ["FROM", *from_]
 		params.extend(f_params)
 		grouping = []
+		if with_limit_offset:
+		result.append(
+			self.connection.ops.limit_offset_sql(
+			self.query.low_mark, self.query.high_mark
+		return " ".join(result), tuple(params)
+		self.query.reset_refcounts(refcounts_before)
+
+
+	def pre_sql_setup(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, with_col_aliases=False):
+		self.setup_query(with_col_aliases=with_col_aliases)
+		order_by = self.get_order_by()
+		self.where, self.having, self.qualify = self.query.where.split_having_qualify(
+		must_group_by=self.query.group_by is not None
+		extra_select = self.get_extra_select(order_by, self.select)
+		self.has_extra_select = bool(extra_select)
+		group_by = self.get_group_by(self.select + extra_select, order_by)
+		return extra_select, order_by, group_by
+
+
+	def setup_query(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, with_col_aliases=False):
+		if all(self.query.alias_refcount[a] == 0 for a in self.query.alias_map):
+			self.query.get_initial_alias()
+			self.select, self.klass_info, self.annotation_col_map = self.get_select(
+			with_col_aliases=with_col_aliases,
+			self.col_count = len(self.select)
+
+
+	def get_select(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, with_col_aliases=False):
+		select = []
+		klass_info = None
+		annotations = {}
+		select_idx = 0
+		for alias, (sql, params) in self.query.extra_select.items():
+			assert not (self.query.select and self.query.default_cols)
+			select_mask = self.query.get_select_mask()
+			if self.query.default_cols:
+				cols = self.get_default_columns(select_mask)
+				if cols:
+					select_list = []
+					for col in cols:
+						select_list.append(select_idx)
+						select.append((col, None))
+						select_idx += 1
+		"model": self.query.model,
+		"select_fields": select_list,
+		klass_info = {
+		ret = []
+		col_idx = 1
+		for col, alias in select:
+			try:
+				sql, params = self.compile(col)
+				sql, params = col.select_format(self, sql, params)
+		ret.append((col, (sql, params), alias))
+		return ret, klass_info, annotations
+
+
+	def get_default_columns(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, select_mask={}, start_alias=None, opts=None, from_parent=None):
+		result = []
+		start_alias = start_alias or self.query.get_initial_alias()
+		seen_models = {None: start_alias}
+		for field in opts.concrete_fields:
+			model = field.model._meta.concrete_model
+		if model == opts.model:
+			model = None
+		from_parent
+		if (
+		alias = self.query.join_parent_model(opts, model, start_alias, seen_models)
+		column = field.get_col(alias)
+		result.append(column)
+		return result
+
+
+	def compile(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, node=<django.db.models.sql.where.WhereNode object at 0x107d1ecd0>):
+		vendor_impl = getattr(node, "as_" + self.connection.vendor, None)
+		sql, params = node.as_sql(self, self.connection)
+		return sql, params
 
 
 	def quote_name_unless_alias(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, name='polls_question'):
 		(name in self.query.alias_map and name not in self.query.table_map)
 		or name in self.query.extra_select
-		return sql, []
-		return sql, params
-		return base_sql + alias_str, []
+		self.query.external_aliases.get(name)
+		r = self.connection.ops.quote_name(name)
+		self.quote_cache[name] = r
+		return r
+		if name in self.quote_cache:
+			return self.quote_cache[name]
 
 
 	def get_order_by(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>):
 		result = []
 		seen = set()
+		return result
 
 
 	def _order_by_pairs(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>):
-		self.where, self.having, self.qualify = self.query.where.split_having_qualify(
-		must_group_by=self.query.group_by is not None
+		elif (meta := self.query.get_meta()) and meta.ordering:
+			ordering = []
+			if self.query.standard_ordering:
+				default_order, _ = ORDER_DIR["ASC"]
+		selected_exprs = {}
 
 
 	def get_extra_select(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, order_by=[], select=[(<django.db.models.expressions.Col object at 0x107660910>, ('"polls_question"."id"', []), None), (<django.db.models.expressions.Col object at 0x107660990>, ('"polls_question"."question_text"', []), None), (<django.db.models.expressions.Col object at 0x107660a50>, ('"polls_question"."pub_date"', []), None)]):
@@ -88,14 +163,15 @@ class SQLCompiler:
 
 
 	def get_group_by(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, select=[(<django.db.models.expressions.Col object at 0x107660910>, ('"polls_question"."id"', []), None), (<django.db.models.expressions.Col object at 0x107660990>, ('"polls_question"."question_text"', []), None), (<django.db.models.expressions.Col object at 0x107660a50>, ('"polls_question"."pub_date"', []), None)], order_by=[]):
-		return extra_select, order_by, group_by
+		if self.query.group_by is None:
+			return []
 
 
 	def get_distinct(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>):
 		result = []
 		params = []
 		opts = self.query.get_meta()
-		from_, f_params = self.get_from_clause()
+		return result, params
 
 
 	def get_from_clause(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>):
@@ -104,7 +180,9 @@ class SQLCompiler:
 		try:
 			from_clause = self.query.alias_map[alias]
 		clause_sql, clause_params = self.compile(from_clause)
-		self.compile(self.where) if self.where is not None else ("", [])
+		result.append(clause_sql)
+		params.extend(clause_params)
+		return result, params
 
 
 	def results_iter(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, results=[[(1, 'are you gay?', datetime(2023, 11, 8, 23, 52, 21, 573273, tzinfo=None, fold=0))]], tuple_expected=False, chunked_fetch=False, chunk_size=100):

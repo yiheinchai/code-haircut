@@ -9,18 +9,16 @@ class DatabaseOperations:
 
 	def limit_offset_sql(self=<django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>, low_mark=0, high_mark=1):
 		limit, offset = self._get_limit_offset_params(low_mark, high_mark)
-		result.append(
-		return " ".join(result), tuple(params)
-		self.query.reset_refcounts(refcounts_before)
-		cursor = self.connection.cursor()
-
-
-	def _get_limit_offset_params(self=<django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>, low_mark=0, high_mark=1):
-		offset = low_mark or 0
 		return " ".join(
 		("LIMIT %d" % limit) if limit else None,
 		("OFFSET %d" % offset) if offset else None,
 		for sql in (
+
+
+	def _get_limit_offset_params(self=<django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>, low_mark=0, high_mark=1):
+		offset = low_mark or 0
+		if high_mark is not None:
+			return (high_mark - offset), offset
 
 
 	def last_executed_query(self=<django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>, cursor=<django.db.backends.sqlite3.base.SQLiteCursorWrapper object at 0x107d0b920>, sql='SELECT "polls_question"."id", "polls_question"."question_text", "polls_question"."pub_date" FROM "polls_question" LIMIT 1', params=()):

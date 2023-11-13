@@ -6,6 +6,7 @@ class DatabaseWrapper:
 	def _cursor(self=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>, name=None):
 		self.close_if_health_check_failed()
 		self.ensure_connection()
+		return self._prepare_cursor(self.create_cursor(name))
 
 
 	def close_if_health_check_failed(self=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>):
@@ -23,11 +24,11 @@ class DatabaseWrapper:
 
 	def _prepare_cursor(self=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>, cursor=<django.db.backends.sqlite3.base.SQLiteCursorWrapper object at 0x107d0b920>):
 		self.validate_thread_sharing()
+		wrapped_cursor = self.make_debug_cursor(cursor)
+		return wrapped_cursor
 
 
 	def validate_thread_sharing(self=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>):
-		wrapped_cursor = self.make_debug_cursor(cursor)
-		return wrapped_cursor
 
 
 	def allow_thread_sharing(self=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>):
@@ -44,7 +45,6 @@ class DatabaseWrapper:
 
 
 	def validate_no_broken_transaction(self=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>):
-		return self.cursor.execute(sql, params)
 
 class SQLiteCursorWrapper:
 	def execute(self=<django.db.backends.sqlite3.base.SQLiteCursorWrapper object at 0x107d0b920>, query='SELECT "polls_question"."id", "polls_question"."question_text", "polls_question"."pub_date" FROM "polls_question" LIMIT 1', params=()):

@@ -8,5 +8,5 @@ class BaseTable:
 		"" if self.table_alias == self.table_name else (" %s" % self.table_alias)
 		alias_str = (
 		base_sql = compiler.quote_name_unless_alias(self.table_name)
-		return sql, params
+		return base_sql + alias_str, []
 
