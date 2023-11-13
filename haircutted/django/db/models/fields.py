@@ -15,9 +15,9 @@ class BigAutoField:
 
 	def __eq__(self=<django.db.models.fields.BigAutoField object at 0x10732fb10>, other=<django.db.models.fields.BigAutoField object at 0x10732fb10>):
 		if isinstance(other, Field):
-		return self.creation_counter == other.creation_counter and getattr(
-		self, "model", None
-		return self.creation_counter == other.creation_counter and getattr(
+			return self.creation_counter == other.creation_counter and getattr(
+			self, "model", None
+			return self.creation_counter == other.creation_counter and getattr(
 		) == getattr(other, "model", None)
 		return self.creation_counter == other.creation_counter and getattr(
 
@@ -42,9 +42,9 @@ class CharField:
 
 	def __eq__(self=<django.db.models.fields.CharField object at 0x107275010>, other=<django.db.models.fields.CharField object at 0x107275010>):
 		if isinstance(other, Field):
-		return self.creation_counter == other.creation_counter and getattr(
-		self, "model", None
-		return self.creation_counter == other.creation_counter and getattr(
+			return self.creation_counter == other.creation_counter and getattr(
+			self, "model", None
+			return self.creation_counter == other.creation_counter and getattr(
 		) == getattr(other, "model", None)
 		return self.creation_counter == other.creation_counter and getattr(
 
@@ -69,9 +69,9 @@ class DateTimeField:
 
 	def __eq__(self=<django.db.models.fields.DateTimeField object at 0x1072751d0>, other=<django.db.models.fields.DateTimeField object at 0x1072751d0>):
 		if isinstance(other, Field):
-		return self.creation_counter == other.creation_counter and getattr(
-		self, "model", None
-		return self.creation_counter == other.creation_counter and getattr(
+			return self.creation_counter == other.creation_counter and getattr(
+			self, "model", None
+			return self.creation_counter == other.creation_counter and getattr(
 		) == getattr(other, "model", None)
 		return self.creation_counter == other.creation_counter and getattr(
 
