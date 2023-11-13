@@ -37,14 +37,15 @@ def split_meta_data_and_code_for_line(line):
 def split_meta_data_and_code(file):
     return [split_meta_data_and_code_for_line(line) for line in file]
 
-# %% haircut.ipynb 30
+# %% haircut.ipynb 33
 class RegexNoMatchError(Exception):
     pass
 
 class Line:
-    def __init__(self, line_no, line_code):
+    def __init__(self, line_no, line_code, line_type):
         self.line_no = line_no
         self.line_code = line_code
+        self.line_type = line_type
 
     def tab(self):
         self.line_code = '\t' + self.line_code
@@ -88,6 +89,9 @@ class LineDictOrdered:
     def __init__(self) -> None:
         self._lines = {}
 
+    def sort(self):
+        self._lines = dict(sorted(self.lines.items()))
+
     def add_line(self, line: Line):
         line_no = line.line_no
         line_code = line.line_code
@@ -99,6 +103,7 @@ class LineDictOrdered:
             self.add_line(line)
 
     def to_list(self):
+        self.sort()
         return list(self._lines.values())
 
     @property
@@ -125,19 +130,21 @@ class TraceCompiler:
 
 
         df = pd.DataFrame(FTransform(execution_trace.split('\n')).apply(split_meta_data_and_code).file, columns=['meta_data', 'code'])
+        # Remove empty row
+        df = df[:-1]
+
         df['indent'] = df['code'].apply(lambda x: len(x) - len(x.lstrip()))
         df['diff'] = df.indent.diff()
         df['line_no'] = df['meta_data'].apply(lambda x: x.split(':')[-1].split(' ')[0])
         df['file_path'] = df['meta_data'].apply(lambda x: x.split(':')[0])
+        df['line_type'] = df['meta_data'].apply(lambda meta:  list(filter(lambda x: x, meta.split(" ")))[-1]) 
 
-        # Remove empty row
-        df = df[:-1]
 
         df['line_no'] = df['line_no'].astype(int)
         df['execution_order'] = df.index
 
         # Rearrange columns
-        df = df[['execution_order', 'file_path', 'line_no', 'indent', 'diff', 'code']]
+        df = df[['execution_order', 'file_path', 'line_no', 'indent', 'diff', 'line_type' ,'code']]
 
         # #######################################
         # # Removing ifs that evaluate to false #
@@ -219,7 +226,7 @@ class TraceCompiler:
 
         func_name = self._get_func_name(line.line_code)
         class_name = self._get_class_name(line.line_code)
-        line = Line(line.line_no, f"def {line.line_code[3:]}:")
+        line = Line(line.line_no, f"def {line.line_code[3:]}:", line.line_type)
 
         self._stack.append(StackItem(class_name, func_name))
 
@@ -271,19 +278,8 @@ class TraceCompiler:
         self._stack.append(BlockStackItem(parent_class_name, parent_func_name, block_type, line))
 
     def _compile_line(self, line: Line):
-        if self._check_is_in_block() and self._check_line_jump():
-            # TODO: if -> nested if -> nested else - the code in nested else will not be added to top level if (as it is considered a line jump)
-            self._compile_block_return()
-            # Do not return has we have not yet processed the current line
-            # Just only know that current line is no longer in block
 
-        if self._check_is_in_block() and self._check_line_in_block(line.line_no):
-            # this is to deal with return statements that are in a block that span multiple lines
-            # the multi-line return statement will be read back on forth, ignore when it reads back
-            self._line_log.pop()
-            return
-
-        if line.line_code.startswith("<="):
+        if line.line_type == "return":
             # Before closing the function, make sure all unclosed blocks are closed
             if self._check_is_in_block():
                 self._compile_block_return()
@@ -291,19 +287,32 @@ class TraceCompiler:
             self._compile_func_return()
             return
 
-        if line.line_code.startswith("=>"):
+        if line.line_type == "call":
             self._compile_func_calls(line)
             return
 
-        # Skip functions marked to skip, eg. lambda functions
-        if self._stack[-1].skip:
-            return
+        if line.line_type == "line":
+            if self._check_is_in_block() and self._check_line_jump():
+                # TODO: if -> nested if -> nested else - the code in nested else will not be added to top level if (as it is considered a line jump)
+                self._compile_block_return()
+                # Do not return has we have not yet processed the current line
+                # Just only know that current line is no longer in block
 
-        if line.line_code.startswith(("if", "elif", "else", "for", "with", 'while', 'try', 'except', 'finally')) and line.line_code.endswith(":"):
-            self._compile_block_entry(line)
-            return
-        
-        self._compile_line_in_block(line)
+            if self._check_is_in_block() and self._check_line_in_block(line.line_no):
+                # this is to deal with return statements that are in a block that span multiple lines
+                # the multi-line return statement will be read back on forth, ignore when it reads back
+                self._line_log.pop()
+                return
+
+            # Skip functions marked to skip, eg. lambda functions
+            if self._stack[-1].skip:
+                return
+
+            if line.line_code.startswith(("if", "elif", "else", "for", "with", 'while', 'try', 'except', 'finally')) and line.line_code.endswith(":"):
+                self._compile_block_entry(line)
+                return
+            
+            self._compile_line_in_block(line)
 
     def _log_line(self, line):
         "History of last 5 lines processed. Useful to track back to find more info abt called function"
@@ -325,12 +334,11 @@ class TraceCompiler:
 
     def compile(self):
         for index, row in self._df.iterrows():
-            file_path = row["file_path"]
             line_no = row["line_no"]
-            indent = int(row["indent"])
-            code_snippet = row["code"].strip()
+            line_type = row["line_type"]
+            line_code = row["code"].strip()
 
-            line = Line(line_no, code_snippet)
+            line = Line(line_no, line_code, line_type)
 
             self._log_line(line)
             self._compile_line(line)
@@ -381,7 +389,7 @@ class TraceCompiler:
                 with p.open(mode="w") as file:
                     file.write(self._build_file(class_name, func_dict))
 
-# %% haircut.ipynb 40
+# %% haircut.ipynb 43
 if __name__ == "__main__":
     tc = TraceCompiler("test.txt")
     tc.pre_process()
