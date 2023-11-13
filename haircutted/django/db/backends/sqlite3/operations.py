@@ -10,9 +10,9 @@ class DatabaseOperations:
 	def limit_offset_sql(self=<django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>, low_mark=0, high_mark=1):
 		limit, offset = self._get_limit_offset_params(low_mark, high_mark)
 		return " ".join(
+		for sql in (
 		("LIMIT %d" % limit) if limit else None,
 		("OFFSET %d" % offset) if offset else None,
-		for sql in (
 
 
 	def _get_limit_offset_params(self=<django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>, low_mark=0, high_mark=1):
@@ -27,12 +27,12 @@ class DatabaseOperations:
 
 	def get_db_converters(self=<django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>, expression=<django.db.models.expressions.Col object at 0x107660a50>):
 		converters = super().get_db_converters(expression)
-		def get_db_converters(self=<django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>, expression=<django.db.models.expressions.Col object at 0x107660a50>):
-		return []
 		internal_type = expression.output_field.get_internal_type()
-		return converters
 		if internal_type == "DateTimeField":
 			converters.append(self.convert_datetimefield_value)
+		return converters
+		def get_db_converters(self=<django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>, expression=<django.db.models.expressions.Col object at 0x107660a50>):
+		return []
 
 
 	def convert_datetimefield_value(self=<django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>, value=datetime(2023, 11, 8, 23, 52, 21, 573273, tzinfo=None, fold=0), expression=<django.db.models.expressions.Col object at 0x107660a50>, connection=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>):

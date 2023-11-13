@@ -41,9 +41,9 @@ class SQLCompiler:
 		self.compile(self.where) if self.where is not None else ("", [])
 		except FullResultSet:
 			where, w_params = "", []
+		having, h_params = (
 		if self.having is not None
 		else ("", [])
-		having, h_params = (
 		result = ["SELECT"]
 		params = []
 		out_cols = []
@@ -97,9 +97,9 @@ class SQLCompiler:
 						select_list.append(select_idx)
 						select.append((col, None))
 						select_idx += 1
+		klass_info = {
 		"model": self.query.model,
 		"select_fields": select_list,
-		klass_info = {
 		ret = []
 		col_idx = 1
 		for col, alias in select:
@@ -118,8 +118,8 @@ class SQLCompiler:
 			model = field.model._meta.concrete_model
 		if model == opts.model:
 			model = None
-		from_parent
 		if (
+		from_parent
 		alias = self.query.join_parent_model(opts, model, start_alias, seen_models)
 		column = field.get_col(alias)
 		result.append(column)
@@ -133,14 +133,14 @@ class SQLCompiler:
 
 
 	def quote_name_unless_alias(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, name='polls_question'):
+		if name in self.quote_cache:
+			return self.quote_cache[name]
 		(name in self.query.alias_map and name not in self.query.table_map)
 		or name in self.query.extra_select
 		self.query.external_aliases.get(name)
 		r = self.connection.ops.quote_name(name)
 		self.quote_cache[name] = r
 		return r
-		if name in self.quote_cache:
-			return self.quote_cache[name]
 
 
 	def get_order_by(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>):

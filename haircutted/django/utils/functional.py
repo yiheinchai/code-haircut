@@ -5,6 +5,6 @@ class cached_property:
 
 class SimpleLazyObject:
 	def __getattribute__(self=<django.utils.functional.SimpleLazyObject object at 0x1072ffc10>, name='_wrapped'):
-		value = super().__getattribute__(name)
 		return super().__getattribute__(name)
+		value = super().__getattribute__(name)
 

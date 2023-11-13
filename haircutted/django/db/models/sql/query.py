@@ -54,12 +54,12 @@ class Query:
 
 
 	def get_initial_alias(self=<django.db.models.sql.query.Query object at 0x107704590>):
-		elif self.model:
-			alias = self.join(self.base_table_class(self.get_meta().db_table, None))
-		return alias
 		if self.alias_map:
 			alias = self.base_table
 		self.ref_alias(alias)
+		elif self.model:
+			alias = self.join(self.base_table_class(self.get_meta().db_table, None))
+		return alias
 
 
 	def get_meta(self=<django.db.models.sql.query.Query object at 0x107704590>):
@@ -79,8 +79,8 @@ class Query:
 
 	def table_alias(self=<django.db.models.sql.query.Query object at 0x107704590>, table_name='polls_question', create=True, filtered_relation=None):
 		alias_list = self.table_map.get(table_name)
-		filtered_relation.alias if filtered_relation is not None else table_name
 		alias = (
+		filtered_relation.alias if filtered_relation is not None else table_name
 		self.table_map[table_name] = [alias]
 		self.alias_refcount[alias] = 1
 		return alias, True
