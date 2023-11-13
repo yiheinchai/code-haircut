@@ -12,5 +12,6 @@ class Col:
 
 
 	def get_db_converters(self=<django.db.models.expressions.Col object at 0x107660a50>, connection=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>):
-		return self.output_field.get_db_converters(connection)
+		if self.target == self.output_field:
+			return self.output_field.get_db_converters(connection)
 

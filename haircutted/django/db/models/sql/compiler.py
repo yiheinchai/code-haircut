@@ -55,7 +55,7 @@ class SQLCompiler:
 		params.extend(f_params)
 		grouping = []
 		if with_limit_offset:
-		result.append(
+			result.append(
 			self.connection.ops.limit_offset_sql(
 			self.query.low_mark, self.query.high_mark
 		return " ".join(result), tuple(params)
@@ -78,7 +78,7 @@ class SQLCompiler:
 			self.query.get_initial_alias()
 			self.select, self.klass_info, self.annotation_col_map = self.get_select(
 			with_col_aliases=with_col_aliases,
-			self.col_count = len(self.select)
+		self.col_count = len(self.select)
 
 
 	def get_select(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, with_col_aliases=False):
@@ -86,26 +86,25 @@ class SQLCompiler:
 		klass_info = None
 		annotations = {}
 		select_idx = 0
-		for alias, (sql, params) in self.query.extra_select.items():
-			assert not (self.query.select and self.query.default_cols)
-			select_mask = self.query.get_select_mask()
-			if self.query.default_cols:
-				cols = self.get_default_columns(select_mask)
-				if cols:
-					select_list = []
-					for col in cols:
-						select_list.append(select_idx)
-						select.append((col, None))
-						select_idx += 1
+		assert not (self.query.select and self.query.default_cols)
+		select_mask = self.query.get_select_mask()
+		if self.query.default_cols:
+			cols = self.get_default_columns(select_mask)
+		if cols:
+			select_list = []
+			for col in cols:
+				select_list.append(select_idx)
+				select.append((col, None))
+				select_idx += 1
 		klass_info = {
 		"model": self.query.model,
 		"select_fields": select_list,
 		ret = []
 		col_idx = 1
 		for col, alias in select:
-			try:
-				sql, params = self.compile(col)
-				sql, params = col.select_format(self, sql, params)
+		try:
+		sql, params = self.compile(col)
+		sql, params = col.select_format(self, sql, params)
 		ret.append((col, (sql, params), alias))
 		return ret, klass_info, annotations
 
@@ -115,9 +114,9 @@ class SQLCompiler:
 		start_alias = start_alias or self.query.get_initial_alias()
 		seen_models = {None: start_alias}
 		for field in opts.concrete_fields:
-			model = field.model._meta.concrete_model
+		model = field.model._meta.concrete_model
 		if model == opts.model:
-			model = None
+		model = None
 		if (
 		from_parent
 		alias = self.query.join_parent_model(opts, model, start_alias, seen_models)
@@ -150,10 +149,9 @@ class SQLCompiler:
 
 
 	def _order_by_pairs(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>):
-		elif (meta := self.query.get_meta()) and meta.ordering:
-			ordering = []
-			if self.query.standard_ordering:
-				default_order, _ = ORDER_DIR["ASC"]
+		ordering = []
+		if self.query.standard_ordering:
+			default_order, _ = ORDER_DIR["ASC"]
 		selected_exprs = {}
 
 
@@ -196,12 +194,12 @@ class SQLCompiler:
 
 	def get_converters(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, expressions=[<django.db.models.expressions.Col object at 0x107660910>, <django.db.models.expressions.Col object at 0x107660990>, <django.db.models.expressions.Col object at 0x107660a50>]):
 		converters = {}
-			for i, expression in enumerate(expressions):
-				if expression:
-					backend_converters = self.connection.ops.get_db_converters(expression)
-		field_converters = expression.get_db_converters(self.connection)
-		if backend_converters or field_converters:
-			converters[i] = (backend_converters + field_converters, expression)
+								for i, expression in enumerate(expressions):
+									if expression:
+										backend_converters = self.connection.ops.get_db_converters(expression)
+										field_converters = expression.get_db_converters(self.connection)
+										if backend_converters or field_converters:
+											converters[i] = (backend_converters + field_converters, expression)
 		return converters
 
 
@@ -213,6 +211,6 @@ class SQLCompiler:
 				value = row[pos]
 				for converter in convs:
 					value = converter(value, expression, connection)
-		row[pos] = value
+					row[pos] = value
 		def apply_converters(self=<django.db.models.sql.compiler.SQLCompiler object at 0x10766d890>, rows=<itertools.chain object at 0x1076596c0>, converters=[(2, ([<bound method DatabaseOperations.convert_datetimefield_value of ...>], <django.db.models.expressions.Col object at 0x107660a50>))]):
 

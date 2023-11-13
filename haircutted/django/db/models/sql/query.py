@@ -49,14 +49,14 @@ class Query:
 	def get_compiler(self=<django.db.models.sql.query.Query object at 0x107704590>, using='default', connection=None, elide_empty=True):
 		if using:
 			connection = connections[using]
-		return connection.ops.compiler(self.compiler)(
-		self, connection, using, elide_empty
+			return connection.ops.compiler(self.compiler)(
+			self, connection, using, elide_empty
 
 
 	def get_initial_alias(self=<django.db.models.sql.query.Query object at 0x107704590>):
 		if self.alias_map:
 			alias = self.base_table
-		self.ref_alias(alias)
+			self.ref_alias(alias)
 		elif self.model:
 			alias = self.join(self.base_table_class(self.get_meta().db_table, None))
 		return alias

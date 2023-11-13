@@ -51,15 +51,23 @@ class Line:
         self.line_code = '\t' + self.line_code
 
 class StackItem:
-    def __init__(self, class_name, func_name, skip=False) -> None:
+    def __init__(self, class_name, func_name, line, skip=False) -> None:
         self.class_name = class_name
         self.func_name = func_name
         self.skip = skip
+        self.visited_lines = [line]
+    
+    def add_visit(self, line):
+        self.visited_lines.append(line)
+
+    @property
+    def visited_line_nos(self):
+        return [line.line_no for line in self.visited_lines]
 
 class BlockStackItem(StackItem):
     '''This is a stateful stack item'''
     def __init__(self, parent_class_name, parent_func_name, block_type, definition_line):
-        super().__init__(parent_class_name, parent_func_name)
+        super().__init__(parent_class_name, parent_func_name, definition_line)
         self.block_type = block_type
         self._lines = [definition_line]
 
@@ -216,19 +224,19 @@ class TraceCompiler:
 
         # Skip lambda functions TODO: might want to handle this better in the future
         if "genexpr" in line.line_code or "listcomp" in line.line_code or "lambda" in line.line_code:
-            self._stack.append(StackItem(None, 'lambda', skip=True))
+            self._stack.append(StackItem(None, 'lambda', line, skip=True))
             return
 
         # Skip decorators TODO:might want to handle this better in the future
         if "=> inner(" in line.line_code:
-            self._stack.append(StackItem(None, 'lambda', skip=True))
+            self._stack.append(StackItem(None, 'lambda', line, skip=True))
             return
 
         func_name = self._get_func_name(line.line_code)
         class_name = self._get_class_name(line.line_code)
         line = Line(line.line_no, f"def {line.line_code[3:]}:", line.line_type)
 
-        self._stack.append(StackItem(class_name, func_name))
+        self._stack.append(StackItem(class_name, func_name, line))
 
         if class_name not in self.classes:
             self.classes[class_name] = {}
@@ -292,17 +300,19 @@ class TraceCompiler:
             return
 
         if line.line_type == "line":
-            if self._check_is_in_block() and self._check_line_jump():
+            if self._check_line_visited(line):
+                # this is to deal with return statements that are in a block that span multiple lines
+                # the multi-line return statement will be read back on forth, ignore when it reads back
+                return
+
+            self._stack[-1].add_visit(line)
+            
+            if self._check_is_in_block() and self._check_block_line_jump(line):
                 # TODO: if -> nested if -> nested else - the code in nested else will not be added to top level if (as it is considered a line jump)
                 self._compile_block_return()
                 # Do not return has we have not yet processed the current line
                 # Just only know that current line is no longer in block
 
-            if self._check_is_in_block() and self._check_line_in_block(line.line_no):
-                # this is to deal with return statements that are in a block that span multiple lines
-                # the multi-line return statement will be read back on forth, ignore when it reads back
-                self._line_log.pop()
-                return
 
             # Skip functions marked to skip, eg. lambda functions
             if self._stack[-1].skip:
@@ -314,14 +324,17 @@ class TraceCompiler:
             
             self._compile_line_in_block(line)
 
-    def _log_line(self, line):
-        "History of last 5 lines processed. Useful to track back to find more info abt called function"
-        if len(self._line_log) > 10:
-                self._line_log = self._line_log[-10:]
-        self._line_log.append(line)
+    def _check_block_line_jump(self, line):
+        if len(self._stack[-1].visited_line_nos) < 2:
+            return False
+        
+        return self._stack[-1].visited_line_nos[-1] - self._stack[-1].visited_line_nos[-2] > 1
 
-    def _check_line_jump(self):
+    def _check_global_line_jump(self):
         return self._line_log[-1].line_no - self._line_log[-2].line_no > 1
+
+    def _check_line_visited(self, line):
+        return line.line_no in self._stack[-1].visited_line_nos
 
     def _check_is_in_block(self):
         if len(self._stack) == 0:
@@ -331,6 +344,12 @@ class TraceCompiler:
 
     def _check_line_in_block(self, line_no):
         return line_no in self._stack[-1].line_nos
+
+    def _log_line(self, line):
+        "History of last 5 lines processed. Useful to track back to find more info abt called function"
+        if len(self._line_log) > 10:
+                self._line_log = self._line_log[-10:]
+        self._line_log.append(line)
 
     def compile(self):
         for index, row in self._df.iterrows():

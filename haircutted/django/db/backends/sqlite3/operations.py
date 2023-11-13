@@ -36,6 +36,7 @@ class DatabaseOperations:
 
 
 	def convert_datetimefield_value(self=<django.db.backends.sqlite3.operations.DatabaseOperations object at 0x107277850>, value=datetime(2023, 11, 8, 23, 52, 21, 573273, tzinfo=None, fold=0), expression=<django.db.models.expressions.Col object at 0x107660a50>, connection=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>):
-		value = timezone.make_aware(value, self.connection.timezone)
-		return value
+		if settings.USE_TZ and not timezone.is_aware(value):
+			value = timezone.make_aware(value, self.connection.timezone)
+			return value
 

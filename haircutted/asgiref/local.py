@@ -2,8 +2,8 @@ class Local:
 	def __getattr__(self=<asgiref.local.Local object at 0x105eb8ed0>, key='default'):
 		with self._thread_lock:
 			storage = self._get_storage()
-		if key in storage:
-			return storage[key]
+			if key in storage:
+				return storage[key]
 
 
 	def _get_storage(self=<asgiref.local.Local object at 0x105eb8ed0>):

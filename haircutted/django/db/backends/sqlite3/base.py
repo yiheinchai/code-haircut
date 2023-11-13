@@ -6,7 +6,8 @@ class DatabaseWrapper:
 	def _cursor(self=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>, name=None):
 		self.close_if_health_check_failed()
 		self.ensure_connection()
-		return self._prepare_cursor(self.create_cursor(name))
+		with self.wrap_database_errors:
+			return self._prepare_cursor(self.create_cursor(name))
 
 
 	def close_if_health_check_failed(self=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>):
@@ -24,7 +25,8 @@ class DatabaseWrapper:
 
 	def _prepare_cursor(self=<django.db.backends.sqlite3.base.DatabaseWrapper object at 0x107275790>, cursor=<django.db.backends.sqlite3.base.SQLiteCursorWrapper object at 0x107d0b920>):
 		self.validate_thread_sharing()
-		wrapped_cursor = self.make_debug_cursor(cursor)
+		if self.queries_logged:
+			wrapped_cursor = self.make_debug_cursor(cursor)
 		return wrapped_cursor
 
 

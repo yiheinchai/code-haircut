@@ -49,8 +49,6 @@ class QuerySet:
 
 
 	def _fetch_all(self=<django.db.models.query.QuerySet object at 0x107d1edd0>):
-		if self._result_cache is None:
-			self._result_cache = list(self._iterable_class(self))
 
 
 	def db(self=<django.db.models.query.QuerySet object at 0x107d1edd0>):

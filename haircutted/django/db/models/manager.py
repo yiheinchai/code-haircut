@@ -1,7 +1,6 @@
 class ManagerDescriptor:
 	def __get__(self=<django.db.models.manager.ManagerDescriptor object at 0x107354690>, instance=None, cls=<django.db.models.base.ModelBase object at 0x1070929d0>):
-		if cls._meta.swapped:
-			return cls._meta.managers_map[self.manager.name]
+		return cls._meta.managers_map[self.manager.name]
 
 class Manager:
 	def all(self=<django.db.models.manager.Manager object at 0x1073fb650>):
