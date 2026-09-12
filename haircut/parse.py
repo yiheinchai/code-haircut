@@ -72,22 +72,68 @@ def detect_format(text: str) -> str:
         if not line:
             continue
         if line.startswith("{"):
+            if '"format"' in line or '"files"' in line[:120]:
+                try:
+                    payload = json.loads(text)
+                except json.JSONDecodeError:
+                    return "jsonl"
+                if isinstance(payload, dict) and "files" in payload:
+                    return "coverage"
             return "jsonl"
         return "hunter"
     raise TraceParseError("Trace file is empty.")
 
 
 def load_trace(path: str | Path) -> CoverageMap:
-    """Auto-detect Hunter CallPrinter text or JSONL and load coverage."""
+    """Auto-detect compact coverage JSON, JSONL events, or Hunter CallPrinter text."""
     trace_path = Path(path)
     try:
         text = trace_path.read_text(encoding="utf-8", errors="replace")
     except OSError as exc:
         raise TraceParseError(f"Could not read trace file {trace_path}: {exc}") from exc
     kind = detect_format(text)
+    if kind == "coverage":
+        return parse_coverage_json(text)
     if kind == "jsonl":
         return parse_jsonl(text.splitlines())
     return parse_hunter(text.splitlines())
+
+
+def parse_coverage_json(text: str) -> CoverageMap:
+    try:
+        payload = json.loads(text)
+    except json.JSONDecodeError as exc:
+        raise TraceParseError(f"Invalid coverage JSON: {exc}") from exc
+    files = payload.get("files") if isinstance(payload, dict) else None
+    if not isinstance(files, dict):
+        raise TraceParseError("Coverage JSON must contain a files object.")
+    coverage = CoverageMap()
+    for path, rec in files.items():
+        if not isinstance(rec, dict):
+            continue
+        file_cov = coverage.coverage_for(str(path))
+        for line in rec.get("lines") or []:
+            file_cov.lines.add(int(line))
+        for line in rec.get("call_lines") or []:
+            line = int(line)
+            file_cov.call_lines.add(line)
+            file_cov.lines.add(line)
+        for func in rec.get("functions") or []:
+            file_cov.functions.add(str(func))
+    if not coverage:
+        raise TraceParseError("Coverage JSON contained no files.")
+    return coverage
+
+
+def dump_coverage(coverage: CoverageMap) -> str:
+    files = {}
+    for path, file_cov in sorted(coverage.files.items()):
+        files[path] = {
+            "lines": sorted(file_cov.lines),
+            "call_lines": sorted(file_cov.call_lines),
+            "functions": sorted(file_cov.functions),
+        }
+    return json.dumps({"format": "haircut-coverage-v1", "files": files}) + "\n"
 
 
 def parse_jsonl(lines: Iterable[str]) -> CoverageMap:

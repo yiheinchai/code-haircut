@@ -46,8 +46,8 @@ def _build_parser() -> argparse.ArgumentParser:
     record.add_argument(
         "-o",
         "--output",
-        default="trace.jsonl",
-        help="Trace file to write (default: trace.jsonl).",
+        default="trace.json",
+        help="Trace file to write (default: trace.json compact coverage; use .jsonl for an event log).",
     )
     record.add_argument(
         "--include",

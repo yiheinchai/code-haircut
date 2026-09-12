@@ -94,7 +94,22 @@ def used():
     assert "def used" in result.source
 
 
-def test_empty_when_nothing_executed():
+def test_drops_decorators_with_unused_function():
+    source = """import functools
+
+@functools.cache
+def unused(x):
+    return x
+
+def used(x):
+    return x + 1
+"""
+    result = _slice(source, lines={7, 8}, calls={7})
+    assert "def used" in result.source
+    assert "def unused" not in result.source
+    assert "@functools.cache" not in result.source
+    ast.parse(result.source)
+
     source = """def unused():
     return 1
 """

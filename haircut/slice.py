@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 from typing import Sequence
 
 from haircut.parse import FileCoverage
+from haircut.graph import FilePlan
 
 _BLANK_RE = re.compile(r"\n{3,}")
 
@@ -73,6 +74,7 @@ def slice_source(
     *,
     prune_branches: bool = False,
     filename: str = "<unknown>",
+    plan: FilePlan | None = None,
 ) -> FileSliceResult:
     """Return a valid-Python subset of *source* using *coverage*."""
     original_lines = len(source.splitlines()) or (1 if source else 0)
@@ -94,16 +96,20 @@ def slice_source(
 
     for stmt in tree.body:
         if isinstance(stmt, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            if _function_executed(stmt, coverage):
+            if _keep_function(stmt, coverage, plan):
                 kept_functions += 1
-                if prune_branches:
+                if prune_branches and _function_executed(stmt, coverage):
                     _prune_function(stmt, coverage, mask)
             else:
-                mask.drop(stmt.lineno, stmt.end_lineno)
+                start, end = _span(stmt)
+                mask.drop(start, end)
         elif isinstance(stmt, ast.ClassDef):
-            kept_in_class = _slice_class(stmt, coverage, mask, prune_branches)
+            kept_in_class = _slice_class(stmt, coverage, mask, prune_branches, plan)
             kept_functions += kept_in_class
-        # Module-level imports, assignments, and if/try blocks stay.
+        elif isinstance(stmt, (ast.Import, ast.ImportFrom)) and plan is not None:
+            _apply_import_plan(stmt, plan, mask, source)
+        elif plan is not None and _is_dunder_all(stmt):
+            _rewrite_dunder_all(stmt, plan, mask)
 
     text = mask.render()
     if not text.strip():
@@ -128,27 +134,49 @@ def slice_source(
     )
 
 
+def _keep_function(
+    node: ast.FunctionDef | ast.AsyncFunctionDef,
+    coverage: FileCoverage,
+    plan: FilePlan | None,
+) -> bool:
+    if plan is not None:
+        return node.lineno in plan.keep_linenos
+    return _function_executed(node, coverage)
+
+
 def _slice_class(
     node: ast.ClassDef,
     coverage: FileCoverage,
     mask: _Mask,
     prune_branches: bool,
+    plan: FilePlan | None = None,
 ) -> int:
     kept_methods = 0
     for stmt in node.body:
         if isinstance(stmt, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            if _function_executed(stmt, coverage):
+            if _keep_function(stmt, coverage, plan):
                 kept_methods += 1
-                if prune_branches:
+                if prune_branches and _function_executed(stmt, coverage):
                     _prune_function(stmt, coverage, mask)
             else:
-                mask.drop(stmt.lineno, stmt.end_lineno)
+                start, end = _span(stmt)
+                mask.drop(start, end)
         elif isinstance(stmt, ast.ClassDef):
-            kept_methods += _slice_class(stmt, coverage, mask, prune_branches)
+            kept_methods += _slice_class(stmt, coverage, mask, prune_branches, plan)
 
-    if kept_methods == 0:
-        mask.drop(node.lineno, node.end_lineno)
+    force = plan is not None and node.lineno in plan.keep_linenos
+    if kept_methods == 0 and not force:
+        mask.drop(*_span(node))
         return 0
+    if kept_methods == 0 and force:
+        remaining = [
+            stmt
+            for stmt in node.body
+            if not isinstance(stmt, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+        ]
+        if not remaining and node.body:
+            mask.put_pass(node.body[0].lineno)
+        return 1
     return kept_methods
 
 
@@ -184,7 +212,10 @@ def _prune_stmts(
         if _keep_stmt(stmt, coverage, mask):
             kept_any = True
         else:
-            mask.drop(stmt.lineno, stmt.end_lineno)
+            start, end = _span(stmt) if isinstance(
+                stmt, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)
+            ) else (stmt.lineno, stmt.end_lineno)
+            mask.drop(start, end)
     return kept_any
 
 
@@ -252,7 +283,7 @@ def _keep_stmt(stmt: ast.stmt, coverage: FileCoverage, mask: _Mask) -> bool:
         return False
 
     if isinstance(stmt, ast.ClassDef):
-        return _slice_class(stmt, coverage, mask, prune_branches=True) > 0
+        return _slice_class(stmt, coverage, mask, prune_branches=True, plan=None) > 0
 
     if hasattr(ast, "Match") and isinstance(stmt, ast.Match):
         return _keep_match(stmt, coverage, mask)
@@ -345,9 +376,87 @@ def _count_functions(node: ast.AST) -> int:
     return total
 
 
+def _span(node: ast.AST) -> tuple[int, int]:
+    start = getattr(node, "lineno", 1)
+    for deco in getattr(node, "decorator_list", ()) or ():
+        lineno = getattr(deco, "lineno", None)
+        if lineno:
+            start = min(start, lineno)
+    return start, getattr(node, "end_lineno", None) or start
+
+
 def _leading_ws(line: str) -> str:
     return line[: len(line) - len(line.lstrip(" \t"))]
 
 
+def _is_dunder_all(stmt: ast.stmt) -> bool:
+    if not isinstance(stmt, ast.Assign):
+        return False
+    return any(isinstance(target, ast.Name) and target.id == "__all__" for target in stmt.targets)
+
+
+def _rewrite_dunder_all(stmt: ast.Assign, plan: FilePlan, mask: _Mask) -> None:
+    names = [
+        value.value
+        for value in ast.walk(stmt)
+        if isinstance(value, ast.Constant) and isinstance(value.value, str) and value.value in plan.keep_names
+    ]
+    indent = _leading_ws(mask.lines[stmt.lineno - 1])
+    newline = "\n" if mask.lines[stmt.lineno - 1].endswith("\n") else ""
+    mask.drop(stmt.lineno, stmt.end_lineno)
+    if not names:
+        return
+    rendered = ", ".join(repr(name) for name in names)
+    mask.replacements[stmt.lineno] = f"{indent}__all__ = [{rendered}]{newline}"
+
+
 def validate_python(source: str, filename: str = "<sliced>") -> None:
     ast.parse(source, filename=filename)
+
+
+def _apply_import_plan(
+    stmt: ast.Import | ast.ImportFrom,
+    plan: FilePlan,
+    mask: _Mask,
+    source: str,
+) -> None:
+    if stmt.lineno in plan.drop_import_linenos and stmt.lineno not in plan.star_names:
+        mask.drop(stmt.lineno, stmt.end_lineno)
+        return
+    if stmt.lineno in plan.star_names and isinstance(stmt, ast.ImportFrom):
+        names = plan.star_names[stmt.lineno]
+        indent = _leading_ws(mask.lines[stmt.lineno - 1])
+        module = stmt.module or ""
+        dots = "." * stmt.level
+        newline = "\n" if mask.lines[stmt.lineno - 1].endswith("\n") else ""
+        mask.drop(stmt.lineno, stmt.end_lineno)
+        mask.put_pass(stmt.lineno)
+        mask.replacements[stmt.lineno] = (
+            f"{indent}from {dots}{module} import {', '.join(names)}{newline}"
+        )
+        return
+    if isinstance(stmt, ast.ImportFrom) and stmt.names and plan.keep_import_asnames:
+        kept = [
+            alias
+            for alias in stmt.names
+            if (alias.asname or alias.name) in plan.keep_import_asnames
+        ]
+        if not kept:
+            mask.drop(stmt.lineno, stmt.end_lineno)
+            return
+        if len(kept) == len(stmt.names):
+            return
+        indent = _leading_ws(mask.lines[stmt.lineno - 1])
+        module = stmt.module or ""
+        dots = "." * stmt.level
+        parts = []
+        for alias in kept:
+            if alias.asname:
+                parts.append(f"{alias.name} as {alias.asname}")
+            else:
+                parts.append(alias.name)
+        newline = "\n" if mask.lines[stmt.lineno - 1].endswith("\n") else ""
+        mask.drop(stmt.lineno, stmt.end_lineno)
+        mask.replacements[stmt.lineno] = (
+            f"{indent}from {dots}{module} import {', '.join(parts)}{newline}"
+        )

@@ -7,6 +7,13 @@ from pathlib import Path
 from typing import Sequence
 
 from haircut.errors import SourceNotFoundError, TraceParseError
+from haircut.graph import (
+    build_graph,
+    compute_closure,
+    discover_package_files,
+    executed_roots,
+    plans_for_keep_set,
+)
 from haircut.parse import CoverageMap, FileCoverage, load_trace
 from haircut.paths import (
     ensure_package_inits,
@@ -14,6 +21,7 @@ from haircut.paths import (
     path_allowed,
     relative_to_root,
     resolve_path,
+    top_package_dir,
 )
 from haircut.slice import slice_source, validate_python
 
@@ -114,16 +122,53 @@ def slice_trace(
         else infer_output_root([path for path, _ in unique_files])
     )
 
+    package_dirs = []
+    seen_pkgs: set[Path] = set()
+    for path, _cov in unique_files:
+        pkg = top_package_dir(path)
+        resolved_pkg = pkg.resolve()
+        if resolved_pkg not in seen_pkgs:
+            seen_pkgs.add(resolved_pkg)
+            package_dirs.append(pkg)
+
+    package_files = [
+        path
+        for path in discover_package_files(package_dirs)
+        if path_allowed(str(path), include=include, exclude=exclude)
+    ]
+    graph = build_graph(package_files, strip_root)
+    coverage_by_path = {path.resolve(): cov for path, cov in unique_files}
+    roots = executed_roots(graph, coverage_by_path)
+    keep = compute_closure(graph, roots)
+    plans = plans_for_keep_set(graph, keep)
+
     report = SliceReport(output_dir=output_dir, unresolved=unresolved)
     written: list[Path] = []
 
-    for path, file_cov in unique_files:
+    emit_paths = set(plans) | {path.resolve() for path, _ in unique_files}
+    for path in sorted(emit_paths):
+        plan = plans.get(path)
+        if plan is None:
+            report.files_skipped += 1
+            continue
+        index = graph.by_path.get(path)
+        traced = path in coverage_by_path
+        if not plan.keep_linenos:
+            if index is not None and index.is_init and plan.keep_import_asnames:
+                pass
+            elif traced and plan.keep_import_asnames:
+                pass
+            else:
+                report.files_skipped += 1
+                continue
+        file_cov = coverage_by_path.get(path) or FileCoverage(path=str(path))
         source = path.read_text(encoding="utf-8", errors="replace")
         result = slice_source(
             source,
             file_cov,
             prune_branches=prune_branches,
             filename=str(path),
+            plan=plan,
         )
         report.functions_original += result.original_functions
         report.functions_kept += result.kept_functions

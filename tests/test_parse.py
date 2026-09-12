@@ -12,6 +12,12 @@ def test_detect_hunter_and_jsonl():
     assert detect_format(hunter) == "hunter"
     jsonl = '{"file": "a.py", "line": 1, "event": "line"}\n'
     assert detect_format(jsonl) == "jsonl"
+    coverage = '{"format": "haircut-coverage-v1", "files": {}}\n'
+    assert detect_format(coverage) == "coverage"
+    hunter = (FIXTURES / "hunter_sample.txt").read_text(encoding="utf-8")
+    assert detect_format(hunter) == "hunter"
+    jsonl = '{"file": "a.py", "line": 1, "event": "line"}\n'
+    assert detect_format(jsonl) == "jsonl"
 
 
 def test_parse_hunter_sample():

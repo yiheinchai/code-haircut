@@ -37,9 +37,9 @@ def test_slice_trace_roundtrip(tmp_path, monkeypatch):
 
     sys.path.insert(0, str(output))
     try:
-        sys.modules.pop("tiny_pkg", None)
-        sys.modules.pop("tiny_pkg.core", None)
-        sys.modules.pop("tiny_pkg.util", None)
+        for name in list(sys.modules):
+            if name == "tiny_pkg" or name.startswith("tiny_pkg."):
+                sys.modules.pop(name)
         from tiny_pkg.core import Calculator as SlicedCalc
         from tiny_pkg.core import used as sliced_used
 
@@ -47,6 +47,9 @@ def test_slice_trace_roundtrip(tmp_path, monkeypatch):
         assert SlicedCalc().add(1, 2) == 6
     finally:
         sys.path.remove(str(output))
+        for name in list(sys.modules):
+            if name == "tiny_pkg" or name.startswith("tiny_pkg."):
+                sys.modules.pop(name)
 
 
 def test_slice_with_prune_branches(tmp_path, monkeypatch):
