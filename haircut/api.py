@@ -159,7 +159,12 @@ def slice_trace(
     graph = build_graph(package_files, strip_root)
     coverage_by_path = {path.resolve(): cov for path, cov in unique_files}
     roots = executed_roots(graph, coverage_by_path)
-    keep = compute_closure(graph, roots)
+    traced_modules = [
+        graph.by_path[path].name
+        for path in coverage_by_path
+        if path in graph.by_path
+    ]
+    keep = compute_closure(graph, roots, seed_modules=traced_modules)
     plans = plans_for_keep_set(graph, keep)
 
     report = SliceReport(output_dir=output_dir, unresolved=unresolved)
@@ -176,6 +181,9 @@ def slice_trace(
             continue
         index = graph.by_path.get(path)
         traced = path in coverage_by_path
+        if index is not None and not traced and not _keep_touches_module(keep, index.name):
+            report.files_skipped += 1
+            continue
         if not plan.keep_linenos:
             if index is not None and index.is_init and plan.keep_import_asnames:
                 pass
@@ -227,6 +235,17 @@ def merge_traces(paths: Sequence[str | Path], output: str | Path) -> CoverageMap
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text(dump_coverage(combined), encoding="utf-8")
     return combined
+
+
+def _keep_touches_module(keep, module_name: str) -> bool:
+    """True if a kept symbol lives in *module_name* or a submodule."""
+    if not module_name:
+        return False
+    prefix = module_name + "."
+    for symbol in keep:
+        if symbol.module == module_name or symbol.module.startswith(prefix):
+            return True
+    return False
 
 
 def _resolve(raw_path: str, roots: Sequence[Path]) -> Path | None:

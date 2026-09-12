@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import ast
 import builtins
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterable, Iterator
@@ -20,6 +21,8 @@ _BUILTIN_NAMES = set(dir(builtins)) | {
     "__doc__",
     "__annotations__",
 }
+
+_DOTTED_REF_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)+$")
 
 
 @dataclass(frozen=True)
@@ -62,6 +65,8 @@ class ModuleIndex:
     aliases: dict[str, Symbol] = field(default_factory=dict)
     module_used_names: set[str] = field(default_factory=set)
     module_used_attrs: set[tuple[str, str]] = field(default_factory=set)
+    instances: dict[str, str] = field(default_factory=dict)
+    string_refs: set[str] = field(default_factory=set)
 
 
 @dataclass
@@ -124,7 +129,11 @@ def executed_roots(
     return roots
 
 
-def compute_closure(graph: PackageGraph, roots: set[Symbol]) -> set[Symbol]:
+def compute_closure(
+    graph: PackageGraph,
+    roots: set[Symbol],
+    seed_modules: Iterable[str] | None = None,
+) -> set[Symbol]:
     keep: set[Symbol] = set()
     queue: list[Symbol] = []
 
@@ -133,6 +142,8 @@ def compute_closure(graph: PackageGraph, roots: set[Symbol]) -> set[Symbol]:
             return
         keep.add(symbol)
         queue.append(symbol)
+        if "." in symbol.name:
+            add(Symbol(symbol.module, symbol.name.split(".", 1)[0]))
 
     for root in roots:
         add(root)
@@ -150,9 +161,15 @@ def compute_closure(graph: PackageGraph, roots: set[Symbol]) -> set[Symbol]:
             add(graph.resolve_name(module, name))
         for base_name, attr in index.module_used_attrs:
             _follow_attr(graph, module, base_name, attr, add)
+        for dotted in index.string_refs:
+            symbol = _resolve_dotted(graph, dotted)
+            add(symbol)
+            _add_class_methods(graph, symbol, add)
 
     for root in list(roots):
         seed_module(root.module)
+    for module in seed_modules or ():
+        seed_module(module)
 
     while queue:
         symbol = queue.pop()
@@ -167,8 +184,22 @@ def compute_closure(graph: PackageGraph, roots: set[Symbol]) -> set[Symbol]:
             add(graph.resolve_name(symbol.module, name.split(".", 1)[0]))
         for base_name, attr in defn.used_attrs:
             _follow_attr(graph, symbol.module, base_name, attr, add)
+            if base_name == "cls":
+                modules = {symbol.module} | {item.module for item in keep}
+                suffix = "." + attr
+                for owner_name in modules:
+                    owner = graph.modules.get(owner_name)
+                    if owner is None:
+                        continue
+                    for method in owner.methods.values():
+                        if method.symbol.name.endswith(suffix):
+                            add(method.symbol)
+        if defn.kind == "method" and "." in symbol.name:
+            _follow_self_attrs(graph, symbol, defn, add)
+            _follow_super_methods(graph, symbol, add)
         if defn.kind == "class":
             add(defn.symbol)
+            _keep_class_protocol_methods(graph, defn, add)
 
     return keep
 
@@ -236,6 +267,16 @@ def discover_package_files(package_dirs: Iterable[Path]) -> list[Path]:
     return files
 
 
+def _is_external_import(graph: PackageGraph, imp: ImportInfo, orig: str) -> bool:
+    """True for stdlib/third-party imports that are not part of the sliced package."""
+    if imp.raw_module is None and imp.level == 0:
+        return orig not in graph.modules and not _has_prefix(graph, orig)
+    if imp.level:
+        return False
+    resolved = imp.resolved or orig
+    return resolved not in graph.modules and not _has_prefix(graph, resolved)
+
+
 def _star_needed(
     graph: PackageGraph,
     index: ModuleIndex,
@@ -247,13 +288,18 @@ def _star_needed(
         return []
     target = graph.modules[imp.resolved]
     imported: set[str] = set()
-    for orig in list(target.defs) + list(target.aliases):
-        if orig in names_here or Symbol(index.name, orig) in keep:
-            imported.add(orig)
+    for orig, defn in target.defs.items():
+        if orig.startswith("_"):
             continue
-        aliased = graph.resolve_name(imp.resolved, orig)
-        if aliased is not None and aliased in keep:
+        if defn.symbol in keep:
             imported.add(orig)
+    if target.is_init:
+        for orig in target.aliases:
+            if orig.startswith("_"):
+                continue
+            aliased = graph.resolve_name(target.name, orig)
+            if aliased is not None and aliased in keep:
+                imported.add(orig)
     return sorted(imported)
 
 
@@ -269,6 +315,9 @@ def _named_import_needed(
         if asname in names_here or Symbol(index.name, asname) in keep:
             kept.append(asname)
             continue
+        if _is_external_import(graph, imp, orig):
+            kept.append(asname)
+            continue
         if not index.is_init:
             continue
         if imp.resolved:
@@ -281,19 +330,96 @@ def _named_import_needed(
                 if target_mod.defs[orig].symbol in keep:
                     kept.append(asname)
                     continue
-        if imp.level == 0 and orig:
-            mod = orig if imp.raw_module is None else imp.resolved
-            if mod and any(
-                symbol.module == mod or symbol.module.startswith(mod + ".")
+        child_mod = orig if imp.raw_module is None else (
+            f"{imp.resolved}.{orig}" if imp.resolved else orig
+        )
+        if child_mod and (
+            child_mod in graph.modules or _has_prefix(graph, child_mod)
+        ):
+            if any(
+                symbol.module == child_mod or symbol.module.startswith(child_mod + ".")
                 for symbol in keep
             ):
                 kept.append(asname)
     return kept
 
 
+def _keep_class_protocol_methods(graph: PackageGraph, defn: DefInfo, add) -> None:
+    owner = graph.modules.get(defn.symbol.module)
+    if owner is None:
+        return
+    prefix = defn.symbol.name + "."
+    for method in owner.methods.values():
+        if not method.symbol.name.startswith(prefix):
+            continue
+        short = method.symbol.name[len(prefix) :]
+        if "." in short:
+            continue
+        if short.startswith("__") and short.endswith("__"):
+            add(method.symbol)
+    for name in defn.used_names:
+        method = Symbol(defn.symbol.module, f"{defn.symbol.name}.{name}")
+        if method.name in owner.methods:
+            add(method)
+    for base_name, attr in defn.used_attrs:
+        candidates = [base_name]
+        if base_name in {"self", "cls"}:
+            candidates.append(attr)
+        for candidate in candidates:
+            method = Symbol(defn.symbol.module, f"{defn.symbol.name}.{candidate}")
+            if method.name in owner.methods:
+                add(method)
+
+
+def _follow_self_attrs(graph: PackageGraph, symbol: Symbol, defn: DefInfo, add) -> None:
+    class_name = symbol.name.split(".", 1)[0]
+    owner = graph.modules.get(symbol.module)
+    if owner is None:
+        return
+    for base_name, attr in defn.used_attrs:
+        if base_name not in {"self", "cls", "type"}:
+            continue
+        sibling = f"{class_name}.{attr}"
+        if sibling in owner.methods:
+            add(Symbol(symbol.module, sibling))
+
+
+def _follow_super_methods(graph: PackageGraph, symbol: Symbol, add) -> None:
+    class_name, method_name = symbol.name.split(".", 1)
+    index = graph.modules.get(symbol.module)
+    if index is None:
+        return
+    class_def = index.defs.get(class_name)
+    if class_def is None:
+        return
+    for base in class_def.bases:
+        base_sym = graph.resolve_name(symbol.module, base.split(".", 1)[0])
+        if base_sym is None or not base_sym.name:
+            continue
+        add(base_sym)
+        parent = Symbol(base_sym.module, f"{base_sym.name}.{method_name}")
+        parent_index = graph.modules.get(base_sym.module)
+        if parent_index is not None and parent.name in parent_index.methods:
+            add(parent)
+
+
 def _follow_attr(graph: PackageGraph, module: str, base_name: str, attr: str, add) -> None:
     if base_name in _BUILTIN_NAMES:
         return
+    index = graph.modules.get(module)
+    ctor = index.instances.get(base_name) if index is not None else None
+    if ctor:
+        class_sym = graph.resolve_name(module, ctor)
+        if class_sym is not None:
+            add(class_sym)
+            method = Symbol(class_sym.module, f"{class_sym.name}.{attr}")
+            class_index = graph.modules.get(class_sym.module)
+            if class_index is not None and method.name in class_index.methods:
+                add(method)
+            nested = graph.resolve_name(class_sym.module, attr)
+            if nested is not None:
+                add(nested)
+            return
     base = graph.resolve_name(module, base_name)
     if base is None:
         add(graph.resolve_name(module, base_name))
@@ -303,8 +429,8 @@ def _follow_attr(graph: PackageGraph, module: str, base_name: str, attr: str, ad
         add(graph.resolve_name(base.module, attr))
         return
     method = Symbol(base.module, f"{base.name}.{attr}")
-    index = graph.modules.get(base.module)
-    if index is not None and method.name in index.methods:
+    owner = graph.modules.get(base.module)
+    if owner is not None and method.name in owner.methods:
         add(method)
     nested = graph.resolve_name(base.module, attr)
     if nested is not None:
@@ -371,14 +497,64 @@ def _module_name(path: Path, strip_root: Path) -> str:
     return ".".join(parts)
 
 
+def _dotted_string_refs(tree: ast.AST) -> set[str]:
+    refs: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Constant) and isinstance(node.value, str):
+            if _DOTTED_REF_RE.match(node.value):
+                refs.add(node.value)
+    return refs
+
+
+def _resolve_dotted(graph: PackageGraph, dotted: str) -> Symbol | None:
+    parts = dotted.split(".")
+    for split in range(len(parts) - 1, 0, -1):
+        module = ".".join(parts[:split])
+        rest = ".".join(parts[split:])
+        index = graph.modules.get(module)
+        if index is None:
+            continue
+        if rest in index.defs:
+            return index.defs[rest].symbol
+        if rest in index.methods:
+            return index.methods[rest].symbol
+        head = rest.split(".", 1)[0]
+        if head in index.defs:
+            return index.defs[head].symbol
+    return None
+
+
+def _add_class_methods(graph: PackageGraph, symbol: Symbol | None, add) -> None:
+    if symbol is None or "." in symbol.name:
+        return
+    index = graph.modules.get(symbol.module)
+    if index is None:
+        return
+    defn = index.defs.get(symbol.name)
+    if defn is None or defn.kind != "class":
+        return
+    prefix = symbol.name + "."
+    for method in index.methods.values():
+        if method.symbol.name.startswith(prefix):
+            add(method.symbol)
+
+
 def _index_module(name: str, path: Path, source: str, tree: ast.Module) -> ModuleIndex:
     is_init = path.name == "__init__.py"
     index = ModuleIndex(name=name, path=path, is_init=is_init, source=source)
+    index.string_refs = _dotted_string_refs(tree)
+    imported = {
+        (alias.asname or alias.name.split(".")[0])
+        for stmt in tree.body
+        if isinstance(stmt, (ast.Import, ast.ImportFrom))
+        for alias in stmt.names
+        if alias.name != "*"
+    }
     for stmt in tree.body:
         if _is_type_checking_if(stmt):
             continue
         if isinstance(stmt, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            used_names, used_attrs = _uses(stmt, skip_locals=True)
+            used_names, used_attrs = _uses(stmt, skip_locals=True, imported=imported)
             index.defs[stmt.name] = DefInfo(
                 symbol=Symbol(name, stmt.name),
                 kind="func",
@@ -388,7 +564,7 @@ def _index_module(name: str, path: Path, source: str, tree: ast.Module) -> Modul
                 used_attrs=used_attrs,
             )
         elif isinstance(stmt, ast.ClassDef):
-            used_names, used_attrs = _uses(stmt, skip_locals=False)
+            used_names, used_attrs = _uses(stmt, skip_locals=False, imported=imported)
             bases = tuple(_base_name(base) for base in stmt.bases if _base_name(base))
             index.defs[stmt.name] = DefInfo(
                 symbol=Symbol(name, stmt.name),
@@ -401,7 +577,7 @@ def _index_module(name: str, path: Path, source: str, tree: ast.Module) -> Modul
             )
             for child in stmt.body:
                 if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                    m_names, m_attrs = _uses(child, skip_locals=True)
+                    m_names, m_attrs = _uses(child, skip_locals=True, imported=imported)
                     method_name = f"{stmt.name}.{child.name}"
                     index.methods[method_name] = DefInfo(
                         symbol=Symbol(name, method_name),
@@ -414,19 +590,35 @@ def _index_module(name: str, path: Path, source: str, tree: ast.Module) -> Modul
         elif isinstance(stmt, (ast.Import, ast.ImportFrom)):
             index.imports.append(_import_info(stmt))
         else:
-            names, attrs = _uses(stmt, skip_locals=False)
+            names, attrs = _uses(stmt, skip_locals=False, imported=imported)
             index.module_used_names.update(names)
             index.module_used_attrs.update(attrs)
             for target in _assignment_names(stmt):
-                index.defs[target] = DefInfo(
-                    symbol=Symbol(name, target),
-                    kind="assign",
-                    lineno=stmt.lineno,
-                    end_lineno=stmt.end_lineno or stmt.lineno,
-                    used_names=names,
-                    used_attrs=attrs,
-                )
+                if target not in index.defs:
+                    index.defs[target] = DefInfo(
+                        symbol=Symbol(name, target),
+                        kind="assign",
+                        lineno=stmt.lineno,
+                        end_lineno=stmt.end_lineno or stmt.lineno,
+                        used_names=names,
+                        used_attrs=attrs,
+                    )
+                ctor = _constructor_class(stmt)
+                if ctor:
+                    index.instances[target] = ctor
     return index
+
+
+def _constructor_class(stmt: ast.AST) -> str | None:
+    """Return the class name for ``name = Foo()`` so instance attributes follow Foo."""
+    if not isinstance(stmt, ast.Assign) or not isinstance(stmt.value, ast.Call):
+        return None
+    func = stmt.value.func
+    if isinstance(func, ast.Name):
+        if func.id in _BUILTIN_NAMES:
+            return None
+        return func.id
+    return None
 
 
 def _import_info(stmt: ast.Import | ast.ImportFrom) -> ImportInfo:
@@ -477,10 +669,25 @@ def _bind_imports(graph: PackageGraph) -> None:
                 continue
             resolved = _absolute_module(package, imp.raw_module, imp.level)
             imp.resolved = resolved
-            if imp.star or not resolved:
+            if not resolved:
+                continue
+            if imp.star:
+                target = graph.modules.get(resolved)
+                if target is not None:
+                    for orig, defn in target.defs.items():
+                        if orig.startswith("_"):
+                            continue
+                        index.aliases[orig] = defn.symbol
                 continue
             for orig, asname in imp.names:
-                index.aliases[asname] = Symbol(resolved, orig)
+                child = f"{resolved}.{orig}"
+                if child in graph.modules or _has_prefix(graph, child):
+                    index.aliases[asname] = Symbol(
+                        child if child in graph.modules else _longest_prefix(graph, child),
+                        "",
+                    )
+                else:
+                    index.aliases[asname] = Symbol(resolved, orig)
 
 
 def _has_prefix(graph: PackageGraph, mod: str) -> bool:
@@ -509,7 +716,12 @@ def _absolute_module(package: str, module: str | None, level: int) -> str | None
     return ".".join(base) if base else None
 
 
-def _uses(node: ast.AST, *, skip_locals: bool) -> tuple[set[str], set[tuple[str, str]]]:
+def _uses(
+    node: ast.AST,
+    *,
+    skip_locals: bool,
+    imported: set[str] | None = None,
+) -> tuple[set[str], set[tuple[str, str]]]:
     local: set[str] = set()
     if skip_locals:
         for child in ast.walk(node):
@@ -519,9 +731,10 @@ def _uses(node: ast.AST, *, skip_locals: bool) -> tuple[set[str], set[tuple[str,
                 local.add(child.arg)
     names: set[str] = set()
     attrs: set[tuple[str, str]] = set()
+    builtin_skip = _BUILTIN_NAMES - (imported or set())
     for child in ast.walk(node):
         if isinstance(child, ast.Name) and isinstance(child.ctx, ast.Load):
-            if child.id not in local and child.id not in _BUILTIN_NAMES:
+            if child.id not in local and child.id not in builtin_skip:
                 names.add(child.id)
         elif isinstance(child, ast.Attribute) and isinstance(child.value, ast.Name):
             if child.value.id not in local:

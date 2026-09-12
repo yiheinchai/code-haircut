@@ -42,9 +42,14 @@ def copy_package_support_files(
         if not src_dir.is_dir():
             continue
         copied.extend(_copy_sidecars(src_dir, dest_py.parent, seen_src))
-        copied.extend(_copy_data_dirs(src_dir, dest_py.parent, seen_src))
-        copied.extend(_copy_app_migrations(src_dir, dest_py.parent, seen_src))
+        if _has_non_init_module(dest_py.parent, written):
+            copied.extend(_copy_data_dirs(src_dir, dest_py.parent, seen_src))
+            copied.extend(_copy_app_migrations(src_dir, dest_py.parent, seen_src))
     return copied
+
+
+def _has_non_init_module(dest_dir: Path, written: list[Path]) -> bool:
+    return any(path.parent == dest_dir and path.name != "__init__.py" for path in written)
 
 
 def _copy_sidecars(src_dir: Path, dest_dir: Path, seen: set[Path]) -> list[Path]:

@@ -93,10 +93,12 @@ def slice_source(
     original_functions = _count_functions(tree)
     mask = _Mask.from_source(source)
     kept_functions = 0
+    extra_classes = _same_file_base_closure(tree, coverage, plan)
+    support_names = _kept_class_support_names(tree, coverage, plan, extra_classes)
 
     for stmt in tree.body:
         if isinstance(stmt, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            if _keep_function(stmt, coverage, plan):
+            if _keep_function(stmt, coverage, plan) or stmt.name in support_names:
                 kept_functions += 1
                 if prune_branches and _function_executed(stmt, coverage):
                     _prune_function(stmt, coverage, mask)
@@ -104,10 +106,12 @@ def slice_source(
                 start, end = _span(stmt)
                 mask.drop(start, end)
         elif isinstance(stmt, ast.ClassDef):
-            kept_in_class = _slice_class(stmt, coverage, mask, prune_branches, plan)
+            kept_in_class = _slice_class(
+                stmt, coverage, mask, prune_branches, plan, extra_classes
+            )
             kept_functions += kept_in_class
         elif isinstance(stmt, (ast.Import, ast.ImportFrom)) and plan is not None:
-            _apply_import_plan(stmt, plan, mask, source)
+            _apply_import_plan(stmt, plan, mask, source, extra_asnames=support_names)
         elif plan is not None and _is_dunder_all(stmt):
             _rewrite_dunder_all(stmt, plan, mask)
 
@@ -140,8 +144,100 @@ def _keep_function(
     plan: FilePlan | None,
 ) -> bool:
     if plan is not None:
-        return node.lineno in plan.keep_linenos
+        start, _ = _span(node)
+        return node.lineno in plan.keep_linenos or start in plan.keep_linenos
     return _function_executed(node, coverage)
+
+
+def _is_protocol_dunder(name: str) -> bool:
+    return name.startswith("__") and name.endswith("__") and len(name) > 4
+
+
+def _same_file_base_closure(
+    tree: ast.Module,
+    coverage: FileCoverage,
+    plan: FilePlan | None,
+) -> set[str]:
+    classes = [stmt for stmt in tree.body if isinstance(stmt, ast.ClassDef)]
+    by_name = {cls.name: cls for cls in classes}
+    kept: set[str] = set()
+    for cls in classes:
+        if plan is not None and cls.lineno in plan.keep_linenos:
+            kept.add(cls.name)
+            continue
+        if any(
+            _keep_function(stmt, coverage, plan)
+            for stmt in cls.body
+            if isinstance(stmt, (ast.FunctionDef, ast.AsyncFunctionDef))
+        ):
+            kept.add(cls.name)
+    changed = True
+    while changed:
+        changed = False
+        for name in list(kept):
+            cls = by_name.get(name)
+            if cls is None:
+                continue
+            for base in cls.bases:
+                if isinstance(base, ast.Name) and base.id in by_name and base.id not in kept:
+                    kept.add(base.id)
+                    changed = True
+    return kept
+
+
+def _class_is_kept(
+    node: ast.ClassDef,
+    coverage: FileCoverage,
+    plan: FilePlan | None,
+    extra_classes: set[str],
+) -> bool:
+    if node.name in extra_classes:
+        return True
+    if plan is not None and node.lineno in plan.keep_linenos:
+        return True
+    return any(
+        _keep_function(stmt, coverage, plan)
+        for stmt in node.body
+        if isinstance(stmt, (ast.FunctionDef, ast.AsyncFunctionDef))
+    )
+
+
+def _expr_root_names(node: ast.AST) -> set[str]:
+    names: set[str] = set()
+    if isinstance(node, ast.Name):
+        names.add(node.id)
+    elif isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name):
+        names.add(node.value.id)
+    elif isinstance(node, ast.Call):
+        names.update(_expr_root_names(node.func))
+        for arg in node.args:
+            names.update(_expr_root_names(arg))
+        for keyword in node.keywords:
+            if keyword.value is not None:
+                names.update(_expr_root_names(keyword.value))
+    return names
+
+
+def _kept_class_support_names(
+    tree: ast.Module,
+    coverage: FileCoverage,
+    plan: FilePlan | None,
+    extra_classes: set[str],
+) -> set[str]:
+    names: set[str] = set()
+    for stmt in tree.body:
+        if not isinstance(stmt, ast.ClassDef):
+            continue
+        if not _class_is_kept(stmt, coverage, plan, extra_classes):
+            continue
+        for deco in stmt.decorator_list:
+            names.update(_expr_root_names(deco))
+        for base in stmt.bases:
+            names.update(_expr_root_names(base))
+        for keyword in stmt.keywords:
+            if keyword.value is not None:
+                names.update(_expr_root_names(keyword.value))
+    return names
 
 
 def _slice_class(
@@ -150,11 +246,28 @@ def _slice_class(
     mask: _Mask,
     prune_branches: bool,
     plan: FilePlan | None = None,
+    extra_classes: set[str] | None = None,
 ) -> int:
+    force = (plan is not None and node.lineno in plan.keep_linenos) or (
+        extra_classes is not None and node.name in extra_classes
+    )
+    kept_names = {
+        stmt.name
+        for stmt in node.body
+        if isinstance(stmt, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and _keep_function(stmt, coverage, plan)
+    }
+    will_keep = bool(kept_names) or force
+    if will_keep:
+        for stmt in node.body:
+            if isinstance(stmt, (ast.FunctionDef, ast.AsyncFunctionDef)) and _is_protocol_dunder(
+                stmt.name
+            ):
+                kept_names.add(stmt.name)
     kept_methods = 0
     for stmt in node.body:
         if isinstance(stmt, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            if _keep_function(stmt, coverage, plan):
+            if _keep_function(stmt, coverage, plan) or stmt.name in kept_names:
                 kept_methods += 1
                 if prune_branches and _function_executed(stmt, coverage):
                     _prune_function(stmt, coverage, mask)
@@ -162,9 +275,9 @@ def _slice_class(
                 start, end = _span(stmt)
                 mask.drop(start, end)
         elif isinstance(stmt, ast.ClassDef):
-            kept_methods += _slice_class(stmt, coverage, mask, prune_branches, plan)
-
-    force = plan is not None and node.lineno in plan.keep_linenos
+            kept_methods += _slice_class(
+                stmt, coverage, mask, prune_branches, plan, extra_classes
+            )
     if kept_methods == 0 and not force:
         mask.drop(*_span(node))
         return 0
@@ -404,8 +517,6 @@ def _rewrite_dunder_all(stmt: ast.Assign, plan: FilePlan, mask: _Mask) -> None:
     indent = _leading_ws(mask.lines[stmt.lineno - 1])
     newline = "\n" if mask.lines[stmt.lineno - 1].endswith("\n") else ""
     mask.drop(stmt.lineno, stmt.end_lineno)
-    if not names:
-        return
     rendered = ", ".join(repr(name) for name in names)
     mask.replacements[stmt.lineno] = f"{indent}__all__ = [{rendered}]{newline}"
 
@@ -419,8 +530,14 @@ def _apply_import_plan(
     plan: FilePlan,
     mask: _Mask,
     source: str,
+    extra_asnames: set[str] | None = None,
 ) -> None:
-    if stmt.lineno in plan.drop_import_linenos and stmt.lineno not in plan.star_names:
+    needed = plan.keep_import_asnames | (extra_asnames or set())
+    if (
+        stmt.lineno in plan.drop_import_linenos
+        and stmt.lineno not in plan.star_names
+        and not _import_provides(stmt, needed)
+    ):
         mask.drop(stmt.lineno, stmt.end_lineno)
         return
     if stmt.lineno in plan.star_names and isinstance(stmt, ast.ImportFrom):
@@ -435,11 +552,11 @@ def _apply_import_plan(
             f"{indent}from {dots}{module} import {', '.join(names)}{newline}"
         )
         return
-    if isinstance(stmt, ast.ImportFrom) and stmt.names and plan.keep_import_asnames:
+    if isinstance(stmt, ast.ImportFrom) and stmt.names and needed:
         kept = [
             alias
             for alias in stmt.names
-            if (alias.asname or alias.name) in plan.keep_import_asnames
+            if (alias.asname or alias.name) in needed
         ]
         if not kept:
             mask.drop(stmt.lineno, stmt.end_lineno)
@@ -460,3 +577,7 @@ def _apply_import_plan(
         mask.replacements[stmt.lineno] = (
             f"{indent}from {dots}{module} import {', '.join(parts)}{newline}"
         )
+
+
+def _import_provides(stmt: ast.Import | ast.ImportFrom, needed: set[str]) -> bool:
+    return any((alias.asname or alias.name.split(".")[0]) in needed for alias in stmt.names)

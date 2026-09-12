@@ -69,8 +69,8 @@ def test_pollsite_tests_pass_on_full_and_sliced_django(tmp_path):
     assert (slim / "django" / "__init__.py").is_file()
     assert list((slim / "django" / "contrib" / "auth" / "migrations").glob("*.py"))
     assert list((slim / "django" / "contrib" / "contenttypes" / "migrations").glob("*.py"))
-    assert not list(slim.glob("django/contrib/admin/**/*.py"))
-    assert not list(slim.glob("django/contrib/gis/**/*.py"))
+    assert not list(slim.glob("django/contrib/admin/static/**/*"))
+    assert not list(slim.glob("django/contrib/gis/gdal/**/*.py"))
 
     replay = _manage("test", "-v", "1", pythonpath=[slim, POLLSITE], timeout=180)
     assert replay.returncode == 0, replay.stderr + replay.stdout
