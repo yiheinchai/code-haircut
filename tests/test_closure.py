@@ -412,3 +412,36 @@ def test_closure_keeps_plugin_command_loaded_via_import_module(tmp_path, monkeyp
         for name in list(sys.modules):
             if name == "pluglib" or name.startswith("pluglib."):
                 sys.modules.pop(name)
+
+
+def test_closure_keeps_unexecuted_methods_referenced_in_kept_bodies(tmp_path, monkeypatch):
+    monkeypatch.syspath_prepend(str(FIXTURES))
+    trace = tmp_path / "trace.json"
+
+    from msgpkg.base import run
+
+    with Tracer(trace, include=["msgpkg"]):
+        assert run() == 0
+
+    output = tmp_path / "slim"
+    slice_trace(trace, output, include=["msgpkg"])
+    source = (output / "msgpkg" / "messages.py").read_text(encoding="utf-8")
+    ast.parse(source)
+    assert "def is_silenced" in source
+    assert "def unused" not in source
+
+    sys.path.insert(0, str(output))
+    try:
+        for name in list(sys.modules):
+            if name == "msgpkg" or name.startswith("msgpkg."):
+                sys.modules.pop(name)
+        from msgpkg.base import check
+        from msgpkg.messages import Warning
+
+        assert [item.id for item in check([Warning("x")])] == ["x"]
+        assert check([Warning("quiet")]) == []
+    finally:
+        sys.path.remove(str(output))
+        for name in list(sys.modules):
+            if name == "msgpkg" or name.startswith("msgpkg."):
+                sys.modules.pop(name)

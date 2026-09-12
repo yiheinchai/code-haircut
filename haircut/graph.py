@@ -172,12 +172,11 @@ def compute_closure(
     for module in seed_modules or ():
         seed_module(module)
 
-    while queue:
-        symbol = queue.pop()
+    def process(symbol: Symbol) -> None:
         seed_module(symbol.module)
         defn = _def_for(graph, symbol)
         if defn is None:
-            continue
+            return
         for name in set(defn.used_names) | set(defn.bases):
             if "." in name:
                 head, tail = name.split(".", 1)
@@ -197,6 +196,8 @@ def compute_closure(
                             add(method.symbol)
             if attr[:1].isupper():
                 _keep_plugin_class(graph, attr, seeded, keep, symbol.module, add)
+            else:
+                _keep_attr_on_kept_classes(graph, attr, keep, add)
         if defn.kind == "method" and "." in symbol.name:
             _follow_self_attrs(graph, symbol, defn, add)
             _follow_super_methods(graph, symbol, add)
@@ -205,6 +206,25 @@ def compute_closure(
         if defn.kind == "class":
             add(defn.symbol)
             _keep_class_protocol_methods(graph, defn, add)
+
+    def sweep_attrs() -> None:
+        for symbol in list(keep):
+            defn = _def_for(graph, symbol)
+            if defn is None:
+                continue
+            for _base, attr in defn.used_attrs:
+                if attr[:1].isupper():
+                    _keep_plugin_class(graph, attr, seeded, keep, symbol.module, add)
+                else:
+                    _keep_attr_on_kept_classes(graph, attr, keep, add)
+
+    while True:
+        while queue:
+            process(queue.pop())
+        size = len(keep)
+        sweep_attrs()
+        if len(keep) == size and not queue:
+            break
 
     return keep
 
@@ -361,6 +381,84 @@ def _keep_plugin_class(graph, attr, seeded, keep, current_module, add) -> None:
         found = owner.defs.get(attr)
         if found is not None and found.kind == "class":
             add(found.symbol)
+
+
+_COMMON_ATTRS = {
+    "get",
+    "set",
+    "save",
+    "delete",
+    "update",
+    "create",
+    "filter",
+    "exclude",
+    "all",
+    "first",
+    "last",
+    "count",
+    "exists",
+    "items",
+    "keys",
+    "values",
+    "append",
+    "extend",
+    "pop",
+    "clear",
+    "copy",
+    "format",
+    "join",
+    "split",
+    "replace",
+    "strip",
+    "read",
+    "write",
+    "open",
+    "close",
+    "add",
+    "remove",
+    "execute",
+    "handle",
+    "run",
+    "start",
+    "stop",
+    "render",
+    "process",
+    "parse",
+    "load",
+    "dump",
+    "check",
+    "send",
+    "connect",
+    "order_by",
+    "using",
+    "pk",
+    "id",
+    "name",
+    "path",
+    "data",
+    "value",
+    "default",
+}
+
+
+def _keep_attr_on_kept_classes(graph: PackageGraph, attr: str, keep: set[Symbol], add) -> None:
+    """Keep uncommon methods referenced in kept bodies, even if that branch did not run.
+
+    Django's ``BaseCommand.check`` always contains ``e.is_silenced()``, but a
+    clean recording never calls it. Replay of a slimmer install can produce
+    warnings and then needs the method.
+    """
+    if not attr or attr.startswith("_") or attr in _COMMON_ATTRS or attr in _BUILTIN_NAMES:
+        return
+    for symbol in list(keep):
+        if "." in symbol.name:
+            continue
+        owner = graph.modules.get(symbol.module)
+        if owner is None:
+            continue
+        method = f"{symbol.name}.{attr}"
+        if method in owner.methods:
+            add(owner.methods[method].symbol)
 
 
 def _keep_class_protocol_methods(graph: PackageGraph, defn: DefInfo, add) -> None:
