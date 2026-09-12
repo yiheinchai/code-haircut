@@ -337,3 +337,41 @@ def test_closure_keeps_lazy_imports_inside_kept_functions(tmp_path, monkeypatch)
         for name in list(sys.modules):
             if name == "lazyimp" or name.startswith("lazyimp."):
                 sys.modules.pop(name)
+
+
+def test_closure_keeps_public_api_imported_by_user_code(tmp_path, monkeypatch):
+    monkeypatch.syspath_prepend(str(FIXTURES))
+    trace = tmp_path / "trace.json"
+
+    from apiuser.app import run
+
+    with Tracer(trace, include=["apilib"]):
+        assert run() == ("/ok", "char")
+
+    output = tmp_path / "slim"
+    slice_trace(trace, output, include=["apilib"])
+    init = (output / "apilib" / "__init__.py").read_text(encoding="utf-8")
+    conf = (output / "apilib" / "conf.py").read_text(encoding="utf-8")
+    fields = (output / "apilib" / "fields.py").read_text(encoding="utf-8")
+    ast.parse(init)
+    ast.parse(conf)
+    ast.parse(fields)
+    assert "public_path" in init
+    assert "def public_path" in conf
+    assert "unused_path" not in conf
+    assert "class CharField" in fields
+    assert "class UnusedField" not in fields
+
+    sys.path.insert(0, str(output))
+    try:
+        for name in list(sys.modules):
+            if name in {"apilib", "apiuser"} or name.startswith("apilib.") or name.startswith("apiuser."):
+                sys.modules.pop(name)
+        from apiuser.app import run as sliced_run
+
+        assert sliced_run() == ("/ok", "char")
+    finally:
+        sys.path.remove(str(output))
+        for name in list(sys.modules):
+            if name == "apilib" or name.startswith("apilib."):
+                sys.modules.pop(name)

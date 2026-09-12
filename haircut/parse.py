@@ -41,6 +41,7 @@ class CoverageMap:
     """Coverage keyed by the path string found in the trace."""
 
     files: dict[str, FileCoverage] = field(default_factory=dict)
+    api: list[tuple[str, str]] = field(default_factory=list)
 
     def coverage_for(self, path: str) -> FileCoverage:
         cov = self.files.get(path)
@@ -64,6 +65,11 @@ class CoverageMap:
             target.lines |= file_cov.lines
             target.call_lines |= file_cov.call_lines
             target.functions |= file_cov.functions
+        seen = set(self.api)
+        for item in other.api:
+            if item not in seen:
+                self.api.append(item)
+                seen.add(item)
 
     @property
     def total_lines(self) -> int:
@@ -124,6 +130,11 @@ def parse_coverage_json(text: str) -> CoverageMap:
             file_cov.lines.add(line)
         for func in rec.get("functions") or []:
             file_cov.functions.add(str(func))
+    api = payload.get("api") if isinstance(payload, dict) else None
+    if isinstance(api, list):
+        for item in api:
+            if isinstance(item, (list, tuple)) and len(item) == 2:
+                coverage.api.append((str(item[0]), str(item[1])))
     if not coverage:
         raise TraceParseError("Coverage JSON contained no files.")
     return coverage
@@ -137,7 +148,12 @@ def dump_coverage(coverage: CoverageMap) -> str:
             "call_lines": sorted(file_cov.call_lines),
             "functions": sorted(file_cov.functions),
         }
-    return json.dumps({"format": "haircut-coverage-v1", "files": files}) + "\n"
+    payload = {
+        "format": "haircut-coverage-v1",
+        "files": files,
+        "api": [[module, name] for module, name in coverage.api],
+    }
+    return json.dumps(payload) + "\n"
 
 
 def parse_jsonl(lines: Iterable[str]) -> CoverageMap:

@@ -8,6 +8,7 @@ from typing import Sequence
 
 from haircut.errors import SourceNotFoundError, TraceParseError
 from haircut.graph import (
+    Symbol,
     build_graph,
     compute_closure,
     discover_package_files,
@@ -159,11 +160,13 @@ def slice_trace(
     graph = build_graph(package_files, strip_root)
     coverage_by_path = {path.resolve(): cov for path, cov in unique_files}
     roots = executed_roots(graph, coverage_by_path)
+    roots |= _api_root_symbols(graph, coverage.api)
     traced_modules = [
         graph.by_path[path].name
         for path in coverage_by_path
         if path in graph.by_path
     ]
+    traced_modules.extend(module for module, _name in coverage.api)
     keep = compute_closure(graph, roots, seed_modules=traced_modules)
     plans = plans_for_keep_set(graph, keep)
 
@@ -246,6 +249,30 @@ def _keep_touches_module(keep, module_name: str) -> bool:
         if symbol.module == module_name or symbol.module.startswith(prefix):
             return True
     return False
+
+
+def _api_root_symbols(graph, api: list[tuple[str, str]]) -> set[Symbol]:
+    roots: set[Symbol] = set()
+    for module, name in api:
+        if not module:
+            continue
+        if name in {"", "*"}:
+            index = graph.modules.get(module)
+            if name == "*" and index is not None:
+                for orig, defn in index.defs.items():
+                    if not orig.startswith("_"):
+                        roots.add(defn.symbol)
+            else:
+                roots.add(Symbol(module, ""))
+            continue
+        roots.add(Symbol(module, name))
+        resolved = graph.resolve_name(module, name)
+        if resolved is not None:
+            roots.add(resolved)
+        child = f"{module}.{name}"
+        if child in graph.modules:
+            roots.add(Symbol(child, ""))
+    return roots
 
 
 def _resolve(raw_path: str, roots: Sequence[Path]) -> Path | None:

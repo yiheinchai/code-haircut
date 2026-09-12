@@ -106,6 +106,9 @@ haircut slice combined.json -o slim --include django
 ## What is kept
 
 - **Functions and methods** that were called
+- **Public names your app imported** from the library (`from django.urls
+  import path`, `models.CharField`, …), even when Django itself never
+  called them
 - **Helpers, bases, and re-exports** they still need (even if those helpers
   were not themselves the API you called)
 - **Package data**: templates, locales, static files, and other non-`.py`

@@ -10,6 +10,7 @@ from types import FrameType
 from typing import Any, Iterable, TextIO
 
 from haircut.parse import CoverageMap, dump_coverage
+from haircut.api_roots import collect_api_uses
 
 _SKIP_PREFIXES = ("<",)
 _SELF_DIR = Path(__file__).resolve().parent
@@ -67,6 +68,8 @@ class Tracer:
 
     def stop(self) -> None:
         self._stop_hooks()
+        if self._include:
+            self.coverage.api = collect_api_uses(self._include)
         if self._jsonl:
             self._flush()
         elif self._stream is not None:
