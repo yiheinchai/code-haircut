@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Iterable, Iterator
 
 from haircut.parse import FileCoverage
+from haircut.paths import is_app_migration_path
 
 _BUILTIN_NAMES = set(dir(builtins)) | {
     "self",
@@ -227,7 +228,11 @@ def discover_package_files(package_dirs: Iterable[Path]) -> list[Path]:
         if directory.is_file():
             files.append(directory)
             continue
-        files.extend(path for path in directory.rglob("*.py") if path.is_file())
+        files.extend(
+            path
+            for path in directory.rglob("*.py")
+            if path.is_file() and not is_app_migration_path(path)
+        )
     return files
 
 

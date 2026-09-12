@@ -21,3 +21,10 @@ def test_top_package_and_output_root():
     file = SRC / "django/db/models/options.py"
     assert top_package_dir(file).name == "django"
     assert infer_output_root([file]) == SRC.resolve()
+
+
+def test_is_app_migration_path():
+    from haircut.paths import is_app_migration_path
+
+    assert is_app_migration_path(Path("django/contrib/auth/migrations/0001_initial.py"))
+    assert not is_app_migration_path(Path("django/db/migrations/executor.py"))

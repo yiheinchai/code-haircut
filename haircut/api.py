@@ -14,10 +14,12 @@ from haircut.graph import (
     executed_roots,
     plans_for_keep_set,
 )
-from haircut.parse import CoverageMap, FileCoverage, load_trace
+from haircut.packaging import copy_package_support_files, original_package_bytes, tree_bytes
+from haircut.parse import CoverageMap, FileCoverage, dump_coverage, load_trace
 from haircut.paths import (
     ensure_package_inits,
     infer_output_root,
+    is_app_migration_path,
     path_allowed,
     relative_to_root,
     resolve_path,
@@ -37,6 +39,9 @@ class SliceReport:
     lines_original: int = 0
     lines_kept: int = 0
     written: list[Path] = field(default_factory=list)
+    support_files: int = 0
+    original_bytes: int = 0
+    slim_bytes: int = 0
 
     @property
     def function_ratio(self) -> float:
@@ -50,6 +55,12 @@ class SliceReport:
             return 0.0
         return self.lines_kept / self.lines_original
 
+    @property
+    def bytes_ratio(self) -> float:
+        if not self.original_bytes:
+            return 0.0
+        return self.slim_bytes / self.original_bytes
+
     def summary(self) -> str:
         lines = [
             "CodeHaircut",
@@ -60,8 +71,17 @@ class SliceReport:
             + (f" ({self.function_ratio:.1%})" if self.functions_original else ""),
             f"Lines kept:        {self.lines_kept} / {self.lines_original}"
             + (f" ({self.line_ratio:.1%})" if self.lines_original else ""),
-            f"Output:            {self.output_dir}",
         ]
+        if self.original_bytes:
+            lines.append(
+                f"Bytes kept:        {self.slim_bytes} / {self.original_bytes}"
+                + f" ({self.bytes_ratio:.1%})"
+            )
+        if self.support_files:
+            lines.append(
+                f"Support files:     {self.support_files} (templates, locales, migrations)"
+            )
+        lines.append(f"Output:            {self.output_dir}")
         if self.unresolved:
             preview = ", ".join(self.unresolved[:5])
             extra = f" (+{len(self.unresolved) - 5} more)" if len(self.unresolved) > 5 else ""
@@ -147,6 +167,9 @@ def slice_trace(
 
     emit_paths = set(plans) | {path.resolve() for path, _ in unique_files}
     for path in sorted(emit_paths):
+        if is_app_migration_path(path):
+            report.files_skipped += 1
+            continue
         plan = plans.get(path)
         if plan is None:
             report.files_skipped += 1
@@ -185,8 +208,25 @@ def slice_trace(
         report.lines_kept += result.kept_lines
         report.written.append(dest)
 
+    copied = copy_package_support_files(written, output_dir, strip_root)
+    report.support_files = len(copied)
     ensure_package_inits(output_dir, written)
+    report.original_bytes = original_package_bytes(written, output_dir, strip_root)
+    report.slim_bytes = tree_bytes(output_dir)
     return report
+
+
+def merge_traces(paths: Sequence[str | Path], output: str | Path) -> CoverageMap:
+    """Union coverage from several traces into one compact JSON file."""
+    if not paths:
+        raise TraceParseError("Pass at least one trace file to merge.")
+    combined = CoverageMap()
+    for path in paths:
+        combined.merge(load_trace(path))
+    dest = Path(output)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text(dump_coverage(combined), encoding="utf-8")
+    return combined
 
 
 def _resolve(raw_path: str, roots: Sequence[Path]) -> Path | None:

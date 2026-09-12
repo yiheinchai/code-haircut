@@ -13,3 +13,6 @@ venv/
 .DS_Store
 *.jsonl
 haircutted/
+.haircut/
+*.sqlite3
+db.sqlite3

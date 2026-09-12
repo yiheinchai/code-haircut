@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "code-haircut"
-version = "0.1.0"
-description = "Slice a Python package down to the code your program actually executes."
+version = "0.2.0"
+description = "Slice a Python package down to the code your program actually executes. Production build step for Django and other large libraries."
 readme = "README.md"
 requires-python = ">=3.9"
 authors = [{name = "CodeHaircut"}]

@@ -66,6 +66,18 @@ def _prefer_shortest(paths: Sequence[Path]) -> Path:
     return sorted(paths, key=lambda p: (len(p.parts), str(p)))[0]
 
 
+def is_app_migration_path(path: Path | str) -> bool:
+    """True for Django *app* migration modules, not ``django.db.migrations``."""
+    parts = Path(path).parts
+    for index, part in enumerate(parts):
+        if part != "migrations":
+            continue
+        if index > 0 and parts[index - 1] == "db":
+            continue
+        return True
+    return False
+
+
 def path_allowed(
     path: str,
     include: Sequence[str] | None = None,

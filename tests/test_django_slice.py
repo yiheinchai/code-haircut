@@ -59,6 +59,7 @@ def test_sliced_django_runs_contenttype_create_get(tmp_path):
     )
     assert sliced.returncode == 0, sliced.stderr + sliced.stdout
     assert "Files written" in sliced.stdout
+    assert "Bytes kept" in sliced.stdout
     assert not list(slim.glob("django/contrib/gis/**/*.py"))
     assert not list(slim.glob("django/contrib/admin/**/*.py"))
 

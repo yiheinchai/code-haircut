@@ -58,8 +58,12 @@ class CoverageMap:
     ) -> None:
         self.coverage_for(path).add(line, event=event, func=func)
 
-    def __len__(self) -> int:
-        return len(self.files)
+    def merge(self, other: "CoverageMap") -> None:
+        for path, file_cov in other.files.items():
+            target = self.coverage_for(path)
+            target.lines |= file_cov.lines
+            target.call_lines |= file_cov.call_lines
+            target.functions |= file_cov.functions
 
     @property
     def total_lines(self) -> int:

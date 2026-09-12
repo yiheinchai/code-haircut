@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from haircut.parse import detect_format, load_trace, parse_hunter, parse_jsonl
+from haircut.parse import detect_format, dump_coverage, load_trace, parse_hunter, parse_jsonl
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -51,3 +51,34 @@ def test_parse_jsonl_roundtrip():
     assert 6 in cov.lines
     assert 0 not in cov.lines
     assert "used" in cov.functions
+
+
+def test_merge_traces(tmp_path):
+    from haircut.api import merge_traces
+
+    first = tmp_path / "a.json"
+    second = tmp_path / "b.json"
+    first.write_text(
+        dump_coverage(
+            parse_jsonl(['{"file": "a.py", "line": 1, "event": "line", "func": "one"}'])
+        ),
+        encoding="utf-8",
+    )
+    second.write_text(
+        dump_coverage(
+            parse_jsonl(
+                [
+                    '{"file": "a.py", "line": 2, "event": "call", "func": "two"}',
+                    '{"file": "b.py", "line": 3, "event": "line", "func": "three"}',
+                ]
+            )
+        ),
+        encoding="utf-8",
+    )
+    combined_path = tmp_path / "c.json"
+    combined = merge_traces([first, second], combined_path)
+    assert 1 in combined.coverage_for("a.py").lines
+    assert 2 in combined.coverage_for("a.py").call_lines
+    assert 3 in combined.coverage_for("b.py").lines
+    loaded = load_trace(combined_path)
+    assert loaded.total_lines == combined.total_lines
