@@ -182,3 +182,37 @@ def test_keeps_dunders_on_class_kept_only_as_a_base():
     namespace: dict[str, object] = {}
     exec(compiled, namespace)
     assert str(namespace["MediaAsset"]("ok")) == "ok"
+
+
+def test_keeps_nested_meta_on_kept_model_classes():
+    source = textwrap.dedent(
+        '''
+        class AbstractBase:
+            class Meta:
+                abstract = True
+
+            def label(self):
+                return "ok"
+
+        class Unused:
+            class Meta:
+                abstract = True
+        '''
+    ).lstrip()
+    tree = ast.parse(source)
+    plan = FilePlan()
+    for node in tree.body:
+        if isinstance(node, ast.ClassDef) and node.name == "AbstractBase":
+            plan.keep_linenos.add(node.lineno)
+            for child in node.body:
+                if isinstance(child, ast.FunctionDef) and child.name == "label":
+                    plan.keep_linenos.add(child.lineno)
+    cov = FileCoverage(path="models.py")
+    result = slice_source(source, cov, filename="models.py", plan=plan)
+    ast.parse(result.source)
+    assert "class AbstractBase" in result.source
+    assert "abstract = True" in result.source
+    assert "class Unused" not in result.source
+    namespace: dict[str, object] = {}
+    exec(compile(result.source, "models.py", "exec"), namespace)
+    assert namespace["AbstractBase"].Meta.abstract is True

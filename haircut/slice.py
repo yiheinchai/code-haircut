@@ -240,6 +240,9 @@ def _kept_class_support_names(
     return names
 
 
+_KEEP_INNER_CLASSES = {"Meta", "Media"}
+
+
 def _slice_class(
     node: ast.ClassDef,
     coverage: FileCoverage,
@@ -247,9 +250,12 @@ def _slice_class(
     prune_branches: bool,
     plan: FilePlan | None = None,
     extra_classes: set[str] | None = None,
+    parent_kept: bool = False,
 ) -> int:
-    force = (plan is not None and node.lineno in plan.keep_linenos) or (
-        extra_classes is not None and node.name in extra_classes
+    force = (
+        (plan is not None and node.lineno in plan.keep_linenos)
+        or (extra_classes is not None and node.name in extra_classes)
+        or (parent_kept and node.name in _KEEP_INNER_CLASSES)
     )
     kept_names = {
         stmt.name
@@ -276,7 +282,13 @@ def _slice_class(
                 mask.drop(start, end)
         elif isinstance(stmt, ast.ClassDef):
             kept_methods += _slice_class(
-                stmt, coverage, mask, prune_branches, plan, extra_classes
+                stmt,
+                coverage,
+                mask,
+                prune_branches,
+                plan,
+                extra_classes,
+                parent_kept=will_keep,
             )
     if kept_methods == 0 and not force:
         mask.drop(*_span(node))
