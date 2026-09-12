@@ -195,6 +195,8 @@ def compute_closure(
                     for method in owner.methods.values():
                         if method.symbol.name.endswith(suffix):
                             add(method.symbol)
+            if attr[:1].isupper():
+                _keep_plugin_class(graph, attr, seeded, keep, symbol.module, add)
         if defn.kind == "method" and "." in symbol.name:
             _follow_self_attrs(graph, symbol, defn, add)
             _follow_super_methods(graph, symbol, add)
@@ -345,6 +347,20 @@ def _named_import_needed(
             ):
                 kept.append(asname)
     return kept
+
+
+def _keep_plugin_class(graph, attr, seeded, keep, current_module, add) -> None:
+    """Keep ``import_module(...).Command`` plugin classes on imported modules."""
+    modules = set(seeded)
+    modules.add(current_module)
+    modules.update(item.module for item in keep)
+    for owner_name in modules:
+        owner = graph.modules.get(owner_name)
+        if owner is None:
+            continue
+        found = owner.defs.get(attr)
+        if found is not None and found.kind == "class":
+            add(found.symbol)
 
 
 def _keep_class_protocol_methods(graph: PackageGraph, defn: DefInfo, add) -> None:
@@ -794,8 +810,7 @@ def _uses(
             if child.id not in local and child.id not in builtin_skip:
                 names.add(child.id)
         elif isinstance(child, ast.Attribute) and isinstance(child.value, ast.Name):
-            if child.value.id not in local:
-                attrs.add((child.value.id, child.attr))
+            attrs.add((child.value.id, child.attr))
     return names, attrs
 
 

@@ -380,3 +380,35 @@ def test_closure_keeps_public_api_imported_by_user_code(tmp_path, monkeypatch):
         for name in list(sys.modules):
             if name == "apilib" or name.startswith("apilib."):
                 sys.modules.pop(name)
+
+
+def test_closure_keeps_plugin_command_loaded_via_import_module(tmp_path, monkeypatch):
+    monkeypatch.syspath_prepend(str(FIXTURES))
+    trace = tmp_path / "trace.json"
+
+    from pluglib.loader import load
+
+    with Tracer(trace, include=["pluglib"]):
+        assert load("pluglib.commands.cut").autodetector == "same"
+
+    output = tmp_path / "slim"
+    slice_trace(trace, output, include=["pluglib"])
+    source = (output / "pluglib" / "commands" / "cut.py").read_text(encoding="utf-8")
+    ast.parse(source)
+    assert "class Command" in source
+    assert "autodetector" in source
+    assert "def unused" not in source
+
+    sys.path.insert(0, str(output))
+    try:
+        for name in list(sys.modules):
+            if name == "pluglib" or name.startswith("pluglib."):
+                sys.modules.pop(name)
+        from pluglib.loader import load as sliced_load
+
+        assert sliced_load("pluglib.commands.cut").autodetector == "same"
+    finally:
+        sys.path.remove(str(output))
+        for name in list(sys.modules):
+            if name == "pluglib" or name.startswith("pluglib."):
+                sys.modules.pop(name)
