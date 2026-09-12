@@ -490,15 +490,42 @@ def _keep_class_protocol_methods(graph: PackageGraph, defn: DefInfo, add) -> Non
 
 def _follow_self_attrs(graph: PackageGraph, symbol: Symbol, defn: DefInfo, add) -> None:
     class_name = symbol.name.split(".", 1)[0]
-    owner = graph.modules.get(symbol.module)
-    if owner is None:
-        return
     for base_name, attr in defn.used_attrs:
         if base_name not in {"self", "cls", "type"}:
             continue
-        sibling = f"{class_name}.{attr}"
-        if sibling in owner.methods:
-            add(Symbol(symbol.module, sibling))
+        _keep_method_on_class_and_bases(graph, symbol.module, class_name, attr, add)
+
+
+def _keep_method_on_class_and_bases(
+    graph: PackageGraph,
+    module: str,
+    class_name: str,
+    attr: str,
+    add,
+    seen: set[tuple[str, str]] | None = None,
+) -> None:
+    seen = seen if seen is not None else set()
+    key = (module, class_name)
+    if key in seen:
+        return
+    seen.add(key)
+    owner = graph.modules.get(module)
+    if owner is None:
+        return
+    sibling = f"{class_name}.{attr}"
+    if sibling in owner.methods:
+        add(Symbol(module, sibling))
+    class_def = owner.defs.get(class_name)
+    if class_def is None:
+        return
+    for base in class_def.bases:
+        base_sym = graph.resolve_name(module, base.split(".", 1)[0])
+        if base_sym is None or not base_sym.name:
+            continue
+        add(base_sym)
+        _keep_method_on_class_and_bases(
+            graph, base_sym.module, base_sym.name, attr, add, seen
+        )
 
 
 def _follow_super_methods(graph: PackageGraph, symbol: Symbol, add) -> None:

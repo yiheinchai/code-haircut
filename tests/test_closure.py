@@ -445,3 +445,34 @@ def test_closure_keeps_unexecuted_methods_referenced_in_kept_bodies(tmp_path, mo
         for name in list(sys.modules):
             if name == "msgpkg" or name.startswith("msgpkg."):
                 sys.modules.pop(name)
+
+
+def test_closure_keeps_mixin_methods_looked_up_on_self(tmp_path, monkeypatch):
+    monkeypatch.syspath_prepend(str(FIXTURES))
+    trace = tmp_path / "trace.json"
+
+    from mixinpkg.client import run
+
+    with Tracer(trace, include=["mixinpkg"]):
+        assert callable(run())
+
+    output = tmp_path / "slim"
+    slice_trace(trace, output, include=["mixinpkg"])
+    source = (output / "mixinpkg" / "client.py").read_text(encoding="utf-8")
+    ast.parse(source)
+    assert "def _parse_json" in source
+    assert "def unused" not in source
+
+    sys.path.insert(0, str(output))
+    try:
+        for name in list(sys.modules):
+            if name == "mixinpkg" or name.startswith("mixinpkg."):
+                sys.modules.pop(name)
+        from mixinpkg.client import run as sliced_run
+
+        assert sliced_run()() == "ok"
+    finally:
+        sys.path.remove(str(output))
+        for name in list(sys.modules):
+            if name == "mixinpkg" or name.startswith("mixinpkg."):
+                sys.modules.pop(name)
