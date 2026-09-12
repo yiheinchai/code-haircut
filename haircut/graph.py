@@ -40,6 +40,7 @@ class DefInfo:
     used_names: set[str] = field(default_factory=set)
     used_attrs: set[tuple[str, str]] = field(default_factory=set)
     bases: tuple[str, ...] = ()
+    inner_imports: tuple[ImportInfo, ...] = ()
 
 
 @dataclass
@@ -197,6 +198,8 @@ def compute_closure(
         if defn.kind == "method" and "." in symbol.name:
             _follow_self_attrs(graph, symbol, defn, add)
             _follow_super_methods(graph, symbol, add)
+        for imp in defn.inner_imports:
+            _follow_inner_import(graph, symbol.module, imp, add)
         if defn.kind == "class":
             add(defn.symbol)
             _keep_class_protocol_methods(graph, defn, add)
@@ -403,6 +406,45 @@ def _follow_super_methods(graph: PackageGraph, symbol: Symbol, add) -> None:
             add(parent)
 
 
+def _follow_inner_import(graph: PackageGraph, module: str, imp: ImportInfo, add) -> None:
+    """Keep names imported inside a kept function (Django AppConfig.ready lazy imports)."""
+    index = graph.modules.get(module)
+    if index is None:
+        return
+    package = index.name if index.is_init else (
+        index.name.rsplit(".", 1)[0] if "." in index.name else ""
+    )
+    if imp.raw_module is None and imp.level == 0:
+        for orig, _asname in imp.names:
+            if orig in graph.modules or _has_prefix(graph, orig):
+                add(Symbol(
+                    orig if orig in graph.modules else _longest_prefix(graph, orig),
+                    "",
+                ))
+            else:
+                add(graph.resolve_name(module, orig))
+        return
+    resolved = _absolute_module(package, imp.raw_module, imp.level)
+    if not resolved:
+        return
+    if imp.star:
+        target = graph.modules.get(resolved)
+        if target is not None:
+            for orig, defn in target.defs.items():
+                if not orig.startswith("_"):
+                    add(defn.symbol)
+        return
+    for orig, _asname in imp.names:
+        child = f"{resolved}.{orig}"
+        if child in graph.modules or _has_prefix(graph, child):
+            add(Symbol(
+                child if child in graph.modules else _longest_prefix(graph, child),
+                "",
+            ))
+            continue
+        add(graph.resolve_name(resolved, orig) or Symbol(resolved, orig))
+
+
 def _follow_attr(graph: PackageGraph, module: str, base_name: str, attr: str, add) -> None:
     if base_name in _BUILTIN_NAMES:
         return
@@ -562,6 +604,7 @@ def _index_module(name: str, path: Path, source: str, tree: ast.Module) -> Modul
                 end_lineno=stmt.end_lineno or stmt.lineno,
                 used_names=used_names,
                 used_attrs=used_attrs,
+                inner_imports=_inner_imports(stmt),
             )
         elif isinstance(stmt, ast.ClassDef):
             used_names, used_attrs = _uses(stmt, skip_locals=False, imported=imported)
@@ -574,6 +617,7 @@ def _index_module(name: str, path: Path, source: str, tree: ast.Module) -> Modul
                 used_names=used_names - {stmt.name},
                 used_attrs=used_attrs,
                 bases=bases,
+                inner_imports=_inner_imports(stmt),
             )
             for child in stmt.body:
                 if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -586,6 +630,7 @@ def _index_module(name: str, path: Path, source: str, tree: ast.Module) -> Modul
                         end_lineno=child.end_lineno or child.lineno,
                         used_names=m_names,
                         used_attrs=m_attrs,
+                        inner_imports=_inner_imports(child),
                     )
         elif isinstance(stmt, (ast.Import, ast.ImportFrom)):
             index.imports.append(_import_info(stmt))
@@ -607,6 +652,18 @@ def _index_module(name: str, path: Path, source: str, tree: ast.Module) -> Modul
                 if ctor:
                     index.instances[target] = ctor
     return index
+
+
+def _inner_imports(node: ast.AST) -> tuple[ImportInfo, ...]:
+    found: list[ImportInfo] = []
+    for child in ast.iter_child_nodes(node):
+        if isinstance(child, (ast.Import, ast.ImportFrom)):
+            found.append(_import_info(child))
+        elif isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            continue
+        else:
+            found.extend(_inner_imports(child))
+    return tuple(found)
 
 
 def _constructor_class(stmt: ast.AST) -> str | None:

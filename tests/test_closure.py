@@ -306,3 +306,34 @@ def test_closure_keeps_html_safe_str_on_unused_base(tmp_path, monkeypatch):
         for name in list(sys.modules):
             if name == "htmlsafepkg" or name.startswith("htmlsafepkg."):
                 sys.modules.pop(name)
+
+
+def test_closure_keeps_lazy_imports_inside_kept_functions(tmp_path, monkeypatch):
+    monkeypatch.syspath_prepend(str(FIXTURES))
+    trace = tmp_path / "trace.json"
+
+    from lazyimp.apps import ready
+
+    with Tracer(trace, include=["lazyimp"]):
+        assert ready() == "logged-in"
+
+    output = tmp_path / "slim"
+    slice_trace(trace, output, include=["lazyimp"])
+    models = (output / "lazyimp" / "models.py").read_text(encoding="utf-8")
+    ast.parse(models)
+    assert "def update_last_login" in models
+    assert "def unused" not in models
+
+    sys.path.insert(0, str(output))
+    try:
+        for name in list(sys.modules):
+            if name == "lazyimp" or name.startswith("lazyimp."):
+                sys.modules.pop(name)
+        from lazyimp.apps import ready as sliced_ready
+
+        assert sliced_ready() == "logged-in"
+    finally:
+        sys.path.remove(str(output))
+        for name in list(sys.modules):
+            if name == "lazyimp" or name.startswith("lazyimp."):
+                sys.modules.pop(name)
