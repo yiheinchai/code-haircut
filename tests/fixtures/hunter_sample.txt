@@ -1,0 +1,15 @@
+[...]/django/django/db/models/manager.py:184   call         => __get__(self=<django.db.models.manager.ManagerDescriptor object at 0x107354690>, instance=None, cls=<django.db.models.base.ModelBase object at 0x1070929d0>)
+[...]/django/django/db/models/manager.py:185   line            if instance is not None:
+[...]/django/django/db/models/manager.py:190   line            if cls._meta.abstract:
+[...]/django/django/db/models/manager.py:195   line            if cls._meta.swapped:
+[...]/django/django/db/models/options.py:404   call            => swapped(self=<django.db.models.options.Options object at 0x107275390>)
+[...]/django/django/db/models/options.py:413   line               if self.swappable:
+[...]/django/django/db/models/options.py:430   line               return None
+[...]/django/django/db/models/options.py:430   return          <= swapped: None
+[...]/django/django/db/models/manager.py:204   line            return cls._meta.managers_map[self.manager.name]
+[...]/django/django/db/models/manager.py:204   return       <= __get__: <django.db.models.manager.Manager object at 0x1073fb650>
+[...]/django/django/db/models/manager.py:157   call         => all(self=<django.db.models.manager.Manager object at 0x1073fb650>)
+[...]/django/django/db/models/manager.py:164   line            return self.get_queryset()
+[...]rn/django/django/db/models/query.py:294   call               => __init__(self=<django.db.models.query.QuerySet object at 0x107c7a350>, model=<django.db.models.base.ModelBase object at 0x1070929d0>, query=None, using=None, hints={})
+[...]rn/django/django/db/models/query.py:295   line                  self.model = model
+C:\site-packages\django\db\models\query.py:316   line                     return self._query
