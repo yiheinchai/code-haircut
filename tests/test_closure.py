@@ -2,7 +2,7 @@ import ast
 import sys
 from pathlib import Path
 
-from haircut.api import slice_trace
+from haircut.api import load_coverage, slice_trace
 from haircut.tracer import Tracer
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -347,6 +347,11 @@ def test_closure_keeps_public_api_imported_by_user_code(tmp_path, monkeypatch):
 
     with Tracer(trace, include=["apilib"]):
         assert run() == ("/ok", "char")
+
+    recorded = load_coverage(trace)
+    assert ("apilib", "public_path") in recorded.api
+    assert ("apilib.fields", "CharField") in recorded.api
+    assert ("apilib.public_path", "") not in recorded.api
 
     output = tmp_path / "slim"
     slice_trace(trace, output, include=["apilib"])

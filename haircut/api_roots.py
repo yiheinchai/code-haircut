@@ -132,7 +132,9 @@ def _module_is_included(modname: str, include: tuple[str, ...]) -> bool:
     if not modname:
         return False
     module = sys.modules.get(modname)
-    filename = getattr(module, "__file__", None) if isinstance(module, ModuleType) else None
+    if not isinstance(module, ModuleType):
+        return False
+    filename = getattr(module, "__file__", None)
     if isinstance(filename, str) and filename:
         return path_allowed(filename, include=include)
     return any(modname == item or modname.startswith(item + ".") for item in include)
